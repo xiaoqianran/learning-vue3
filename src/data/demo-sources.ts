@@ -456,6 +456,118 @@ const vColor = {
 }
 // <p v-color="'tomato'">高亮</p>`,
   },
+  "class-style": {
+    lang: "vue",
+    title: "Class 与 Style 绑定",
+    code: `<script setup>
+import { ref, reactive } from 'vue'
+const isActive = ref(true)
+const hasError = ref(false)
+const styleObj = reactive({ color: 'tomato', fontSize: '18px' })
+</script>
+
+<template>
+  <div class="static" :class="{ active: isActive, 'text-danger': hasError }">对象 class</div>
+  <div :class="[isActive ? 'active' : '', 'rounded']">数组 class</div>
+  <p :style="styleObj">对象 style</p>
+</template>`,
+  },
+  watchers: {
+    lang: "vue",
+    title: "watch / watchEffect",
+    code: `<script setup>
+import { ref, watch } from 'vue'
+const id = ref(1)
+const log = ref([])
+watch(id, (n, o, onCleanup) => {
+  let cancelled = false
+  onCleanup(() => { cancelled = true })
+  if (!cancelled) log.value.push(\`\${o} → \${n}\`)
+})
+</script>`,
+  },
+  "template-ref": {
+    lang: "vue",
+    title: "模板 ref",
+    code: `<script setup>
+import { ref, onMounted } from 'vue'
+const input = ref(null)
+onMounted(() => input.value?.focus())
+function focus() { input.value?.focus() }
+</script>
+<template>
+  <input ref="input" />
+  <button @click="focus">聚焦</button>
+</template>`,
+  },
+  "component-vmodel": {
+    lang: "vue",
+    title: "组件 v-model",
+    code: `<script setup>
+const model = defineModel({ type: String })
+</script>
+<template>
+  <input :value="model" @input="model = $event.target.value" />
+</template>
+<!-- 父：<CustomInput v-model="text" /> -->`,
+  },
+  fallthrough: {
+    lang: "vue",
+    title: "透传 attrs",
+    code: `<script setup>
+defineOptions({ inheritAttrs: false })
+defineProps<{ label: string }>()
+</script>
+<template>
+  <label>
+    {{ label }}
+    <input v-bind="$attrs" />
+  </label>
+</template>`,
+  },
+  "async-comp": {
+    lang: "ts",
+    title: "defineAsyncComponent",
+    code: `import { defineAsyncComponent } from 'vue'
+const Heavy = defineAsyncComponent({
+  loader: () => import('./Heavy.vue'),
+  loadingComponent: Spinner,
+  delay: 200,
+})`,
+  },
+  transition: {
+    lang: "vue",
+    title: "Transition",
+    code: `<script setup>
+import { ref } from 'vue'
+const show = ref(true)
+</script>
+<template>
+  <button @click="show = !show">toggle</button>
+  <Transition name="fade">
+    <p v-if="show">Hello</p>
+  </Transition>
+</template>`,
+  },
+  suspense: {
+    lang: "vue",
+    title: "Suspense",
+    code: `<Suspense>
+  <template #default><AsyncPage /></template>
+  <template #fallback><div>Loading...</div></template>
+</Suspense>`,
+  },
+  plugins: {
+    lang: "ts",
+    title: "app.use 插件",
+    code: `export default {
+  install(app, options) {
+    app.config.globalProperties.$translate = (key) =>
+      options.messages[key] ?? key
+  },
+}
+app.use(plugin, { messages: { hello: '你好' } })`,
+  },
 };
 
 export function getDemoSource(kind: DemoKind): DemoSource {

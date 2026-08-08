@@ -29,3 +29,5 @@ screenshots/
 artifacts/
 .node_modules.lock
 AGENTS.md
+docs-research/vue-llms-full.txt
+docs-research/snip/

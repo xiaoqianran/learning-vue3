@@ -31,12 +31,12 @@ export const Route = createRootRoute({
       { charSet: "utf-8" },
       { name: "viewport", content: "width=device-width, initial-scale=1" },
       {
-        title: "Vue 3 实战学习 v7 · 进阶模式",
+        title: "Vue 3 实战学习 v8 · 官网对齐",
       },
       {
         name: "description",
         content:
-          "Vue 3 中文交互式教程 v7：进阶模式、速查表、Teleport/KeepAlive/指令/性能与面试串讲。",
+          "Vue 3 中文交互式教程 v8：对照官网 llms.txt 全目录、讲解+源码+Demo、速查表、全栈工坊。",
       },
     ],
     links: [

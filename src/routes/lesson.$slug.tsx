@@ -1,10 +1,5 @@
 import { createFileRoute, Link, notFound } from "@tanstack/react-router";
-import {
-  getAdjacent,
-  getLesson,
-  getLessonIndex,
-  LESSONS,
-} from "@/data/lessons";
+import { getAdjacent, getLesson, getLessonIndex, LESSONS } from "@/data/lessons";
 import { CodeBlock } from "@/components/CodeBlock";
 import { InteractiveDemo } from "@/components/demos/InteractiveDemos";
 import { Quiz } from "@/components/Quiz";
@@ -18,6 +13,7 @@ import {
   Check,
   Clock,
   Lightbulb,
+  ExternalLink,
 } from "lucide-react";
 import { useEffect, useState } from "react";
 import { cn } from "@/lib/utils";
@@ -72,8 +68,7 @@ function LessonPage() {
             {lesson.level}
           </span>
           <span className="inline-flex items-center gap-1 text-xs text-muted">
-            <Clock className="h-3.5 w-3.5" />
-            约 {lesson.minutes} 分钟
+            <Clock className="h-3.5 w-3.5" />约 {lesson.minutes} 分钟
           </span>
           {done ? (
             <span className="inline-flex items-center gap-1 rounded-full bg-primary/15 px-2 py-0.5 text-[11px] text-primary">
@@ -96,15 +91,27 @@ function LessonPage() {
                 : "border-border bg-surface text-muted hover:text-fg",
             )}
           >
-            {bookmarked ? (
-              <BookmarkCheck className="h-4 w-4" />
-            ) : (
-              <Bookmark className="h-4 w-4" />
-            )}
+            {bookmarked ? <BookmarkCheck className="h-4 w-4" /> : <Bookmark className="h-4 w-4" />}
             {bookmarked ? "已收藏" : "收藏"}
           </button>
         </div>
         <p className="mt-2 text-base text-muted">{lesson.summary}</p>
+        {lesson.official ? (
+          <p className="mt-3">
+            <a
+              href={`https://cn.vuejs.org${lesson.official}`}
+              target="_blank"
+              rel="noreferrer"
+              className="inline-flex items-center gap-1.5 text-sm text-primary no-underline hover:underline"
+            >
+              <ExternalLink className="h-3.5 w-3.5" />
+              对照官网文档
+            </a>
+            <span className="ml-2 font-mono text-[11px] text-subtle">
+              cn.vuejs.org{lesson.official}
+            </span>
+          </p>
+        ) : null}
       </header>
 
       <div className="mt-8 space-y-8">
@@ -113,9 +120,7 @@ function LessonPage() {
             return (
               <section key={i}>
                 {block.title ? (
-                  <h2 className="mb-2 font-display text-lg font-semibold text-fg">
-                    {block.title}
-                  </h2>
+                  <h2 className="mb-2 font-display text-lg font-semibold text-fg">{block.title}</h2>
                 ) : null}
                 <p className="text-[15px] leading-relaxed text-muted whitespace-pre-line">
                   {block.body}
@@ -124,14 +129,7 @@ function LessonPage() {
             );
           }
           if (block.type === "code") {
-            return (
-              <CodeBlock
-                key={i}
-                code={block.code}
-                title={block.title}
-                lang={block.lang}
-              />
-            );
+            return <CodeBlock key={i} code={block.code} title={block.title} lang={block.lang} />;
           }
           if (block.type === "tip") {
             return (
@@ -146,12 +144,7 @@ function LessonPage() {
           }
           if (block.type === "demo") {
             return (
-              <InteractiveDemo
-                key={i}
-                kind={block.kind}
-                title={block.title}
-                hint={block.hint}
-              />
+              <InteractiveDemo key={i} kind={block.kind} title={block.title} hint={block.hint} />
             );
           }
           if (block.type === "quiz") {
@@ -162,9 +155,7 @@ function LessonPage() {
       </div>
 
       <section className="mt-10 rounded-xl border border-border bg-surface p-4 sm:p-5">
-        <h2 className="font-display text-base font-semibold text-fg">
-          本节笔记
-        </h2>
+        <h2 className="font-display text-base font-semibold text-fg">本节笔记</h2>
         <p className="mt-1 text-xs text-muted">自动保存在本机，仅你可见</p>
         <textarea
           value={note}
@@ -193,11 +184,7 @@ function LessonPage() {
 
       <nav className="mt-6 grid gap-3 sm:grid-cols-2">
         {prev ? (
-          <Link
-            to="/lesson/$slug"
-            params={{ slug: prev.slug }}
-            className="no-underline"
-          >
+          <Link to="/lesson/$slug" params={{ slug: prev.slug }} className="no-underline">
             <div className="rounded-xl border border-border bg-surface p-4 transition-colors hover:border-border-strong hover:bg-surface-2">
               <p className="inline-flex items-center gap-1 text-xs text-muted">
                 <ArrowLeft className="h-3.5 w-3.5" />

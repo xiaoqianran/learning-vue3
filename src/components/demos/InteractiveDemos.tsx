@@ -115,6 +115,24 @@ function DemoBody({ kind }: { kind: DemoKind }) {
       return <KeepAliveDemo />;
     case "directive":
       return <DirectiveDemo />;
+    case "class-style":
+      return <ClassStyleDemo />;
+    case "watchers":
+      return <WatchersDemo />;
+    case "template-ref":
+      return <TemplateRefDemo />;
+    case "component-vmodel":
+      return <ComponentVModelDemo />;
+    case "fallthrough":
+      return <FallthroughDemo />;
+    case "async-comp":
+      return <AsyncCompDemo />;
+    case "transition":
+      return <TransitionDemo />;
+    case "suspense":
+      return <SuspenseDemo />;
+    case "plugins":
+      return <PluginsDemo />;
     default:
       return null;
   }
@@ -1142,6 +1160,312 @@ function DirectiveDemo() {
       ) : (
         <p className="mt-3 text-sm text-muted">输入框已卸载</p>
       )}
+    </div>
+  );
+}
+
+function ClassStyleDemo() {
+  const [active, setActive] = useState(true);
+  const [error, setError] = useState(false);
+  const [size, setSize] = useState(16);
+  const [color, setColor] = useState("#42b883");
+  return (
+    <div className="grid gap-3 sm:grid-cols-2">
+      <Panel label="控制">
+        <label className="flex items-center gap-2 text-sm">
+          <input
+            type="checkbox"
+            checked={active}
+            onChange={(e) => setActive(e.target.checked)}
+            className="accent-[var(--color-primary)]"
+          />
+          isActive
+        </label>
+        <label className="mt-2 flex items-center gap-2 text-sm">
+          <input
+            type="checkbox"
+            checked={error}
+            onChange={(e) => setError(e.target.checked)}
+            className="accent-[var(--color-primary)]"
+          />
+          hasError
+        </label>
+        <label className="mt-3 block text-xs text-muted">fontSize</label>
+        <input
+          type="range"
+          min={12}
+          max={28}
+          value={size}
+          onChange={(e) => setSize(Number(e.target.value))}
+          className="w-full"
+        />
+        <label className="mt-2 block text-xs text-muted">color</label>
+        <input type="color" value={color} onChange={(e) => setColor(e.target.value)} />
+      </Panel>
+      <Panel label="渲染结果">
+        <div
+          className={cn(
+            "rounded-md border px-3 py-2 text-sm",
+            active && "border-primary bg-primary-soft",
+            error && "border-danger text-danger",
+            !active && !error && "border-border bg-bg text-muted",
+          )}
+          style={{ fontSize: size, color: error ? undefined : color }}
+        >
+          :class 对象 + :style 对象
+        </div>
+        <pre className="mt-2 font-mono text-[11px] text-muted">
+          {`{ active: ${active}, 'text-danger': ${error} }
+{ fontSize: '${size}px', color: '${color}' }`}
+        </pre>
+      </Panel>
+    </div>
+  );
+}
+
+function WatchersDemo() {
+  const [id, setId] = useState(1);
+  const [log, setLog] = useState<string[]>([]);
+  useEffect(() => {
+    setLog((xs) => [...xs, `watch id → ${id}`].slice(-6));
+  }, [id]);
+  return (
+    <div className="grid gap-3 sm:grid-cols-2">
+      <Panel label="源 id">
+        <p className="font-mono text-3xl text-primary tabular-nums">{id}</p>
+        <div className="mt-2 flex gap-2">
+          <Button size="sm" onClick={() => setId((x) => x + 1)}>
+            id++
+          </Button>
+          <Button size="sm" variant="secondary" onClick={() => setId(1)}>
+            重置
+          </Button>
+        </div>
+      </Panel>
+      <Panel label="watch 日志">
+        <ul className="space-y-1 font-mono text-xs text-muted">
+          {log.map((l, i) => (
+            <li key={i}>{l}</li>
+          ))}
+        </ul>
+      </Panel>
+    </div>
+  );
+}
+
+function TemplateRefDemo() {
+  const [val, setVal] = useState("");
+  const [focused, setFocused] = useState(false);
+  return (
+    <div className="grid gap-3 sm:grid-cols-2">
+      <Panel label="模板 ref 模拟">
+        <input
+          id="tpl-ref-demo"
+          value={val}
+          onChange={(e) => setVal(e.target.value)}
+          onFocus={() => setFocused(true)}
+          onBlur={() => setFocused(false)}
+          className="h-10 w-full rounded-md border border-border bg-bg px-3 text-sm"
+          placeholder="input ref=..."
+        />
+        <Button
+          className="mt-2"
+          size="sm"
+          onClick={() => {
+            const el = document.getElementById("tpl-ref-demo") as HTMLInputElement | null;
+            el?.focus();
+            el?.select();
+          }}
+        >
+          inputRef.value.focus()
+        </Button>
+      </Panel>
+      <Panel label="状态">
+        <p className="text-sm">
+          value: <span className="text-primary">{val || "—"}</span>
+        </p>
+        <p className="mt-1 text-sm">focused: {String(focused)}</p>
+        <p className="mt-2 text-xs text-muted">挂载前 ref 为 null；事件/onMounted 后再用。</p>
+      </Panel>
+    </div>
+  );
+}
+
+function ComponentVModelDemo() {
+  const [text, setText] = useState("Hello");
+  return (
+    <div className="grid gap-3 sm:grid-cols-2">
+      <Panel label="父 state">
+        <p className="font-mono text-sm">
+          text = <span className="text-primary">{text}</span>
+        </p>
+        <Button size="sm" className="mt-2" variant="secondary" onClick={() => setText("重置")}>
+          父直接 setText
+        </Button>
+      </Panel>
+      <Panel label="子 · v-model">
+        <input
+          value={text}
+          onChange={(e) => setText(e.target.value)}
+          className="h-10 w-full rounded-md border border-border bg-bg px-3 text-sm"
+        />
+        <p className="mt-2 font-mono text-[11px] text-muted">
+          emit('update:modelValue', e.target.value)
+        </p>
+      </Panel>
+    </div>
+  );
+}
+
+function FallthroughDemo() {
+  const [ph, setPh] = useState("Ada");
+  const [cls, setCls] = useState(true);
+  return (
+    <div className="grid gap-3 sm:grid-cols-2">
+      <Panel label="父传入的 attrs">
+        <input
+          value={ph}
+          onChange={(e) => setPh(e.target.value)}
+          className="h-10 w-full rounded-md border border-border bg-bg px-3 text-sm"
+        />
+        <label className="mt-2 flex items-center gap-2 text-sm">
+          <input type="checkbox" checked={cls} onChange={(e) => setCls(e.target.checked)} />
+          class="ring"
+        </label>
+      </Panel>
+      <Panel label="子内部 input 接收 $attrs">
+        <label className="text-xs text-muted">label prop</label>
+        <input
+          placeholder={ph}
+          className={cn(
+            "mt-1 h-10 w-full rounded-md border bg-bg px-3 text-sm",
+            cls ? "border-primary ring-2 ring-primary/30" : "border-border",
+          )}
+        />
+        <p className="mt-2 text-xs text-muted">inheritAttrs: false → v-bind="$attrs" 到 input</p>
+      </Panel>
+    </div>
+  );
+}
+
+function AsyncCompDemo() {
+  const [phase, setPhase] = useState<"idle" | "loading" | "ready" | "error">("idle");
+  function load(ok: boolean) {
+    setPhase("loading");
+    window.setTimeout(() => setPhase(ok ? "ready" : "error"), 900);
+  }
+  return (
+    <div className="grid gap-3 sm:grid-cols-2">
+      <Panel label="loader">
+        <div className="flex gap-2">
+          <Button size="sm" onClick={() => load(true)} disabled={phase === "loading"}>
+            import()
+          </Button>
+          <Button
+            size="sm"
+            variant="secondary"
+            onClick={() => load(false)}
+            disabled={phase === "loading"}
+          >
+            失败
+          </Button>
+          <Button size="sm" variant="ghost" onClick={() => setPhase("idle")}>
+            重置
+          </Button>
+        </div>
+      </Panel>
+      <Panel label="UI">
+        {phase === "idle" && <p className="text-sm text-muted">尚未加载</p>}
+        {phase === "loading" && <p className="text-sm text-primary">loadingComponent…</p>}
+        {phase === "error" && <p className="text-sm text-danger">errorComponent</p>}
+        {phase === "ready" && (
+          <div className="rounded-md border border-primary/30 bg-primary-soft p-3 text-sm text-primary">
+            HeavyChart 已加载（模拟）
+          </div>
+        )}
+      </Panel>
+    </div>
+  );
+}
+
+function TransitionDemo() {
+  const [show, setShow] = useState(true);
+  return (
+    <div className="grid gap-3 sm:grid-cols-2">
+      <Panel label="控制">
+        <Button onClick={() => setShow((s) => !s)}>toggle show={String(show)}</Button>
+      </Panel>
+      <Panel label="Transition 模拟">
+        <div
+          className={cn(
+            "overflow-hidden transition-all duration-300",
+            show ? "max-h-24 opacity-100" : "max-h-0 opacity-0",
+          )}
+        >
+          <p className="rounded-md bg-primary-soft px-3 py-2 text-sm text-primary">fade 中的内容</p>
+        </div>
+        <p className="mt-2 font-mono text-[11px] text-muted">v-enter-from / v-leave-to …</p>
+      </Panel>
+    </div>
+  );
+}
+
+function SuspenseDemo() {
+  const [ready, setReady] = useState(false);
+  const [loading, setLoading] = useState(false);
+  function start() {
+    setReady(false);
+    setLoading(true);
+    window.setTimeout(() => {
+      setLoading(false);
+      setReady(true);
+    }, 1000);
+  }
+  return (
+    <div className="space-y-3">
+      <Button size="sm" onClick={start}>
+        触发异步依赖
+      </Button>
+      <div className="rounded-lg border border-border bg-surface-2 p-4">
+        {loading || (!ready && !loading) ? (
+          <p className="text-sm text-muted">#fallback · Loading…</p>
+        ) : (
+          <p className="text-sm text-primary">#default · AsyncPage 就绪</p>
+        )}
+      </div>
+    </div>
+  );
+}
+
+function PluginsDemo() {
+  const [installed, setInstalled] = useState(false);
+  const [msg, setMsg] = useState("hello");
+  const dict: Record<string, string> = { hello: "你好", bye: "再见" };
+  return (
+    <div className="grid gap-3 sm:grid-cols-2">
+      <Panel label="app.use">
+        <Button size="sm" onClick={() => setInstalled(true)} disabled={installed}>
+          {installed ? "已 install" : "安装 i18n 插件"}
+        </Button>
+        <div className="mt-2 flex gap-2">
+          {(["hello", "bye"] as const).map((k) => (
+            <Button key={k} size="sm" variant="secondary" onClick={() => setMsg(k)}>
+              key={k}
+            </Button>
+          ))}
+        </div>
+      </Panel>
+      <Panel label="$translate">
+        <p className="text-sm">
+          {installed ? (
+            <>
+              $translate('{msg}') → <span className="text-primary">{dict[msg]}</span>
+            </>
+          ) : (
+            <span className="text-muted">插件未安装</span>
+          )}
+        </p>
+      </Panel>
     </div>
   );
 }

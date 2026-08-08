@@ -13,7 +13,7 @@
 
 你可以：
 
-- 按路径学完 **33 节** 课程（**讲解 + 对应源码 + 交互 Demo + 小测验**，源码与 Demo 一一对应）
+- 按路径学完 **47 节** 课程（**讲解 + 对应源码 + 交互 Demo + 小测验**，源码与 Demo 一一对应）
 - 在 **SFC 编辑器** 里写并运行真实 `.vue` 文件
 - 在 **全栈工坊** 里练登录、401、笔记 CRUD（模拟 REST API）
 - 用 **速查表** 复习，用 **学习中心 / 错题本 / 结业证明** 跟进度
@@ -57,6 +57,7 @@
 | **全栈实训** | REST/CRUD、Token 会话、Nuxt 地图、毕业作品清单 |
 | **工程化** | Vue+TS、API 客户端、测试入门、生产部署 |
 | **进阶模式** | Teleport、KeepAlive、自定义指令、性能、面试串讲 |
+| **官网对齐** | 对照 vuejs.org/llms.txt：class/style、watch、template ref、组件 v-model、attrs、异步组件、插件、Transition、Suspense、a11y/安全、SSR、风格指南等 |
 
 建议顺序：
 
@@ -77,6 +78,7 @@
 | v5 | 全栈工坊：模拟登录 + 笔记 CRUD |
 | v6 | 工坊闯关 + 工程化课 |
 | v7 | 进阶模式 + 速查表 |
+| v8 | 官网 llms.txt 对齐补强 + 代码即组件 + 对照外链 |
 
 Release 见：[GitHub Releases](https://github.com/xiaoqianran/learning-vue3/releases)
 

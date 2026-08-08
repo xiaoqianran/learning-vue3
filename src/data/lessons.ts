@@ -27,7 +27,16 @@ export type DemoKind =
   | "validate"
   | "teleport"
   | "keepalive"
-  | "directive";
+  | "directive"
+  | "class-style"
+  | "watchers"
+  | "template-ref"
+  | "component-vmodel"
+  | "fallthrough"
+  | "async-comp"
+  | "transition"
+  | "suspense"
+  | "plugins";
 
 export type LessonBlock =
   | { type: "text"; title?: string; body: string }
@@ -41,8 +50,10 @@ export type Lesson = {
   title: string;
   summary: string;
   level: "入门" | "进阶" | "实战";
-  track: "基础" | "进阶" | "全栈准备" | "全栈实训" | "工程化" | "进阶模式";
+  track: "基础" | "进阶" | "全栈准备" | "全栈实训" | "工程化" | "进阶模式" | "官网对齐";
   minutes: number;
+  /** 官网路径（相对 cn.vuejs.org），如 /guide/essentials/template-syntax.html */
+  official?: string;
   blocks: LessonBlock[];
 };
 
@@ -54,6 +65,7 @@ export const LESSONS: Lesson[] = [
     level: "入门",
     track: "基础",
     minutes: 6,
+    official: "/guide/introduction.html",
     blocks: [
       {
         type: "text",
@@ -95,6 +107,7 @@ export const LESSONS: Lesson[] = [
     level: "入门",
     track: "基础",
     minutes: 8,
+    official: "/guide/essentials/template-syntax.html",
     blocks: [
       {
         type: "text",
@@ -136,6 +149,7 @@ export const LESSONS: Lesson[] = [
     level: "入门",
     track: "基础",
     minutes: 10,
+    official: "/guide/essentials/reactivity-fundamentals.html",
     blocks: [
       {
         type: "text",
@@ -177,6 +191,7 @@ export const LESSONS: Lesson[] = [
     level: "入门",
     track: "基础",
     minutes: 10,
+    official: "/guide/essentials/computed.html",
     blocks: [
       {
         type: "text",
@@ -218,6 +233,7 @@ export const LESSONS: Lesson[] = [
     level: "入门",
     track: "基础",
     minutes: 9,
+    official: "/guide/essentials/list.html",
     blocks: [
       {
         type: "text",
@@ -259,6 +275,7 @@ export const LESSONS: Lesson[] = [
     level: "入门",
     track: "基础",
     minutes: 7,
+    official: "/guide/essentials/event-handling.html",
     blocks: [
       {
         type: "text",
@@ -293,6 +310,7 @@ export const LESSONS: Lesson[] = [
     level: "入门",
     track: "基础",
     minutes: 9,
+    official: "/guide/essentials/forms.html",
     blocks: [
       {
         type: "text",
@@ -327,6 +345,7 @@ export const LESSONS: Lesson[] = [
     level: "进阶",
     track: "基础",
     minutes: 10,
+    official: "/guide/essentials/component-basics.html",
     blocks: [
       {
         type: "text",
@@ -361,6 +380,7 @@ export const LESSONS: Lesson[] = [
     level: "进阶",
     track: "基础",
     minutes: 11,
+    official: "/guide/components/props.html",
     blocks: [
       {
         type: "text",
@@ -395,6 +415,7 @@ export const LESSONS: Lesson[] = [
     level: "进阶",
     track: "基础",
     minutes: 8,
+    official: "/guide/essentials/lifecycle.html",
     blocks: [
       {
         type: "text",
@@ -429,6 +450,7 @@ export const LESSONS: Lesson[] = [
     level: "实战",
     track: "基础",
     minutes: 12,
+    official: "/guide/reusability/composables.html",
     blocks: [
       {
         type: "text",
@@ -470,6 +492,7 @@ export const LESSONS: Lesson[] = [
     level: "进阶",
     track: "进阶",
     minutes: 14,
+    official: "/guide/scaling-up/routing.html",
     blocks: [
       {
         type: "text",
@@ -511,6 +534,7 @@ export const LESSONS: Lesson[] = [
     level: "进阶",
     track: "进阶",
     minutes: 12,
+    official: "/guide/scaling-up/state-management.html",
     blocks: [
       {
         type: "text",
@@ -638,6 +662,7 @@ export const LESSONS: Lesson[] = [
     level: "进阶",
     track: "全栈准备",
     minutes: 12,
+    official: "/guide/components/slots.html",
     blocks: [
       {
         type: "text",
@@ -679,6 +704,7 @@ export const LESSONS: Lesson[] = [
     level: "进阶",
     track: "全栈准备",
     minutes: 11,
+    official: "/guide/components/provide-inject.html",
     blocks: [
       {
         type: "text",
@@ -1010,6 +1036,7 @@ export const LESSONS: Lesson[] = [
     level: "实战",
     track: "工程化",
     minutes: 14,
+    official: "/guide/typescript/composition-api.html",
     blocks: [
       {
         type: "code",
@@ -1096,6 +1123,7 @@ export const LESSONS: Lesson[] = [
     level: "实战",
     track: "工程化",
     minutes: 12,
+    official: "/guide/scaling-up/testing.html",
     blocks: [
       {
         type: "text",
@@ -1140,6 +1168,7 @@ export const LESSONS: Lesson[] = [
     level: "实战",
     track: "工程化",
     minutes: 11,
+    official: "/guide/best-practices/production-deployment.html",
     blocks: [
       {
         type: "text",
@@ -1182,6 +1211,7 @@ export const LESSONS: Lesson[] = [
     level: "进阶",
     track: "进阶模式",
     minutes: 11,
+    official: "/guide/built-ins/teleport.html",
     blocks: [
       {
         type: "text",
@@ -1246,6 +1276,7 @@ const open = ref(false)
     level: "进阶",
     track: "进阶模式",
     minutes: 12,
+    official: "/guide/built-ins/keep-alive.html",
     blocks: [
       {
         type: "text",
@@ -1305,6 +1336,7 @@ const current = ref<'A' | 'B'>('A')
     level: "进阶",
     track: "进阶模式",
     minutes: 10,
+    official: "/guide/reusability/custom-directives.html",
     blocks: [
       {
         type: "text",
@@ -1363,6 +1395,7 @@ app.directive('focus', vFocus)
     level: "实战",
     track: "进阶模式",
     minutes: 12,
+    official: "/guide/best-practices/performance.html",
     blocks: [
       {
         type: "text",
@@ -1468,9 +1501,760 @@ const Admin = defineAsyncComponent(() => import('./Admin.vue'))`,
       },
     ],
   },
+
+  // ========== 官网对齐补强（对照 vuejs.org/llms.txt）==========
+  {
+    slug: "class-style",
+    title: "Class 与 Style 绑定",
+    summary: "对象/数组语法绑定 class 与 style，对应官网 essentials/class-and-style。",
+    level: "入门",
+    track: "官网对齐",
+    minutes: 10,
+    official: "/guide/essentials/class-and-style.html",
+    blocks: [
+      {
+        type: "text",
+        title: "和 HTML 的差别",
+        body: "Vue 用 :class / :style 做动态绑定。class 支持对象（条件开关）与数组（列表合并）；style 支持对象（CSS 属性驼峰或短横线）与数组合并。绑定对象/数组时，Vue 会智能合并到元素的 class/style，而不是整段覆盖静态 class。",
+      },
+      {
+        type: "code",
+        title: "对应源码 · class / style",
+        lang: "vue",
+        code: `<script setup>
+import { ref, reactive } from 'vue'
+const isActive = ref(true)
+const hasError = ref(false)
+const styleObj = reactive({ color: 'tomato', fontSize: '18px' })
+</script>
+
+<template>
+  <div
+    class="static"
+    :class="{ active: isActive, 'text-danger': hasError }"
+  >
+    对象 class
+  </div>
+  <div :class="[isActive ? 'active' : '', 'rounded']">数组 class</div>
+  <p :style="styleObj">对象 style</p>
+</template>`,
+      },
+      {
+        type: "demo",
+        kind: "class-style",
+        title: "动手：切换 class / style",
+        hint: "对照官网：对象语法适合布尔开关，数组适合多来源合并。",
+      },
+      {
+        type: "quiz",
+        questions: [
+          {
+            id: "cs1",
+            question: ":class 对象语法的值通常是？",
+            options: ["仅字符串", "布尔条件", "只能数字", "禁止静态 class"],
+            answer: 1,
+            explain: "真值时加入该类名。",
+          },
+          {
+            id: "cs2",
+            question: "静态 class 与 :class 同时写？",
+            options: ["冲突必丢静态", "会合并", "必须二选一", "仅 SSR 生效"],
+            answer: 1,
+            explain: "Vue 会合并。",
+          },
+        ],
+      },
+    ],
+  },
+  {
+    slug: "watchers",
+    title: "侦听器 Watchers",
+    summary: "watch / watchEffect / 清理副作用，对应官网 essentials/watchers。",
+    level: "入门",
+    track: "官网对齐",
+    minutes: 12,
+    official: "/guide/essentials/watchers.html",
+    blocks: [
+      {
+        type: "text",
+        title: "何时用 watch",
+        body: "派生展示数据优先 computed。需要「状态变了去做点事」（请求、日志、同步 storage）再用 watch。watch 可指定源；watchEffect 自动追踪依赖。异步时务必返回/调用清理函数，避免竞态。",
+      },
+      {
+        type: "code",
+        title: "对应源码 · watch",
+        lang: "vue",
+        code: `<script setup>
+import { ref, watch, watchEffect } from 'vue'
+const id = ref(1)
+const log = ref([])
+watch(id, async (n, o, onCleanup) => {
+  let cancelled = false
+  onCleanup(() => { cancelled = true })
+  // await fetch...
+  if (!cancelled) log.value.push(\`id: \${o} → \${n}\`)
+})
+watchEffect(() => {
+  console.log('effect id=', id.value)
+})
+</script>`,
+      },
+      {
+        type: "demo",
+        kind: "watchers",
+        title: "动手：改源看日志",
+        hint: "快速连点会触发多次；真实项目用 onCleanup 取消上一次请求。",
+      },
+      {
+        type: "quiz",
+        questions: [
+          {
+            id: "w1",
+            question: "展示派生文本优先？",
+            options: ["watch", "computed", "onMounted 循环", "v-html"],
+            answer: 1,
+            explain: "computed 有缓存、声明式。",
+          },
+          {
+            id: "w2",
+            question: "watch 异步请求要？",
+            options: ["忽略旧请求", "onCleanup / Abort 取消", "只能同步", "禁止 watch"],
+            answer: 1,
+            explain: "防竞态。",
+          },
+        ],
+      },
+    ],
+  },
+  {
+    slug: "template-refs",
+    title: "模板引用 Template Refs",
+    summary: "ref 拿到 DOM / 子组件实例，对应官网 essentials/template-refs。",
+    level: "入门",
+    track: "官网对齐",
+    minutes: 10,
+    official: "/guide/essentials/template-refs.html",
+    blocks: [
+      {
+        type: "text",
+        title: "什么时候需要 ref",
+        body: '优先声明式数据驱动。仅在必须操作 DOM（聚焦、测宽、接入非 Vue 库）时用模板 ref。script setup 中：const el = ref(null)，模板写 ref="el"。注意挂载前 el.value 为 null；v-for 上的 ref 是数组。',
+      },
+      {
+        type: "code",
+        title: "对应源码 · 聚焦输入框",
+        lang: "vue",
+        code: `<script setup>
+import { ref, onMounted } from 'vue'
+const input = ref(null)
+onMounted(() => input.value?.focus())
+function focus() { input.value?.focus() }
+</script>
+
+<template>
+  <input ref="input" />
+  <button @click="focus">聚焦</button>
+</template>`,
+      },
+      {
+        type: "demo",
+        kind: "template-ref",
+        title: "动手：DOM 聚焦与读值",
+      },
+      {
+        type: "quiz",
+        questions: [
+          {
+            id: "tr1",
+            question: "挂载前 ref.value？",
+            options: ["元素", "null", "window", "永远有值"],
+            answer: 1,
+            explain: "需 onMounted 或用户事件后再用。",
+          },
+          {
+            id: "tr2",
+            question: "能替代状态驱动吗？",
+            options: ["应该优先 ref 改 DOM", "多数 UI 仍应用状态", "禁止使用", "仅 Options"],
+            answer: 1,
+            explain: "声明式优先。",
+          },
+        ],
+      },
+    ],
+  },
+  {
+    slug: "component-vmodel",
+    title: "组件上的 v-model",
+    summary: "modelValue + update:modelValue，对应官网 components/v-model。",
+    level: "进阶",
+    track: "官网对齐",
+    minutes: 12,
+    official: "/guide/components/v-model.html",
+    blocks: [
+      {
+        type: "text",
+        title: "约定",
+        body: '父级 <Child v-model="x" /> 等价于 :modelValue="x" @update:modelValue="x = $event"。子组件 defineProps([\'modelValue\']) + defineEmits([\'update:modelValue\'])。Vue 3.4+ 可用 defineModel() 简化。多 v-model 用参数：v-model:title。',
+      },
+      {
+        type: "code",
+        title: "对应源码 · 自定义输入",
+        lang: "vue",
+        code: `<!-- CustomInput.vue -->
+<script setup>
+const model = defineModel({ type: String })
+</script>
+<template>
+  <input :value="model" @input="model = $event.target.value" />
+</template>
+
+<!-- 父 -->
+<CustomInput v-model="text" />`,
+      },
+      {
+        type: "demo",
+        kind: "component-vmodel",
+        title: "动手：父子双向同步",
+      },
+      {
+        type: "quiz",
+        questions: [
+          {
+            id: "vm1",
+            question: "默认 v-model prop 名？",
+            options: ["value", "modelValue", "vModel", "bind"],
+            answer: 1,
+            explain: "Vue 3 默认 modelValue。",
+          },
+          {
+            id: "vm2",
+            question: "子更新父应？",
+            options: ["直接改 props", "emit update:modelValue", "window 全局", "仅 inject"],
+            answer: 1,
+            explain: "保持单向数据流。",
+          },
+        ],
+      },
+    ],
+  },
+  {
+    slug: "fallthrough-attrs",
+    title: "透传 Attributes",
+    summary: 'class/监听器自动落入根元素；inheritAttrs 与 v-bind="$attrs"。',
+    level: "进阶",
+    track: "官网对齐",
+    minutes: 11,
+    official: "/guide/components/attrs.html",
+    blocks: [
+      {
+        type: "text",
+        title: "Fallthrough",
+        body: '父传到子、但子未声明为 props/emits 的 attribute（含 class、style、原生事件）会自动落到子组件的单根节点。多根节点或要落到内部 input 时：set inheritAttrs: false，并在目标上 v-bind="$attrs"。',
+      },
+      {
+        type: "code",
+        title: "对应源码 · 落到内部 input",
+        lang: "vue",
+        code: `<script setup>
+defineOptions({ inheritAttrs: false })
+defineProps<{ label: string }>()
+</script>
+<template>
+  <label>
+    {{ label }}
+    <input v-bind="$attrs" />
+  </label>
+</template>
+
+<!-- 父：class / placeholder 落到 input -->
+<BaseInput label="名" class="w-full" placeholder="Ada" />`,
+      },
+      {
+        type: "demo",
+        kind: "fallthrough",
+        title: "动手：attrs 落点",
+      },
+      {
+        type: "quiz",
+        questions: [
+          {
+            id: "fa1",
+            question: "未声明的 class 默认？",
+            options: ["丢弃", "落到子根元素", "变成 prop", "仅 SSR"],
+            answer: 1,
+            explain: "fallthrough。",
+          },
+          {
+            id: "fa2",
+            question: "想落到内部 input？",
+            options: [
+              "无法",
+              "inheritAttrs:false + v-bind=$attrs",
+              "只能用 provide",
+              "改 Vue 源码",
+            ],
+            answer: 1,
+            explain: "官网推荐写法。",
+          },
+        ],
+      },
+    ],
+  },
+  {
+    slug: "async-components",
+    title: "异步组件",
+    summary: "defineAsyncComponent 分包与加载态，对应 components/async。",
+    level: "进阶",
+    track: "官网对齐",
+    minutes: 11,
+    official: "/guide/components/async.html",
+    blocks: [
+      {
+        type: "text",
+        title: "用途",
+        body: "大组件按需加载，减小首包。defineAsyncComponent(() => import('./Heavy.vue'))。可配置 loadingComponent、errorComponent、delay、timeout。结合 Suspense 可在树级等待。",
+      },
+      {
+        type: "code",
+        title: "对应源码",
+        lang: "ts",
+        code: `import { defineAsyncComponent } from 'vue'
+
+const HeavyChart = defineAsyncComponent({
+  loader: () => import('./HeavyChart.vue'),
+  loadingComponent: Spinner,
+  errorComponent: ErrorCard,
+  delay: 200,
+  timeout: 10000,
+})`,
+      },
+      {
+        type: "demo",
+        kind: "async-comp",
+        title: "动手：模拟异步加载",
+      },
+      {
+        type: "quiz",
+        questions: [
+          {
+            id: "ac1",
+            question: "异步组件主要收益？",
+            options: ["更少代码", "代码分割/按需加载", "替代路由", "去掉打包"],
+            answer: 1,
+            explain: "减小首屏。",
+          },
+        ],
+      },
+    ],
+  },
+  {
+    slug: "plugins",
+    title: "插件 Plugins",
+    summary: "app.use 安装全局能力，对应 reusability/plugins。",
+    level: "进阶",
+    track: "官网对齐",
+    minutes: 10,
+    official: "/guide/reusability/plugins.html",
+    blocks: [
+      {
+        type: "text",
+        title: "插件形态",
+        body: "插件是带 install(app, options) 的对象或函数，用于注册全局组件/指令、挂载全局属性、提供 provide 等。Router、Pinia 都是插件。自己写插件时避免污染过多全局。",
+      },
+      {
+        type: "code",
+        title: "对应源码 · 简易 i18n 插件",
+        lang: "ts",
+        code: `export default {
+  install(app, options) {
+    app.config.globalProperties.$translate = (key) =>
+      options.messages[key] ?? key
+    app.provide('i18n', options)
+  },
+}
+// main.ts
+app.use(i18nPlugin, { messages: { hello: '你好' } })`,
+      },
+      {
+        type: "demo",
+        kind: "plugins",
+        title: "动手：安装插件前后",
+      },
+      {
+        type: "quiz",
+        questions: [
+          {
+            id: "pl1",
+            question: "安装插件 API？",
+            options: ["app.mount", "app.use", "app.component only", "import 即可自动"],
+            answer: 1,
+            explain: "app.use(plugin, options?)。",
+          },
+        ],
+      },
+    ],
+  },
+  {
+    slug: "transition",
+    title: "Transition 过渡",
+    summary: "内置 Transition / TransitionGroup，对应 built-ins/transition。",
+    level: "进阶",
+    track: "官网对齐",
+    minutes: 12,
+    official: "/guide/built-ins/transition.html",
+    blocks: [
+      {
+        type: "text",
+        title: "原理",
+        body: "Transition 在元素插入/移除时自动挂 CSS 类名（v-enter-from 等）或跑 JS 钩子。只应包裹单个元素/组件。列表用 TransitionGroup 并给子项 key。",
+      },
+      {
+        type: "code",
+        title: "对应源码",
+        lang: "vue",
+        code: `<script setup>
+import { ref } from 'vue'
+const show = ref(true)
+</script>
+<template>
+  <button @click="show = !show">toggle</button>
+  <Transition name="fade">
+    <p v-if="show">Hello</p>
+  </Transition>
+</template>
+<style>
+.fade-enter-active, .fade-leave-active { transition: opacity .3s }
+.fade-enter-from, .fade-leave-to { opacity: 0 }
+</style>`,
+      },
+      {
+        type: "demo",
+        kind: "transition",
+        title: "动手：显隐过渡",
+      },
+      {
+        type: "quiz",
+        questions: [
+          {
+            id: "tr1",
+            question: "列表动画用？",
+            options: ["Transition", "TransitionGroup", "仅 CSS", "Teleport"],
+            answer: 1,
+            explain: "TransitionGroup。",
+          },
+        ],
+      },
+    ],
+  },
+  {
+    slug: "suspense",
+    title: "Suspense",
+    summary: "等待异步依赖的实验性内置组件，对应 built-ins/suspense。",
+    level: "进阶",
+    track: "官网对齐",
+    minutes: 11,
+    official: "/guide/built-ins/suspense.html",
+    blocks: [
+      {
+        type: "text",
+        title: "注意",
+        body: "Suspense 仍标为 experimental，API 可能变。它协调异步组件 / async setup，在 default 与 fallback 插槽间切换。生产关键路径请做好兼容与加载态设计。",
+      },
+      {
+        type: "code",
+        title: "对应源码",
+        lang: "vue",
+        code: `<Suspense>
+  <template #default>
+    <AsyncPage />
+  </template>
+  <template #fallback>
+    <div>Loading...</div>
+  </template>
+</Suspense>`,
+      },
+      {
+        type: "demo",
+        kind: "suspense",
+        title: "动手：fallback ↔ content",
+      },
+      {
+        type: "quiz",
+        questions: [
+          {
+            id: "su1",
+            question: "Suspense 状态？",
+            options: ["稳定 final", "experimental 需谨慎", "仅 Vue2", "替代 Router"],
+            answer: 1,
+            explain: "官网标注 experimental。",
+          },
+        ],
+      },
+    ],
+  },
+  {
+    slug: "a11y-security",
+    title: "无障碍与安全",
+    summary: "a11y + XSS/敏感数据，对应 best-practices/accessibility & security。",
+    level: "实战",
+    track: "官网对齐",
+    minutes: 14,
+    official: "/guide/best-practices/security.html",
+    blocks: [
+      {
+        type: "text",
+        title: "两条底线",
+        body: "无障碍：语义标签、键盘可达、label、对比度、不要用 div 冒充按钮。安全：永不信任用户 HTML——v-html 可导致 XSS；前端密钥等于公开；鉴权以后端为准；用户生成内容要消毒。",
+      },
+      {
+        type: "code",
+        title: "危险 vs 安全",
+        lang: "vue",
+        code: `<!-- ❌ 危险：直接渲染用户 HTML -->
+<div v-html="userHtml"></div>
+
+<!-- ✅ 默认插值会转义 -->
+<p>{{ userText }}</p>
+
+<!-- ✅ 交互用 button，并绑键盘 -->
+<button type="button" @click="save">保存</button>`,
+      },
+      {
+        type: "demo",
+        kind: "challenge",
+        title: "挑战：找出不安全写法",
+        hint: "结合速查表：v-html、token 存放、a11y 语义。",
+      },
+      {
+        type: "tip",
+        body: "官网安全篇：https://cn.vuejs.org/guide/best-practices/security.html ；无障碍：.../accessibility.html",
+      },
+      {
+        type: "quiz",
+        questions: [
+          {
+            id: "as1",
+            question: "用户富文本应用？",
+            options: ["直接 v-html", "消毒/白名单后再渲染", "eval", "innerHTML 全局"],
+            answer: 1,
+            explain: "防 XSS。",
+          },
+          {
+            id: "as2",
+            question: "前端存永久密钥？",
+            options: ["可以", "等于公开，禁止", "仅 ref 安全", "Pinia 加密即可"],
+            answer: 1,
+            explain: "任何前端包都可被拆。",
+          },
+        ],
+      },
+    ],
+  },
+  {
+    slug: "reactivity-depth",
+    title: "深入响应式",
+    summary: "Proxy、依赖收集、shallow / readonly，对应 extras/reactivity-in-depth。",
+    level: "进阶",
+    track: "官网对齐",
+    minutes: 14,
+    official: "/guide/extras/reactivity-in-depth.html",
+    blocks: [
+      {
+        type: "text",
+        title: "心智模型",
+        body: "Vue 3 用 Proxy 拦截读写：读时 track 依赖，写时 trigger 副作用。reactive 仅对对象；ref 对任意值（对象会深层转换）。markRaw 跳过代理；shallowRef 只追踪 .value 替换。理解这些才能解释「解构丢失」和性能取舍。",
+      },
+      {
+        type: "code",
+        title: "对应源码 · 工具 API",
+        lang: "ts",
+        code: `import { ref, shallowRef, readonly, markRaw } from 'vue'
+
+const deep = ref({ nested: { n: 1 } }) // 深层
+const shallow = shallowRef({ nested: { n: 1 } })
+// 改 shallow.value.nested.n 不触发；替换 shallow.value = {...} 才触发
+
+const state = readonly({ x: 1 }) // 写会警告
+const raw = markRaw({ huge: true }) // 永不变成代理`,
+      },
+      {
+        type: "demo",
+        kind: "ref-vs-reactive",
+        title: "复习：响应式边界",
+      },
+      {
+        type: "quiz",
+        questions: [
+          {
+            id: "rd1",
+            question: "Vue3 响应式核心？",
+            options: ["脏检查", "Proxy", "Object.observe", "setInterval"],
+            answer: 1,
+            explain: "Proxy。",
+          },
+          {
+            id: "rd2",
+            question: "大列表性能优化常见？",
+            options: ["全部 deep reactive", "shallowRef + 不可变替换", "去掉 key", "禁用编译"],
+            answer: 1,
+            explain: "减少深层代理成本。",
+          },
+        ],
+      },
+    ],
+  },
+  {
+    slug: "render-jsx",
+    title: "渲染函数与 JSX",
+    summary: "h() / JSX 场景，对应 extras/render-function。",
+    level: "进阶",
+    track: "官网对齐",
+    minutes: 12,
+    official: "/guide/extras/render-function.html",
+    blocks: [
+      {
+        type: "text",
+        title: "何时离开模板",
+        body: "模板覆盖 95% 场景。高度动态的标签/子节点结构可用 render 函数或 JSX。h('div', { class: 'x' }, children)。注意：render 里没有模板的自动解包便利，VNode 要稳定 key。",
+      },
+      {
+        type: "code",
+        title: "对应源码 · h()",
+        lang: "ts",
+        code: `import { h, ref } from 'vue'
+export default {
+  setup() {
+    const ok = ref(true)
+    return () =>
+      h('button', { onClick: () => (ok.value = !ok.value) }, ok.value ? 'ON' : 'OFF')
+  },
+}`,
+      },
+      {
+        type: "demo",
+        kind: "component",
+        title: "对照：模板组件仍是默认选择",
+      },
+      {
+        type: "quiz",
+        questions: [
+          {
+            id: "rj1",
+            question: "默认推荐？",
+            options: ["全站 JSX", "模板 / SFC", "必须 render", "仅 Options"],
+            answer: 1,
+            explain: "模板是一等公民。",
+          },
+        ],
+      },
+    ],
+  },
+  {
+    slug: "ssr-basics",
+    title: "SSR 基础",
+    summary: "同构、水合、数据获取边界，对应 scaling-up/ssr。",
+    level: "实战",
+    track: "官网对齐",
+    minutes: 13,
+    official: "/guide/scaling-up/ssr.html",
+    blocks: [
+      {
+        type: "text",
+        title: "SSR 解决什么",
+        body: "服务端先出 HTML，利于首屏与 SEO，再在浏览器 hydrate。约束：组件需在服务端可运行（无直接 window）；每请求创建新 app 实例；跨请求状态不能共享。实践中多用 Nuxt 等更高层方案。",
+      },
+      {
+        type: "code",
+        title: "概念伪码",
+        lang: "ts",
+        code: `// server
+const app = createSSRApp(App)
+const html = await renderToString(app)
+
+// client
+const app = createSSRApp(App)
+app.mount('#app') // hydrate`,
+      },
+      {
+        type: "tip",
+        body: "课站 nuxt-map 课讲文件系统路由与 server/api；本课补 SSR 心智。完整工程请跟 Nuxt 文档。",
+      },
+      {
+        type: "demo",
+        kind: "async",
+        title: "类比：等待数据再呈现",
+      },
+      {
+        type: "quiz",
+        questions: [
+          {
+            id: "ss1",
+            question: "SSR 组件能否直接读 window？",
+            options: ["可以任意", "服务端无 window，需防护", "只有 Safari", "仅 Options"],
+            answer: 1,
+            explain: "同构约束。",
+          },
+        ],
+      },
+    ],
+  },
+  {
+    slug: "style-guide",
+    title: "风格指南精要",
+    summary: "Priority A/B 规则压缩版，对应 style-guide。",
+    level: "进阶",
+    track: "官网对齐",
+    minutes: 10,
+    official: "/style-guide/",
+    blocks: [
+      {
+        type: "text",
+        title: "必守（Priority A 思路）",
+        body: "组件名多词；key 必备；data/状态用函数返回新对象（Options）；prop 定义尽量详细；v-for 与 v-if 不要同元素（Vue 3 中 v-if 优先，行为易踩坑）。强推荐：组件文件名 PascalCase 或 kebab-close 一致；基础组件前缀；指令缩写保持团队统一。",
+      },
+      {
+        type: "code",
+        title: "示例",
+        lang: "vue",
+        code: `<!-- ✅ 多词组件名 -->
+<script setup lang="ts">
+// TodoItem.vue
+defineProps<{ id: string; done: boolean }>()
+</script>
+
+<!-- ❌ 避免 -->
+<div v-for="item in list" v-if="item.ok" :key="item.id">`,
+      },
+      {
+        type: "demo",
+        kind: "challenge",
+        title: "挑战：挑出违规点",
+      },
+      {
+        type: "quiz",
+        questions: [
+          {
+            id: "sg1",
+            question: "组件名建议？",
+            options: ["单词 Item", "多词 TodoItem", "随意", "仅中文"],
+            answer: 1,
+            explain: "避免与 HTML 冲突。",
+          },
+        ],
+      },
+    ],
+  },
 ];
 
-export const TRACKS = ["基础", "进阶", "全栈准备", "全栈实训", "工程化", "进阶模式"] as const;
+export const TRACKS = [
+  "基础",
+  "进阶",
+  "全栈准备",
+  "全栈实训",
+  "工程化",
+  "进阶模式",
+  "官网对齐",
+] as const;
 
 export function getLesson(slug: string): Lesson | undefined {
   return LESSONS.find((l) => l.slug === slug);

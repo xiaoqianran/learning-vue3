@@ -105,7 +105,7 @@ function CertificatePage() {
               Vue 3 实战学习 · v7
             </h2>
             <p className="mx-auto mt-3 max-w-md text-sm leading-relaxed text-muted">
-              兹证明持有人已完成本站全部课程：基础、进阶、全栈准备、全栈实训、工程化与进阶模式（含 SFC 编辑器与模拟 API 工坊）。
+              兹证明持有人已完成本站全部课程：基础、进阶、官网对齐、全栈准备、全栈实训、工程化与进阶模式（含 SFC 编辑器与模拟 API 工坊）。
             </p>
             <dl className="mx-auto mt-6 grid max-w-sm grid-cols-2 gap-3 text-sm">
               <div className="rounded-lg bg-surface-2 px-3 py-2">

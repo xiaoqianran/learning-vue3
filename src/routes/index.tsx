@@ -21,7 +21,7 @@ export const Route = createFileRoute("/")({
   component: HomePage,
 });
 
-type TrackFilter = "全部" | "基础" | "进阶" | "全栈准备" | "全栈实训" | "工程化" | "进阶模式";
+type TrackFilter = "全部" | "基础" | "进阶" | "全栈准备" | "全栈实训" | "工程化" | "进阶模式" | "官网对齐";
 
 function HomePage() {
   const completed = useProgress((s) => s.completed);
@@ -66,7 +66,7 @@ function HomePage() {
           <div className="flex flex-wrap items-center gap-2">
             <p className="inline-flex items-center gap-1.5 rounded-full border border-border bg-bg/60 px-2.5 py-1 text-xs font-medium text-primary">
               <Sparkles className="h-3.5 w-3.5" />
-              v7 · 进阶模式
+              v8 · 官网对齐
             </p>
             {streak > 0 ? (
               <span className="rounded-full bg-surface-3 px-2.5 py-1 font-mono text-xs text-muted">
@@ -93,7 +93,7 @@ function HomePage() {
               className="no-underline"
             >
               <Button size="lg" variant="secondary">
-                进阶模式
+                官网对齐
               </Button>
             </Link>
             <Link to="/cheatsheet" className="no-underline">
@@ -188,7 +188,7 @@ function HomePage() {
             <p className="mt-1 text-sm text-muted">搜索与路径筛选</p>
           </div>
           <div className="flex flex-wrap gap-2">
-            {(["全部", "基础", "进阶", "全栈准备", "全栈实训", "工程化", "进阶模式"] as const).map((t) => (
+            {(["全部", "基础", "进阶", "官网对齐", "全栈准备", "全栈实训", "工程化", "进阶模式"] as const).map((t) => (
               <button
                 key={t}
                 type="button"
