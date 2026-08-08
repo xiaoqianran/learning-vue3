@@ -19,6 +19,13 @@ import { cn } from "@/lib/utils";
 import { useProgress } from "@/store/progress";
 import { LESSONS } from "@/data/lessons";
 import appCss from "@/styles.css?url";
+import { CatppuccinSwitcher } from "@/components/CatppuccinSwitcher";
+import {
+  applyCtpAccent,
+  applyCtpFlavor,
+  readCtpAccent,
+  readCtpFlavor,
+} from "@/lib/catppuccin";
 
 export const Route = createRootRoute({
   head: () => ({
@@ -31,7 +38,7 @@ export const Route = createRootRoute({
       {
         name: "description",
         content:
-          "Vue 3 中文交互式教程 v8：对照官网 llms.txt 全目录、讲解+源码+Demo、速查表、全栈工坊。",
+          "Vue 3 中文交互式教程 v8：对照官网 llms.txt、文档地图、Catppuccin 主题、讲解+源码+Demo、全栈工坊。",
       },
     ],
     links: [
@@ -55,10 +62,15 @@ function RootComponent() {
   );
 }
 
+/** Apply saved Catppuccin before paint (no FOUC). */
+const CTP_BOOT =
+  "(function(){try{var f=localStorage.getItem('vue3-learn-ctp-flavor');var a=localStorage.getItem('vue3-learn-ctp-accent');var okF=['mocha','macchiato','frappe','latte'];var okA=['green','mauve','blue','lavender','sapphire','teal','peach','pink'];if(okF.indexOf(f)<0)f='mocha';if(okA.indexOf(a)<0)a='green';document.documentElement.setAttribute('data-ctp-flavor',f);document.documentElement.setAttribute('data-ctp-accent',a);}catch(e){document.documentElement.setAttribute('data-ctp-flavor','mocha');document.documentElement.setAttribute('data-ctp-accent','green');}})();";
+
 function RootDocument({ children }: { children: ReactNode }) {
   return (
-    <html lang="zh-CN">
+    <html lang="zh-CN" data-ctp-flavor="mocha" data-ctp-accent="green">
       <head>
+        <script dangerouslySetInnerHTML={{ __html: CTP_BOOT }} />
         <HeadContent />
       </head>
       <body>
@@ -91,10 +103,15 @@ function AppShell({ children }: { children: ReactNode }) {
     checkInToday();
   }, [checkInToday]);
 
+  useEffect(() => {
+    applyCtpFlavor(readCtpFlavor());
+    applyCtpAccent(readCtpAccent());
+  }, []);
+
   return (
-    <div className="min-h-dvh bg-bg text-fg">
-      <header className="sticky top-0 z-40 border-b border-border bg-bg/90 backdrop-blur-md">
-        <div className="mx-auto flex h-14 max-w-6xl items-center gap-3 px-4 sm:px-6">
+    <div className="min-h-dvh text-fg">
+      <header className="sticky top-0 z-40 border-b border-border bg-bg/85 backdrop-blur-md">
+        <div className="mx-auto flex h-14 max-w-6xl items-center gap-2 px-4 sm:gap-3 sm:px-6">
           <button
             type="button"
             className="inline-flex h-10 w-10 items-center justify-center rounded-md border border-border bg-surface text-fg lg:hidden"
@@ -133,9 +150,12 @@ function AppShell({ children }: { children: ReactNode }) {
             ))}
           </nav>
 
-          <div className="ml-auto flex items-center gap-3">
+          <div className="ml-auto flex items-center gap-1.5 sm:gap-2">
+            <div className="hidden sm:block">
+              <CatppuccinSwitcher mode="popover" />
+            </div>
             {streak > 0 ? (
-              <span className="hidden font-mono text-xs tabular-nums text-muted sm:inline">
+              <span className="hidden font-mono text-xs tabular-nums text-muted lg:inline">
                 连续 {streak} 天
               </span>
             ) : null}
@@ -160,6 +180,9 @@ function AppShell({ children }: { children: ReactNode }) {
           )}
         >
           <nav className="scrollbar-thin h-[calc(100dvh-3.5rem)] overflow-y-auto p-3 lg:sticky lg:top-14 lg:h-[calc(100dvh-3.5rem)] lg:py-6">
+            <div className="mb-4 lg:mb-5">
+              <CatppuccinSwitcher mode="panel" />
+            </div>
             <p className="mb-2 px-2 text-xs font-medium uppercase tracking-wider text-subtle">
               快捷入口
             </p>

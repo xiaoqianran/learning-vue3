@@ -26,7 +26,12 @@ export function CodeBlock({
   return (
     <div className="overflow-hidden rounded-lg border border-border bg-code-bg shadow-soft">
       <div className="flex items-center justify-between border-b border-border px-3 py-2">
-        <div className="flex items-center gap-2 min-w-0">
+        <div className="flex min-w-0 items-center gap-2">
+          <span className="flex gap-1" aria-hidden>
+            <span className="h-2.5 w-2.5 rounded-full bg-red/80" />
+            <span className="h-2.5 w-2.5 rounded-full bg-yellow/80" />
+            <span className="h-2.5 w-2.5 rounded-full bg-green/80" />
+          </span>
           {title ? (
             <span className="truncate text-xs font-medium text-muted">{title}</span>
           ) : null}

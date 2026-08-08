@@ -31,6 +31,7 @@
 | SFC 编辑器 | `/playground` | 真实 Vue SFC 在线编译 |
 | 全栈工坊 | `/studio` | 模拟 API + 闯关任务 |
 | 文档地图 | `/docs` | 对照 vuejs.org/llms.txt：官网 ↔ 本站课 |
+| 主题 | 全局 | **Catppuccin Userstyles**（Mocha/Macchiato/Frappé/Latte + Accent） |
 | 速查表 | `/cheatsheet` | 一页核心 API 与约定 |
 | 学习中心 | `/hub` | 打卡、收藏、路径进度 |
 | 练习场 | `/lab` | 综合练习 |
