@@ -8,34 +8,34 @@ import {
   Check,
   Clock,
   Sparkles,
-  RotateCcw,
   Search,
+  Library,
+  BookMarked,
+  Server,
+  Code2,
   FlaskConical,
   LayoutDashboard,
-  Code2,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { useMemo, useState } from "react";
+import { getContinueLesson, orderedTracks, TRACK_META, trackLabel } from "@/lib/nav";
 
 export const Route = createFileRoute("/")({
   component: HomePage,
 });
 
-type TrackFilter =
-  "全部" | "基础" | "进阶" | "全栈准备" | "全栈实训" | "工程化" | "进阶模式" | "官网对齐";
+type TrackFilter = "全部" | (typeof LESSONS)[number]["track"];
 
 function HomePage() {
   const completed = useProgress((s) => s.completed);
   const quizScores = useProgress((s) => s.quizScores);
   const streak = useProgress((s) => s.streak);
-  const bookmarks = useProgress((s) => s.bookmarks);
-  const reset = useProgress((s) => s.reset);
   const [q, setQ] = useState("");
   const [track, setTrack] = useState<TrackFilter>("全部");
 
   const progress = Math.round((completed.length / LESSONS.length) * 100);
-  const firstIncomplete = LESSONS.find((l) => !completed.includes(l.slug)) ?? LESSONS[0];
-  const fullstackCount = LESSONS.filter((l) => l.track === "全栈准备").length;
+  const cont = getContinueLesson(completed);
+  const contIdx = LESSONS.findIndex((l) => l.slug === cont.slug);
 
   const filtered = useMemo(() => {
     let list = track === "全部" ? LESSONS : getLessonsByTrack(track);
@@ -51,8 +51,21 @@ function HomePage() {
     return list;
   }, [q, track]);
 
+  const pathCards = orderedTracks().map((t) => {
+    const list = getLessonsByTrack(t);
+    const done = list.filter((l) => completed.includes(l.slug)).length;
+    return {
+      track: t,
+      ...TRACK_META[t],
+      done,
+      total: list.length,
+      pct: list.length ? Math.round((done / list.length) * 100) : 0,
+    };
+  });
+
   return (
     <div className="mx-auto max-w-3xl pb-16">
+      {/* Hero：一条主路 */}
       <section className="relative overflow-hidden rounded-xl border border-border bg-surface px-5 py-8 sm:px-8 sm:py-10">
         <div
           className="pointer-events-none absolute inset-0 opacity-40"
@@ -65,11 +78,11 @@ function HomePage() {
           <div className="flex flex-wrap items-center gap-2">
             <p className="inline-flex items-center gap-1.5 rounded-full border border-border bg-bg/60 px-2.5 py-1 text-xs font-medium text-primary">
               <Sparkles className="h-3.5 w-3.5" />
-              v8 · 官网对齐
+              v8 · 系统路径
             </p>
             {streak > 0 ? (
               <span className="rounded-full bg-surface-3 px-2.5 py-1 font-mono text-xs text-muted">
-                连续学习 {streak} 天
+                连续 {streak} 天
               </span>
             ) : null}
           </div>
@@ -77,59 +90,45 @@ function HomePage() {
             带你系统学 Vue 3
           </h1>
           <p className="mt-3 max-w-xl text-base leading-relaxed text-muted">
-            v7：Teleport / KeepAlive / 自定义指令 / 性能 / 面试串讲，并新增速查表。
+            讲解 → 对应源码 → 动手 Demo → 测验。对照官网{" "}
+            <Link to="/docs" className="text-primary no-underline hover:underline">
+              文档地图
+            </Link>
+            ，需要时再查速查表与工坊。
           </p>
-          <div className="mt-6 flex flex-wrap items-center gap-3">
-            <Link to="/studio" className="no-underline">
-              <Button size="lg">
-                打开全栈工坊
+
+          <div className="mt-6 flex flex-col gap-3 sm:flex-row sm:flex-wrap sm:items-center">
+            <Link to="/lesson/$slug" params={{ slug: cont.slug }} className="no-underline">
+              <Button size="lg" className="w-full sm:w-auto">
+                {completed.length > 0 ? "继续学习" : "从第一节开始"}
                 <ArrowRight className="h-4 w-4" />
               </Button>
             </Link>
-            <Link to="/lesson/$slug" params={{ slug: "teleport" }} className="no-underline">
-              <Button size="lg" variant="secondary">
-                官网对齐
-              </Button>
-            </Link>
-            <Link to="/docs" className="no-underline">
-              <span className="inline-flex items-center gap-1.5 rounded-full border border-primary/30 bg-primary-soft px-3 py-1.5 text-xs font-medium text-primary">
-                文档地图
-              </span>
-            </Link>
-            <Link to="/cheatsheet" className="no-underline">
-              <Button size="lg" variant="secondary">
-                速查表
-              </Button>
-            </Link>
-            <Link to="/playground" className="no-underline">
-              <Button size="lg" variant="secondary">
-                <Code2 className="h-4 w-4" />
-                SFC 编辑器
-              </Button>
-            </Link>
-            <Link
-              to="/lesson/$slug"
-              params={{ slug: firstIncomplete.slug }}
-              className="no-underline"
-            >
-              <Button size="lg" variant="ghost">
-                {completed.length > 0 ? "继续学习" : "从第一节"}
-              </Button>
-            </Link>
-            <Link to="/lab" className="no-underline">
-              <Button size="lg" variant="ghost">
-                <FlaskConical className="h-4 w-4" />
-                练习场
-              </Button>
-            </Link>
             <Link to="/hub" className="no-underline">
-              <Button size="lg" variant="ghost">
+              <Button size="lg" variant="secondary" className="w-full sm:w-auto">
                 <LayoutDashboard className="h-4 w-4" />
                 学习中心
               </Button>
             </Link>
           </div>
-          <div className="mt-6 flex flex-wrap items-center gap-3">
+
+          {/* 下一课卡片 */}
+          <div className="mt-6 rounded-xl border border-border bg-bg/50 p-4">
+            <p className="text-[10px] font-medium uppercase tracking-wider text-subtle">
+              下一课 · {trackLabel(cont.track)}
+            </p>
+            <div className="mt-1 flex flex-wrap items-start justify-between gap-2">
+              <div className="min-w-0">
+                <p className="font-display text-lg font-semibold text-fg">{cont.title}</p>
+                <p className="mt-0.5 text-sm text-muted line-clamp-2">{cont.summary}</p>
+              </div>
+              <span className="shrink-0 font-mono text-xs text-subtle">
+                #{String(contIdx + 1).padStart(2, "0")} · {cont.minutes} 分
+              </span>
+            </div>
+          </div>
+
+          <div className="mt-5 flex flex-wrap items-center gap-3">
             <div className="h-2 min-w-[8rem] flex-1 overflow-hidden rounded-full bg-surface-3 sm:max-w-xs">
               <div
                 className="h-full rounded-full bg-primary transition-[width] duration-300"
@@ -137,79 +136,157 @@ function HomePage() {
               />
             </div>
             <span className="font-mono text-xs tabular-nums text-muted">
-              已完成 {completed.length}/{LESSONS.length}
+              {completed.length}/{LESSONS.length}
             </span>
             <span className="inline-flex items-center gap-1 text-xs text-muted">
               <BookOpen className="h-3.5 w-3.5" />约 {LESSONS.reduce((a, l) => a + l.minutes, 0)}{" "}
               分钟
             </span>
-            {completed.length > 0 ? (
-              <button
-                type="button"
-                onClick={() => reset()}
-                className="inline-flex items-center gap-1 text-xs text-subtle hover:text-muted"
-              >
-                <RotateCcw className="h-3 w-3" />
-                重置进度
-              </button>
-            ) : null}
+            <Link to="/hub" className="text-xs text-primary no-underline hover:underline">
+              详细进度 →
+            </Link>
           </div>
         </div>
       </section>
 
-      {bookmarks.length > 0 ? (
-        <section className="mt-6 rounded-xl border border-border bg-surface-2 px-4 py-3">
-          <p className="text-xs font-medium text-muted">我的收藏</p>
-          <div className="mt-2 flex flex-wrap gap-2">
-            {bookmarks.map((slug) => {
-              const l = LESSONS.find((x) => x.slug === slug);
-              if (!l) return null;
-              return (
-                <Link
-                  key={slug}
-                  to="/lesson/$slug"
-                  params={{ slug }}
-                  className="rounded-full border border-border bg-bg px-3 py-1 text-xs text-fg no-underline hover:border-primary/40"
-                >
-                  {l.title}
-                </Link>
-              );
-            })}
-          </div>
-        </section>
-      ) : null}
+      {/* 怎么用：学 / 查 / 练 / 我 */}
+      <section className="mt-6 grid gap-2 sm:grid-cols-2">
+        {[
+          {
+            to: "/docs" as const,
+            icon: Library,
+            title: "查 · 文档地图",
+            desc: "官网章节 ↔ 本站课",
+          },
+          {
+            to: "/cheatsheet" as const,
+            icon: BookMarked,
+            title: "查 · 速查表",
+            desc: "写码时扫一眼 API",
+          },
+          {
+            to: "/studio" as const,
+            icon: Server,
+            title: "练 · 全栈工坊",
+            desc: "模拟 REST / 鉴权",
+          },
+          {
+            to: "/playground" as const,
+            icon: Code2,
+            title: "练 · SFC 编辑器",
+            desc: "真实 Vue 单文件",
+          },
+          {
+            to: "/lab" as const,
+            icon: FlaskConical,
+            title: "练 · 练习场",
+            desc: "刷测验题",
+          },
+          {
+            to: "/hub" as const,
+            icon: LayoutDashboard,
+            title: "我 · 学习中心",
+            desc: "进度 · 打卡 · 错题",
+          },
+        ].map((item) => {
+          const Icon = item.icon;
+          return (
+            <Link
+              key={item.to + item.title}
+              to={item.to}
+              className="flex items-start gap-3 rounded-xl border border-border bg-surface px-4 py-3 no-underline transition-colors hover:border-border-strong hover:bg-surface-2"
+            >
+              <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-primary-soft text-primary">
+                <Icon className="h-4 w-4" />
+              </span>
+              <span>
+                <span className="block text-sm font-medium text-fg">{item.title}</span>
+                <span className="block text-xs text-muted">{item.desc}</span>
+              </span>
+            </Link>
+          );
+        })}
+      </section>
 
+      {/* 路径总览 */}
       <section className="mt-8">
+        <div className="flex items-end justify-between gap-2">
+          <div>
+            <h2 className="font-display text-lg font-semibold text-fg">七条学习路径</h2>
+            <p className="mt-1 text-sm text-muted">建议按序号学；「官网补全」可并行加深</p>
+          </div>
+        </div>
+        <ol className="mt-4 grid gap-2 sm:grid-cols-2">
+          {pathCards.map((p) => (
+            <li key={p.track}>
+              <button
+                type="button"
+                onClick={() => {
+                  setTrack(p.track);
+                  document
+                    .getElementById("course-outline")
+                    ?.scrollIntoView({ behavior: "smooth", block: "start" });
+                }}
+                className={cn(
+                  "w-full rounded-xl border px-4 py-3 text-left transition-colors",
+                  track === p.track
+                    ? "border-primary/40 bg-primary-soft"
+                    : "border-border bg-surface hover:border-border-strong hover:bg-surface-2",
+                )}
+              >
+                <div className="flex items-center justify-between gap-2">
+                  <span className="text-sm font-semibold text-fg">{p.label}</span>
+                  <span className="font-mono text-[11px] text-muted">
+                    {p.done}/{p.total}
+                  </span>
+                </div>
+                <p className="mt-0.5 text-xs text-muted">{p.blurb}</p>
+                <div className="mt-2 h-1 overflow-hidden rounded-full bg-surface-3">
+                  <div className="h-full rounded-full bg-primary" style={{ width: `${p.pct}%` }} />
+                </div>
+              </button>
+            </li>
+          ))}
+        </ol>
+      </section>
+
+      {/* 大纲：筛选 + 列表 */}
+      <section id="course-outline" className="mt-10 scroll-mt-20">
         <div className="flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between">
           <div>
             <h2 className="font-display text-lg font-semibold text-fg">课程大纲</h2>
-            <p className="mt-1 text-sm text-muted">搜索与路径筛选</p>
+            <p className="mt-1 text-sm text-muted">
+              {track === "全部"
+                ? `全部 ${LESSONS.length} 课`
+                : `${trackLabel(track as (typeof LESSONS)[number]["track"])} · ${filtered.length} 课`}
+            </p>
           </div>
-          <div className="flex flex-wrap gap-2">
-            {(
-              [
-                "全部",
-                "基础",
-                "进阶",
-                "官网对齐",
-                "全栈准备",
-                "全栈实训",
-                "工程化",
-                "进阶模式",
-              ] as const
-            ).map((t) => (
+          <div className="flex flex-wrap gap-1.5">
+            <button
+              type="button"
+              onClick={() => setTrack("全部")}
+              className={cn(
+                "rounded-full px-2.5 py-1 text-[11px] font-medium transition-colors",
+                track === "全部"
+                  ? "bg-primary text-primary-fg"
+                  : "bg-surface-3 text-muted hover:text-fg",
+              )}
+            >
+              全部
+            </button>
+            {orderedTracks().map((t) => (
               <button
                 key={t}
                 type="button"
                 onClick={() => setTrack(t)}
                 className={cn(
-                  "rounded-full px-3 py-1.5 text-xs font-medium transition-colors",
+                  "rounded-full px-2.5 py-1 text-[11px] font-medium transition-colors",
                   track === t
                     ? "bg-primary text-primary-fg"
                     : "bg-surface-3 text-muted hover:text-fg",
                 )}
               >
-                {t}
+                {TRACK_META[t].label}
               </button>
             ))}
           </div>
@@ -220,7 +297,7 @@ function HomePage() {
           <input
             value={q}
             onChange={(e) => setQ(e.target.value)}
-            placeholder="搜索课程标题或摘要…"
+            placeholder="搜索标题、摘要或 slug…"
             className="h-11 w-full rounded-lg border border-border bg-surface pl-10 pr-3 text-sm text-fg placeholder:text-subtle"
           />
         </div>
@@ -250,19 +327,12 @@ function HomePage() {
                       <h3 className="font-medium text-fg group-hover:text-primary">
                         {lesson.title}
                       </h3>
-                      <span className="rounded-full bg-surface-3 px-2 py-0.5 text-[10px] font-medium uppercase tracking-wide text-muted">
+                      <span className="rounded-full bg-surface-3 px-2 py-0.5 text-[10px] font-medium text-muted">
+                        {trackLabel(lesson.track)}
+                      </span>
+                      <span className="rounded-full bg-surface-3 px-2 py-0.5 text-[10px] text-subtle">
                         {lesson.level}
                       </span>
-                      {lesson.track === "进阶" ? (
-                        <span className="rounded-full bg-primary-soft px-2 py-0.5 text-[10px] font-medium text-primary">
-                          进阶线
-                        </span>
-                      ) : null}
-                      {lesson.track === "全栈准备" ? (
-                        <span className="rounded-full bg-accent/30 px-2 py-0.5 text-[10px] font-medium text-fg">
-                          全栈准备
-                        </span>
-                      ) : null}
                     </div>
                     <p className="mt-0.5 text-sm text-muted">{lesson.summary}</p>
                   </div>
@@ -281,7 +351,7 @@ function HomePage() {
           })}
           {filtered.length === 0 ? (
             <li className="rounded-xl border border-dashed border-border px-4 py-8 text-center text-sm text-muted">
-              没有匹配的课程，试试其他关键词
+              没有匹配的课程
             </li>
           ) : null}
         </ol>

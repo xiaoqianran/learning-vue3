@@ -36,7 +36,7 @@ function CertificatePage() {
           学习证明
         </h1>
         <p className="mt-1 text-sm text-muted">
-          完成全部 {LESSONS.length} 节课程后解锁（含进阶模式）
+          完成全部 {LESSONS.length} 节课程后解锁（含官网对齐与进阶模式）
         </p>
       </header>
 
