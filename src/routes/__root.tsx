@@ -1,11 +1,5 @@
 import type { ReactNode } from "react";
-import {
-  Outlet,
-  createRootRoute,
-  HeadContent,
-  Scripts,
-  Link,
-} from "@tanstack/react-router";
+import { Outlet, createRootRoute, HeadContent, Scripts, Link } from "@tanstack/react-router";
 import {
   BookOpen,
   Check,
@@ -18,6 +12,7 @@ import {
   Code2,
   Server,
   BookMarked,
+  Library,
 } from "lucide-react";
 import { useEffect, useState } from "react";
 import { cn } from "@/lib/utils";
@@ -75,6 +70,7 @@ function RootDocument({ children }: { children: ReactNode }) {
 }
 
 const NAV_EXTRA = [
+  { to: "/docs" as const, label: "文档地图", icon: Library },
   { to: "/studio" as const, label: "全栈工坊", icon: Server },
   { to: "/cheatsheet" as const, label: "速查表", icon: BookMarked },
   { to: "/playground" as const, label: "SFC 编辑器", icon: Code2 },
@@ -119,7 +115,9 @@ function AppShell({ children }: { children: ReactNode }) {
             <span className="truncate font-display text-sm font-semibold tracking-tight text-fg">
               Vue 3 实战学习
             </span>
-            <span className="hidden rounded-full bg-surface-3 px-1.5 py-0.5 font-mono text-[10px] text-primary sm:inline">v7</span>
+            <span className="hidden rounded-full bg-surface-3 px-1.5 py-0.5 font-mono text-[10px] text-primary sm:inline">
+              v8
+            </span>
           </Link>
 
           <nav className="ml-2 hidden items-center gap-0.5 xl:flex">
@@ -148,9 +146,7 @@ function AppShell({ children }: { children: ReactNode }) {
                   style={{ width: `${progress}%` }}
                 />
               </div>
-              <span className="font-mono text-xs tabular-nums text-muted">
-                {progress}%
-              </span>
+              <span className="font-mono text-xs tabular-nums text-muted">{progress}%</span>
             </div>
           </div>
         </div>
@@ -204,9 +200,7 @@ function AppShell({ children }: { children: ReactNode }) {
                       <span
                         className={cn(
                           "mt-0.5 flex h-5 w-5 shrink-0 items-center justify-center rounded-full font-mono text-[10px] font-medium",
-                          done
-                            ? "bg-primary text-primary-fg"
-                            : "bg-surface-3 text-muted",
+                          done ? "bg-primary text-primary-fg" : "bg-surface-3 text-muted",
                         )}
                       >
                         {done ? <Check className="h-3 w-3" /> : i + 1}
@@ -240,9 +234,7 @@ function AppShell({ children }: { children: ReactNode }) {
           />
         ) : null}
 
-        <main className="min-w-0 flex-1 px-4 py-6 sm:px-6 lg:py-8">
-          {children}
-        </main>
+        <main className="min-w-0 flex-1 px-4 py-6 sm:px-6 lg:py-8">{children}</main>
       </div>
     </div>
   );

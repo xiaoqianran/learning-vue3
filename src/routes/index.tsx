@@ -21,7 +21,8 @@ export const Route = createFileRoute("/")({
   component: HomePage,
 });
 
-type TrackFilter = "全部" | "基础" | "进阶" | "全栈准备" | "全栈实训" | "工程化" | "进阶模式" | "官网对齐";
+type TrackFilter =
+  "全部" | "基础" | "进阶" | "全栈准备" | "全栈实训" | "工程化" | "进阶模式" | "官网对齐";
 
 function HomePage() {
   const completed = useProgress((s) => s.completed);
@@ -33,13 +34,11 @@ function HomePage() {
   const [track, setTrack] = useState<TrackFilter>("全部");
 
   const progress = Math.round((completed.length / LESSONS.length) * 100);
-  const firstIncomplete =
-    LESSONS.find((l) => !completed.includes(l.slug)) ?? LESSONS[0];
+  const firstIncomplete = LESSONS.find((l) => !completed.includes(l.slug)) ?? LESSONS[0];
   const fullstackCount = LESSONS.filter((l) => l.track === "全栈准备").length;
 
   const filtered = useMemo(() => {
-    let list =
-      track === "全部" ? LESSONS : getLessonsByTrack(track);
+    let list = track === "全部" ? LESSONS : getLessonsByTrack(track);
     const s = q.trim().toLowerCase();
     if (s) {
       list = list.filter(
@@ -87,14 +86,15 @@ function HomePage() {
                 <ArrowRight className="h-4 w-4" />
               </Button>
             </Link>
-            <Link
-              to="/lesson/$slug"
-              params={{ slug: "teleport" }}
-              className="no-underline"
-            >
+            <Link to="/lesson/$slug" params={{ slug: "teleport" }} className="no-underline">
               <Button size="lg" variant="secondary">
                 官网对齐
               </Button>
+            </Link>
+            <Link to="/docs" className="no-underline">
+              <span className="inline-flex items-center gap-1.5 rounded-full border border-primary/30 bg-primary-soft px-3 py-1.5 text-xs font-medium text-primary">
+                文档地图
+              </span>
             </Link>
             <Link to="/cheatsheet" className="no-underline">
               <Button size="lg" variant="secondary">
@@ -140,8 +140,8 @@ function HomePage() {
               已完成 {completed.length}/{LESSONS.length}
             </span>
             <span className="inline-flex items-center gap-1 text-xs text-muted">
-              <BookOpen className="h-3.5 w-3.5" />
-              约 {LESSONS.reduce((a, l) => a + l.minutes, 0)} 分钟
+              <BookOpen className="h-3.5 w-3.5" />约 {LESSONS.reduce((a, l) => a + l.minutes, 0)}{" "}
+              分钟
             </span>
             {completed.length > 0 ? (
               <button
@@ -182,13 +182,22 @@ function HomePage() {
       <section className="mt-8">
         <div className="flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between">
           <div>
-            <h2 className="font-display text-lg font-semibold text-fg">
-              课程大纲
-            </h2>
+            <h2 className="font-display text-lg font-semibold text-fg">课程大纲</h2>
             <p className="mt-1 text-sm text-muted">搜索与路径筛选</p>
           </div>
           <div className="flex flex-wrap gap-2">
-            {(["全部", "基础", "进阶", "官网对齐", "全栈准备", "全栈实训", "工程化", "进阶模式"] as const).map((t) => (
+            {(
+              [
+                "全部",
+                "基础",
+                "进阶",
+                "官网对齐",
+                "全栈准备",
+                "全栈实训",
+                "工程化",
+                "进阶模式",
+              ] as const
+            ).map((t) => (
               <button
                 key={t}
                 type="button"
@@ -231,16 +240,10 @@ function HomePage() {
                   <span
                     className={cn(
                       "flex h-9 w-9 shrink-0 items-center justify-center rounded-md font-mono text-sm font-medium",
-                      done
-                        ? "bg-primary text-primary-fg"
-                        : "bg-surface-3 text-muted",
+                      done ? "bg-primary text-primary-fg" : "bg-surface-3 text-muted",
                     )}
                   >
-                    {done ? (
-                      <Check className="h-4 w-4" />
-                    ) : (
-                      String(i + 1).padStart(2, "0")
-                    )}
+                    {done ? <Check className="h-4 w-4" /> : String(i + 1).padStart(2, "0")}
                   </span>
                   <div className="min-w-0 flex-1">
                     <div className="flex flex-wrap items-center gap-2">
@@ -269,9 +272,7 @@ function HomePage() {
                       {lesson.minutes} 分
                     </span>
                     {score !== undefined ? (
-                      <span className="font-mono text-primary">
-                        测验 {score}%
-                      </span>
+                      <span className="font-mono text-primary">测验 {score}%</span>
                     ) : null}
                   </div>
                 </Link>
