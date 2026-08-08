@@ -18,7 +18,7 @@ import {
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { useMemo, useState } from "react";
-import { getContinueLesson, orderedTracks, TRACK_META, trackLabel } from "@/lib/nav";
+import { getContinueLesson, isAllComplete, orderedTracks, TRACK_META, trackLabel } from "@/lib/nav";
 
 export const Route = createFileRoute("/")({
   component: HomePage,
@@ -36,6 +36,7 @@ function HomePage() {
   const progress = Math.round((completed.length / LESSONS.length) * 100);
   const cont = getContinueLesson(completed);
   const contIdx = LESSONS.findIndex((l) => l.slug === cont.slug);
+  const allDone = isAllComplete(completed);
 
   const filtered = useMemo(() => {
     let list = track === "全部" ? LESSONS : getLessonsByTrack(track);
@@ -98,12 +99,21 @@ function HomePage() {
           </p>
 
           <div className="mt-6 flex flex-col gap-3 sm:flex-row sm:flex-wrap sm:items-center">
-            <Link to="/lesson/$slug" params={{ slug: cont.slug }} className="no-underline">
-              <Button size="lg" className="w-full sm:w-auto">
-                {completed.length > 0 ? "继续学习" : "从第一节开始"}
-                <ArrowRight className="h-4 w-4" />
-              </Button>
-            </Link>
+            {allDone ? (
+              <Link to="/certificate" className="no-underline">
+                <Button size="lg" className="w-full sm:w-auto">
+                  领取结业证明
+                  <ArrowRight className="h-4 w-4" />
+                </Button>
+              </Link>
+            ) : (
+              <Link to="/lesson/$slug" params={{ slug: cont.slug }} className="no-underline">
+                <Button size="lg" className="w-full sm:w-auto">
+                  {completed.length > 0 ? "继续学习" : "从第一节开始"}
+                  <ArrowRight className="h-4 w-4" />
+                </Button>
+              </Link>
+            )}
             <Link to="/hub" className="no-underline">
               <Button size="lg" variant="secondary" className="w-full sm:w-auto">
                 <LayoutDashboard className="h-4 w-4" />
@@ -112,19 +122,24 @@ function HomePage() {
             </Link>
           </div>
 
-          {/* 下一课卡片 */}
           <div className="mt-6 rounded-xl border border-border bg-bg/50 p-4">
             <p className="text-[10px] font-medium uppercase tracking-wider text-subtle">
-              下一课 · {trackLabel(cont.track)}
+              {allDone ? "全部完成" : `下一课 · ${trackLabel(cont.track)}`}
             </p>
             <div className="mt-1 flex flex-wrap items-start justify-between gap-2">
               <div className="min-w-0">
-                <p className="font-display text-lg font-semibold text-fg">{cont.title}</p>
-                <p className="mt-0.5 text-sm text-muted line-clamp-2">{cont.summary}</p>
+                <p className="font-display text-lg font-semibold text-fg">
+                  {allDone ? "可以生成结业证明" : cont.title}
+                </p>
+                <p className="mt-0.5 line-clamp-2 text-sm text-muted">
+                  {allDone ? "想复习可从下方路径点回任意一课。" : cont.summary}
+                </p>
               </div>
-              <span className="shrink-0 font-mono text-xs text-subtle">
-                #{String(contIdx + 1).padStart(2, "0")} · {cont.minutes} 分
-              </span>
+              {!allDone ? (
+                <span className="shrink-0 font-mono text-xs text-subtle">
+                  #{String(contIdx + 1).padStart(2, "0")} · {cont.minutes} 分
+                </span>
+              ) : null}
             </div>
           </div>
 

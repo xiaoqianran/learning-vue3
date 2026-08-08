@@ -1,6 +1,6 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { LESSONS, getLessonsByTrack } from "@/data/lessons";
-import { getContinueLesson, orderedTracks, trackLabel } from "@/lib/nav";
+import { getContinueLesson, isAllComplete, orderedTracks, trackLabel } from "@/lib/nav";
 import { useProgress, todayKey } from "@/store/progress";
 import { Button } from "@/components/ui/button";
 import { Award, BookMarked, BookX, Flame, StickyNote, Target } from "lucide-react";
@@ -30,6 +30,8 @@ function HubPage() {
 
   const cont = getContinueLesson(completed);
   const progress = Math.round((completed.length / LESSONS.length) * 100);
+  const allDone = isAllComplete(completed);
+  const reset = useProgress((s) => s.reset);
 
   return (
     <div className="mx-auto max-w-3xl pb-16">
@@ -41,15 +43,27 @@ function HubPage() {
 
       <div className="mb-6 flex flex-col gap-3 rounded-xl border border-primary/30 bg-primary-soft p-4 sm:flex-row sm:items-center sm:justify-between">
         <div>
-          <p className="text-[10px] font-medium uppercase tracking-wider text-primary">下一步</p>
-          <p className="mt-0.5 font-display text-base font-semibold text-fg">{cont.title}</p>
+          <p className="text-[10px] font-medium uppercase tracking-wider text-primary">
+            {allDone ? "已毕业" : "下一步"}
+          </p>
+          <p className="mt-0.5 font-display text-base font-semibold text-fg">
+            {allDone ? "领取结业证明" : cont.title}
+          </p>
           <p className="text-xs text-muted">
-            {trackLabel(cont.track)} · 总进度 {progress}%
+            {allDone
+              ? `全部 ${LESSONS.length} 课 · 100%`
+              : `${trackLabel(cont.track)} · 总进度 ${progress}%`}
           </p>
         </div>
-        <Link to="/lesson/$slug" params={{ slug: cont.slug }} className="no-underline">
-          <Button>{completed.length > 0 ? "继续学习" : "开始学习"}</Button>
-        </Link>
+        {allDone ? (
+          <Link to="/certificate" className="no-underline">
+            <Button>结业证明</Button>
+          </Link>
+        ) : (
+          <Link to="/lesson/$slug" params={{ slug: cont.slug }} className="no-underline">
+            <Button>{completed.length > 0 ? "继续学习" : "开始学习"}</Button>
+          </Link>
+        )}
       </div>
 
       <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
@@ -146,6 +160,24 @@ function HubPage() {
               );
             })}
           </ul>
+        )}
+      </section>
+
+      <section className="mt-8 rounded-xl border border-border bg-surface p-4">
+        <h2 className="font-display text-sm font-semibold text-fg">数据</h2>
+        <p className="mt-1 text-xs text-muted">进度保存在本机浏览器，换设备不会同步。</p>
+        {completed.length > 0 ? (
+          <button
+            type="button"
+            className="mt-3 text-xs text-subtle underline-offset-2 hover:text-danger hover:underline"
+            onClick={() => {
+              if (window.confirm("确定重置全部学习进度？此操作不可撤销。")) reset();
+            }}
+          >
+            重置学习进度
+          </button>
+        ) : (
+          <p className="mt-3 text-xs text-subtle">尚无进度可重置</p>
         )}
       </section>
 

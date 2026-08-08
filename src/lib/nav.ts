@@ -33,8 +33,23 @@ export function orderedTracks(): Lesson["track"][] {
   return [...TRACKS].sort((a, b) => (TRACK_META[a]?.order ?? 99) - (TRACK_META[b]?.order ?? 99));
 }
 
+export function isAllComplete(completed: string[]): boolean {
+  return LESSONS.length > 0 && completed.length >= LESSONS.length;
+}
+
+/** 下一未完成课；若已全部完成则返回最后一课 */
 export function getContinueLesson(completed: string[]): Lesson {
-  return LESSONS.find((l) => !completed.includes(l.slug)) ?? LESSONS[0]!;
+  const next = LESSONS.find((l) => !completed.includes(l.slug));
+  if (next) return next;
+  return LESSONS[LESSONS.length - 1] ?? LESSONS[0]!;
+}
+
+export function getContinueHref(completed: string[]): {
+  kind: "lesson" | "certificate";
+  slug?: string;
+} {
+  if (isAllComplete(completed)) return { kind: "certificate" };
+  return { kind: "lesson", slug: getContinueLesson(completed).slug };
 }
 
 export type NavItem = {
@@ -55,9 +70,9 @@ export type NavItem = {
 
 /** 顶栏主导航：学 / 查 / 练 / 我 */
 export const NAV_PRIMARY: NavItem[] = [
-  { to: "/docs", label: "查 · 文档", hint: "官网对照", icon: Library },
-  { to: "/studio", label: "练 · 工坊", hint: "模拟全栈", icon: Server },
-  { to: "/hub", label: "我 · 进度", hint: "学习中心", icon: LayoutDashboard },
+  { to: "/docs", label: "文档", hint: "查 · 官网对照地图", icon: Library },
+  { to: "/studio", label: "工坊", hint: "练 · 模拟全栈闯关", icon: Server },
+  { to: "/hub", label: "进度", hint: "我 · 学习中心", icon: LayoutDashboard },
 ];
 
 /** 更多工具（侧栏分组 + 顶栏下拉） */

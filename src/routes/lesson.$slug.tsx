@@ -1,5 +1,6 @@
 import { createFileRoute, Link, notFound } from "@tanstack/react-router";
 import { getAdjacent, getLesson, getLessonIndex, LESSONS } from "@/data/lessons";
+import { trackLabel } from "@/lib/nav";
 import { CodeBlock } from "@/components/CodeBlock";
 import { InteractiveDemo } from "@/components/demos/InteractiveDemos";
 import { Quiz } from "@/components/Quiz";
@@ -51,14 +52,15 @@ function LessonPage() {
     <article className="mx-auto max-w-3xl pb-20">
       <div className="mb-6 flex flex-wrap items-center gap-2 text-xs text-muted">
         <Link to="/" className="text-muted no-underline hover:text-fg">
-          课程首页
+          首页
         </Link>
+        <span className="text-subtle">/</span>
+        <span className="rounded-full bg-primary-soft px-2 py-0.5 text-[10px] font-medium text-primary">
+          {trackLabel(lesson.track)}
+        </span>
         <span className="text-subtle">/</span>
         <span className="text-fg">
           第 {idx + 1}/{LESSONS.length} 节
-        </span>
-        <span className="rounded-full bg-surface-3 px-2 py-0.5 text-[10px]">
-          {lesson.track}路径
         </span>
       </div>
 
