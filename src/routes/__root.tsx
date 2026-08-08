@@ -94,8 +94,10 @@ function AppShell({ children }: { children: ReactNode }) {
   const [sidebarQ, setSidebarQ] = useState("");
   const completed = useProgress((s) => s.completed);
   const streak = useProgress((s) => s.streak);
-  const checkInToday = useProgress((s) => s.checkInToday);
-  const progress = Math.round((completed.length / LESSONS.length) * 100);
+  const progress = (() => {
+    const n = LESSONS.filter((l) => completed.includes(l.slug)).length;
+    return LESSONS.length ? Math.round((n / LESSONS.length) * 100) : 0;
+  })();
   const cont = getContinueLesson(completed);
   const continueTo = getContinueHref(completed);
   const allDone = isAllComplete(completed);
@@ -129,10 +131,6 @@ function AppShell({ children }: { children: ReactNode }) {
     }, 50);
     return () => window.clearTimeout(id);
   }, [activeLessonSlug, expanded, open]);
-
-  useEffect(() => {
-    checkInToday();
-  }, [checkInToday]);
 
   useEffect(() => {
     applyCtpFlavor(readCtpFlavor());
@@ -292,7 +290,7 @@ function AppShell({ children }: { children: ReactNode }) {
                 className="inline-flex items-center gap-1 rounded-full bg-primary px-2.5 py-1.5 text-xs font-medium text-primary-fg no-underline hover:opacity-90 sm:gap-1.5 sm:px-3"
               >
                 <Play className="h-3 w-3" />
-                {allDone ? "复习" : completed.length > 0 ? "继续" : "开始"}
+                {LESSONS.some((l) => completed.includes(l.slug)) ? "继续" : "开始"}
               </Link>
             )}
             <div className="hidden sm:block">
@@ -362,7 +360,7 @@ function AppShell({ children }: { children: ReactNode }) {
                 </span>
                 <span className="min-w-0">
                   <span className="block text-[10px] font-medium uppercase tracking-wider text-primary">
-                    {completed.length > 0 ? "继续学习" : "开始学习"}
+                    {LESSONS.some((l) => completed.includes(l.slug)) ? "继续学习" : "开始学习"}
                   </span>
                   <span className="mt-0.5 block truncate text-sm font-semibold text-fg">
                     {cont.title}

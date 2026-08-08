@@ -1,6 +1,6 @@
 import { createFileRoute, Link, notFound } from "@tanstack/react-router";
 import { getAdjacent, getLesson, getLessonIndex, LESSONS } from "@/data/lessons";
-import { trackLabel } from "@/lib/nav";
+import { getContinueLesson, isAllComplete, trackLabel } from "@/lib/nav";
 import { CodeBlock } from "@/components/CodeBlock";
 import { InteractiveDemo } from "@/components/demos/InteractiveDemos";
 import { Quiz } from "@/components/Quiz";
@@ -46,7 +46,14 @@ function LessonPage() {
   useEffect(() => {
     window.scrollTo({ top: 0 });
     setNoteLocal(notes[slug] ?? "");
-  }, [slug, notes]);
+  }, [slug]); // 切课时重置；不把 notes 放依赖以免回写抖动
+
+  // 输入后自动保存（不必等 blur，避免点「下一节」丢笔记）
+  useEffect(() => {
+    if (note === (notes[slug] ?? "")) return;
+    const id = window.setTimeout(() => setNote(slug, note), 400);
+    return () => window.clearTimeout(id);
+  }, [note, slug, notes, setNote]);
 
   return (
     <article className="mx-auto max-w-3xl pb-20">
@@ -193,6 +200,7 @@ function LessonPage() {
                 上一节
               </p>
               <p className="mt-1 font-medium text-fg">{prev.title}</p>
+              <p className="mt-0.5 text-[11px] text-subtle">{trackLabel(prev.track)}</p>
             </div>
           </Link>
         ) : (
@@ -210,13 +218,28 @@ function LessonPage() {
                 <ArrowRight className="h-3.5 w-3.5" />
               </p>
               <p className="mt-1 font-medium text-fg">{next.title}</p>
+              <p className="mt-0.5 text-[11px] text-subtle sm:text-right">
+                {trackLabel(next.track)}
+                {next.track !== lesson.track ? " · 进入新路径" : ""}
+              </p>
+            </div>
+          </Link>
+        ) : isAllComplete(completed) ? (
+          <Link to="/certificate" className="no-underline sm:text-right">
+            <div className="rounded-xl border border-primary/30 bg-primary-soft p-4">
+              <p className="text-xs text-primary">全部学完了</p>
+              <p className="mt-1 font-medium text-fg">查看结业证明</p>
             </div>
           </Link>
         ) : (
-          <Link to="/certificate" className="no-underline sm:text-right">
+          <Link
+            to="/lesson/$slug"
+            params={{ slug: getContinueLesson(completed).slug }}
+            className="no-underline sm:text-right"
+          >
             <div className="rounded-xl border border-primary/30 bg-primary-soft p-4">
-              <p className="text-xs text-primary">全部学完了？</p>
-              <p className="mt-1 font-medium text-fg">查看结业证明</p>
+              <p className="text-xs text-primary">还有未完成课程</p>
+              <p className="mt-1 font-medium text-fg">继续：{getContinueLesson(completed).title}</p>
             </div>
           </Link>
         )}

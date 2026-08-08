@@ -1,6 +1,13 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { LESSONS, getLessonsByTrack } from "@/data/lessons";
-import { getContinueLesson, isAllComplete, orderedTracks, trackLabel } from "@/lib/nav";
+import {
+  completedCount,
+  getContinueLesson,
+  isAllComplete,
+  orderedTracks,
+  progressPercent,
+  trackLabel,
+} from "@/lib/nav";
 import { useProgress, todayKey } from "@/store/progress";
 import { Button } from "@/components/ui/button";
 import { Award, BookMarked, BookX, Flame, StickyNote, Target } from "lucide-react";
@@ -29,7 +36,8 @@ function HubPage() {
   const checkedIn = checkIns.includes(todayKey());
 
   const cont = getContinueLesson(completed);
-  const progress = Math.round((completed.length / LESSONS.length) * 100);
+  const progress = progressPercent(completed);
+  const doneCount = completedCount(completed);
   const allDone = isAllComplete(completed);
   const reset = useProgress((s) => s.reset);
 
@@ -61,13 +69,13 @@ function HubPage() {
           </Link>
         ) : (
           <Link to="/lesson/$slug" params={{ slug: cont.slug }} className="no-underline">
-            <Button>{completed.length > 0 ? "继续学习" : "开始学习"}</Button>
+            <Button>{doneCount > 0 ? "继续学习" : "开始学习"}</Button>
           </Link>
         )}
       </div>
 
       <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
-        <Stat icon={Target} label="完成课程" value={`${completed.length}/${LESSONS.length}`} />
+        <Stat icon={Target} label="完成课程" value={`${doneCount}/${LESSONS.length}`} />
         <Stat icon={Flame} label="连续打卡" value={`${streak} 天`} />
         <Stat icon={BookMarked} label="收藏" value={String(bookmarks.length)} />
         <Stat icon={BookX} label="错题" value={String(wrongBook.length)} />
@@ -166,7 +174,7 @@ function HubPage() {
       <section className="mt-8 rounded-xl border border-border bg-surface p-4">
         <h2 className="font-display text-sm font-semibold text-fg">数据</h2>
         <p className="mt-1 text-xs text-muted">进度保存在本机浏览器，换设备不会同步。</p>
-        {completed.length > 0 ? (
+        {doneCount > 0 ? (
           <button
             type="button"
             className="mt-3 text-xs text-subtle underline-offset-2 hover:text-danger hover:underline"

@@ -18,7 +18,15 @@ import {
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { useMemo, useState } from "react";
-import { getContinueLesson, isAllComplete, orderedTracks, TRACK_META, trackLabel } from "@/lib/nav";
+import {
+  completedCount,
+  getContinueLesson,
+  isAllComplete,
+  orderedTracks,
+  progressPercent,
+  TRACK_META,
+  trackLabel,
+} from "@/lib/nav";
 
 export const Route = createFileRoute("/")({
   component: HomePage,
@@ -33,7 +41,8 @@ function HomePage() {
   const [q, setQ] = useState("");
   const [track, setTrack] = useState<TrackFilter>("全部");
 
-  const progress = Math.round((completed.length / LESSONS.length) * 100);
+  const progress = progressPercent(completed);
+  const doneCount = completedCount(completed);
   const cont = getContinueLesson(completed);
   const contIdx = LESSONS.findIndex((l) => l.slug === cont.slug);
   const allDone = isAllComplete(completed);
@@ -109,7 +118,7 @@ function HomePage() {
             ) : (
               <Link to="/lesson/$slug" params={{ slug: cont.slug }} className="no-underline">
                 <Button size="lg" className="w-full sm:w-auto">
-                  {completed.length > 0 ? "继续学习" : "从第一节开始"}
+                  {doneCount > 0 ? "继续学习" : "从第一节开始"}
                   <ArrowRight className="h-4 w-4" />
                 </Button>
               </Link>
@@ -151,7 +160,7 @@ function HomePage() {
               />
             </div>
             <span className="font-mono text-xs tabular-nums text-muted">
-              {completed.length}/{LESSONS.length}
+              {doneCount}/{LESSONS.length}
             </span>
             <span className="inline-flex items-center gap-1 text-xs text-muted">
               <BookOpen className="h-3.5 w-3.5" />约 {LESSONS.reduce((a, l) => a + l.minutes, 0)}{" "}
@@ -228,7 +237,7 @@ function HomePage() {
         <div className="flex items-end justify-between gap-2">
           <div>
             <h2 className="font-display text-lg font-semibold text-fg">七条学习路径</h2>
-            <p className="mt-1 text-sm text-muted">建议按序号学；「官网补全」可并行加深</p>
+            <p className="mt-1 text-sm text-muted">建议按 ①→⑥ 主路径学完，⑦ 官网补全为可选加深</p>
           </div>
         </div>
         <ol className="mt-4 grid gap-2 sm:grid-cols-2">

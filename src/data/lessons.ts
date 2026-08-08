@@ -3207,7 +3207,7 @@ export const TRACKS = [
   "全栈实训",
   "工程化",
   "进阶模式",
-  "官网对齐",
+  "官网对齐", // 主路径之后可选
 ] as const;
 
 export function getLesson(slug: string): Lesson | undefined {
@@ -3237,9 +3237,7 @@ export function getLessonsByTrack(track: Lesson["track"]) {
 export function getAllQuizQuestions(): Array<
   QuizQuestion & { lessonSlug: string; lessonTitle: string }
 > {
-  const out: Array<
-    QuizQuestion & { lessonSlug: string; lessonTitle: string }
-  > = [];
+  const out: Array<QuizQuestion & { lessonSlug: string; lessonTitle: string }> = [];
   for (const lesson of LESSONS) {
     for (const block of lesson.blocks) {
       if (block.type === "quiz") {

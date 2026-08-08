@@ -149,7 +149,7 @@ function CheatsheetPage() {
       </div>
 
       <p className="mt-6 text-center text-xs text-subtle">
-        建议路径：①入门 → ②组件进阶 → ③官网补全 → ④全栈基础 → ⑤实训 → ⑥工程化 → ⑦模式与面试
+        建议路径：①入门 → ②组件进阶 → ③全栈基础 → ④实训 → ⑤工程化 → ⑥模式与面试 → ⑦官网补全（可选）
       </p>
     </div>
   );

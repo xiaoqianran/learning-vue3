@@ -18,11 +18,12 @@ export const TRACK_META: Record<Lesson["track"], { order: number; label: string;
   {
     基础: { order: 1, label: "① 入门", blurb: "模板 · 响应式 · 组件基础" },
     进阶: { order: 2, label: "② 组件进阶", blurb: "路由 · 状态 · 项目" },
-    官网对齐: { order: 3, label: "③ 官网补全", blurb: "对照 llms.txt 可选加深" },
-    全栈准备: { order: 4, label: "④ 全栈基础", blurb: "请求 · 守卫 · 校验" },
-    全栈实训: { order: 5, label: "⑤ 项目实训", blurb: "REST · 鉴权 · Nuxt · 毕业" },
-    工程化: { order: 6, label: "⑥ 工程化", blurb: "TS · 测试 · 部署" },
-    进阶模式: { order: 7, label: "⑦ 模式与面试", blurb: "内置组件 · 性能 · 串讲" },
+    全栈准备: { order: 3, label: "③ 全栈基础", blurb: "请求 · 守卫 · 校验" },
+    全栈实训: { order: 4, label: "④ 项目实训", blurb: "REST · 鉴权 · Nuxt · 毕业" },
+    工程化: { order: 5, label: "⑤ 工程化", blurb: "TS · 测试 · 部署" },
+    进阶模式: { order: 6, label: "⑥ 模式与面试", blurb: "内置组件 · 性能 · 串讲" },
+    /** 可选加深：与 LESSONS 数组一致，放在主路径之后，避免「继续学习」与路径卡错位 */
+    官网对齐: { order: 7, label: "⑦ 官网补全", blurb: "对照 llms.txt · 可选加深" },
   };
 
 export function trackLabel(track: Lesson["track"]) {
@@ -33,8 +34,23 @@ export function orderedTracks(): Lesson["track"][] {
   return [...TRACKS].sort((a, b) => (TRACK_META[a]?.order ?? 99) - (TRACK_META[b]?.order ?? 99));
 }
 
+/** 仅统计仍存在的课（忽略历史脏 slug） */
+export function getValidCompleted(completed: string[]): string[] {
+  const set = new Set(LESSONS.map((l) => l.slug));
+  return completed.filter((s) => set.has(s));
+}
+
+export function completedCount(completed: string[]): number {
+  return getValidCompleted(completed).length;
+}
+
+export function progressPercent(completed: string[]): number {
+  if (LESSONS.length === 0) return 0;
+  return Math.round((completedCount(completed) / LESSONS.length) * 100);
+}
+
 export function isAllComplete(completed: string[]): boolean {
-  return LESSONS.length > 0 && completed.length >= LESSONS.length;
+  return LESSONS.every((l) => completed.includes(l.slug));
 }
 
 /** 下一未完成课；若已全部完成则返回最后一课 */

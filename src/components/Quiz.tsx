@@ -5,13 +5,7 @@ import { cn } from "@/lib/utils";
 import { useProgress } from "@/store/progress";
 import { CheckCircle2, XCircle } from "lucide-react";
 
-export function Quiz({
-  slug,
-  questions,
-}: {
-  slug: string;
-  questions: QuizQuestion[];
-}) {
+export function Quiz({ slug, questions }: { slug: string; questions: QuizQuestion[] }) {
   const [answers, setAnswers] = useState<Record<string, number | null>>(() =>
     Object.fromEntries(questions.map((q) => [q.id, null])),
   );
@@ -22,19 +16,12 @@ export function Quiz({
   const checkInToday = useProgress((s) => s.checkInToday);
 
   const score = useMemo(
-    () =>
-      questions.reduce(
-        (acc, q) => acc + (answers[q.id] === q.answer ? 1 : 0),
-        0,
-      ),
+    () => questions.reduce((acc, q) => acc + (answers[q.id] === q.answer ? 1 : 0), 0),
     [answers, questions],
   );
 
   function submit() {
-    const real = questions.reduce(
-      (acc, q) => acc + (answers[q.id] === q.answer ? 1 : 0),
-      0,
-    );
+    const real = questions.reduce((acc, q) => acc + (answers[q.id] === q.answer ? 1 : 0), 0);
     const realPct = Math.round((real / questions.length) * 100);
     setSubmitted(true);
     setQuizScore(slug, realPct);
@@ -56,7 +43,8 @@ export function Quiz({
       }
     }
 
-    if (real === questions.length) markComplete(slug);
+    // 交卷即计进度（掌握度看分数/错题本）；全对额外提示
+    markComplete(slug);
   }
 
   function reset() {
@@ -70,9 +58,7 @@ export function Quiz({
     <section className="rounded-xl border border-border bg-surface p-4 shadow-soft sm:p-5">
       <div className="mb-4 flex items-end justify-between gap-3">
         <div>
-          <p className="text-xs font-medium uppercase tracking-wider text-primary">
-            小测验
-          </p>
+          <p className="text-xs font-medium uppercase tracking-wider text-primary">小测验</p>
           <h3 className="font-display text-lg font-semibold">检验一下</h3>
         </div>
         {submitted ? (
@@ -95,12 +81,10 @@ export function Quiz({
               <div className="mt-2 grid gap-2">
                 {q.options.map((opt, oi) => {
                   const selected = chosen === oi;
-                  let stateClass =
-                    "border-border bg-surface-2 hover:border-border-strong";
+                  let stateClass = "border-border bg-surface-2 hover:border-border-strong";
                   if (submitted) {
                     if (oi === q.answer) {
-                      stateClass =
-                        "border-primary/50 bg-primary-soft text-fg";
+                      stateClass = "border-primary/50 bg-primary-soft text-fg";
                     } else if (selected && !correct) {
                       stateClass = "border-danger/40 bg-danger/10 text-fg";
                     } else {
@@ -114,9 +98,7 @@ export function Quiz({
                       key={oi}
                       type="button"
                       disabled={submitted}
-                      onClick={() =>
-                        setAnswers((a) => ({ ...a, [q.id]: oi }))
-                      }
+                      onClick={() => setAnswers((a) => ({ ...a, [q.id]: oi }))}
                       className={cn(
                         "rounded-md border px-3 py-2.5 text-left text-sm transition-colors duration-150",
                         stateClass,
@@ -159,11 +141,11 @@ export function Quiz({
             </Button>
             {score === questions.length ? (
               <span className="inline-flex items-center text-sm text-primary">
-                全部正确，本节已标记完成
+                全部正确 · 本节已完成
               </span>
             ) : (
               <span className="inline-flex items-center text-sm text-muted">
-                错题已收入错题本
+                本节已计完成 · 错题已入错题本
               </span>
             )}
           </>
