@@ -1,8 +1,10 @@
 import { useEffect, useId, useState } from "react";
 import type { DemoKind } from "@/data/lessons";
 import { Button } from "@/components/ui/button";
+import { CodeBlock } from "@/components/CodeBlock";
+import { getDemoSource } from "@/data/demo-sources";
 import { cn } from "@/lib/utils";
-import { Plus, Trash2, Check, RotateCcw } from "lucide-react";
+import { Plus, Trash2, Check, RotateCcw, Code2, ChevronDown, ChevronUp } from "lucide-react";
 
 export function InteractiveDemo({
   kind,
@@ -13,24 +15,57 @@ export function InteractiveDemo({
   title: string;
   hint?: string;
 }) {
+  const [showSource, setShowSource] = useState(true);
+  const source = getDemoSource(kind);
+
   return (
     <section className="overflow-hidden rounded-xl border border-border bg-surface shadow-soft">
       <div className="flex flex-wrap items-start justify-between gap-2 border-b border-border px-4 py-3">
         <div>
           <p className="text-xs font-medium uppercase tracking-wider text-primary">
-            交互 Demo
+            交互 Demo · 代码即组件
           </p>
-          <h3 className="mt-0.5 font-display text-base font-semibold text-fg">
-            {title}
-          </h3>
+          <h3 className="mt-0.5 font-display text-base font-semibold text-fg">{title}</h3>
         </div>
-        <span className="rounded-full bg-primary-soft px-2.5 py-1 font-mono text-[10px] text-primary">
-          live
-        </span>
+        <div className="flex items-center gap-2">
+          <button
+            type="button"
+            onClick={() => setShowSource((v) => !v)}
+            className="inline-flex items-center gap-1 rounded-full border border-border bg-surface-2 px-2.5 py-1 text-[11px] text-muted transition-colors hover:text-fg"
+          >
+            <Code2 className="h-3.5 w-3.5" />
+            对应源码
+            {showSource ? (
+              <ChevronUp className="h-3.5 w-3.5" />
+            ) : (
+              <ChevronDown className="h-3.5 w-3.5" />
+            )}
+          </button>
+          <span className="rounded-full bg-primary-soft px-2.5 py-1 font-mono text-[10px] text-primary">
+            live
+          </span>
+        </div>
       </div>
       <div className="p-4 sm:p-5">
         {hint ? <p className="mb-4 text-sm text-muted">{hint}</p> : null}
+        <div className="mb-2 flex items-center gap-2">
+          <span className="rounded-sm bg-primary-soft px-1.5 py-0.5 font-mono text-[10px] text-primary">
+            A · 运行结果
+          </span>
+          <span className="text-xs text-muted">下方源码编译/等价实现后的可交互界面</span>
+        </div>
         <DemoBody kind={kind} />
+        {showSource ? (
+          <div className="mt-5 border-t border-border pt-4">
+            <div className="mb-2 flex items-center gap-2">
+              <span className="rounded-sm bg-surface-3 px-1.5 py-0.5 font-mono text-[10px] text-muted">
+                B · 对应源码
+              </span>
+              <span className="text-xs text-muted">与上方 Demo 同一套逻辑 — 读 B，操作 A</span>
+            </div>
+            <CodeBlock code={source.code} title={source.title} lang={source.lang} />
+          </div>
+        ) : null}
       </div>
     </section>
   );
@@ -95,15 +130,8 @@ function Panel({
   className?: string;
 }) {
   return (
-    <div
-      className={cn(
-        "rounded-lg border border-border bg-surface-2 p-3 sm:p-4",
-        className,
-      )}
-    >
-      <p className="mb-2 font-mono text-[10px] uppercase tracking-wider text-subtle">
-        {label}
-      </p>
+    <div className={cn("rounded-lg border border-border bg-surface-2 p-3 sm:p-4", className)}>
+      <p className="mb-2 font-mono text-[10px] uppercase tracking-wider text-subtle">{label}</p>
       {children}
     </div>
   );
@@ -180,9 +208,7 @@ function RefReactiveDemo() {
   return (
     <div className="grid gap-3 lg:grid-cols-2">
       <Panel label="ref(count)">
-        <p className="font-mono text-2xl font-semibold tabular-nums text-primary">
-          {count}
-        </p>
+        <p className="font-mono text-2xl font-semibold tabular-nums text-primary">{count}</p>
         <div className="mt-3 flex gap-2">
           <Button size="sm" onClick={() => setCount((c) => c + 1)}>
             count.value++
@@ -316,17 +342,13 @@ function ListDemo() {
                 className="flex items-center justify-between rounded-md bg-bg px-2.5 py-2 text-sm"
               >
                 <span>
-                  <span className="mr-2 font-mono text-xs text-subtle">
-                    #{item.id}
-                  </span>
+                  <span className="mr-2 font-mono text-xs text-subtle">#{item.id}</span>
                   {item.text}
                 </span>
                 <button
                   type="button"
                   className="text-muted hover:text-danger"
-                  onClick={() =>
-                    setItems((xs) => xs.filter((x) => x.id !== item.id))
-                  }
+                  onClick={() => setItems((xs) => xs.filter((x) => x.id !== item.id))}
                   aria-label="删除"
                 >
                   <Trash2 className="h-4 w-4" />
@@ -346,9 +368,7 @@ function EventsDemo() {
   return (
     <div className="grid gap-3 sm:grid-cols-2">
       <Panel label="事件">
-        <p className="font-mono text-3xl font-semibold tabular-nums text-primary">
-          {n}
-        </p>
+        <p className="font-mono text-3xl font-semibold tabular-nums text-primary">{n}</p>
         <div className="mt-3 flex flex-wrap gap-2">
           <Button onClick={() => setN((x) => x + 1)}>@click +1</Button>
           <Button variant="secondary" onClick={() => setN((x) => x + 5)}>
@@ -359,10 +379,7 @@ function EventsDemo() {
             onClick={(e) => {
               e.preventDefault();
               setLog((xs) =>
-                [
-                  `submit.prevent @ ${new Date().toLocaleTimeString()}`,
-                  ...xs,
-                ].slice(0, 4),
+                [`submit.prevent @ ${new Date().toLocaleTimeString()}`, ...xs].slice(0, 4),
               );
             }}
           >
@@ -499,11 +516,7 @@ function LifecycleDemo() {
           <div>
             <p className="font-mono text-3xl tabular-nums text-primary">{ticks}s</p>
             <p className="mt-1 text-xs text-muted">已挂载，计时中</p>
-            <Button
-              className="mt-3"
-              variant="secondary"
-              onClick={() => setMounted(false)}
-            >
+            <Button className="mt-3" variant="secondary" onClick={() => setMounted(false)}>
               卸载组件
             </Button>
           </div>
@@ -568,11 +581,7 @@ function TodoDemo() {
             <button
               type="button"
               onClick={() =>
-                setItems((xs) =>
-                  xs.map((x) =>
-                    x.id === item.id ? { ...x, done: !x.done } : x,
-                  ),
-                )
+                setItems((xs) => xs.map((x) => (x.id === item.id ? { ...x, done: !x.done } : x)))
               }
               className={cn(
                 "flex h-7 w-7 shrink-0 items-center justify-center rounded-sm border",
@@ -584,20 +593,13 @@ function TodoDemo() {
             >
               <Check className="h-3.5 w-3.5" />
             </button>
-            <span
-              className={cn(
-                "min-w-0 flex-1 text-sm",
-                item.done && "text-muted line-through",
-              )}
-            >
+            <span className={cn("min-w-0 flex-1 text-sm", item.done && "text-muted line-through")}>
               {item.text}
             </span>
             <button
               type="button"
               className="text-muted hover:text-danger"
-              onClick={() =>
-                setItems((xs) => xs.filter((x) => x.id !== item.id))
-              }
+              onClick={() => setItems((xs) => xs.filter((x) => x.id !== item.id))}
               aria-label="删除"
             >
               <Trash2 className="h-4 w-4" />
@@ -659,9 +661,7 @@ function RouterDemo() {
       </Panel>
       <Panel label="RouterView">
         <p className="font-mono text-xs text-subtle">route.path = {path}</p>
-        <h4 className="mt-2 font-display text-lg font-semibold text-fg">
-          {current.title}
-        </h4>
+        <h4 className="mt-2 font-display text-lg font-semibold text-fg">{current.title}</h4>
         <p className="mt-1 text-sm text-muted">{current.body}</p>
       </Panel>
     </div>
@@ -684,8 +684,7 @@ function PiniaDemo() {
     <div className="grid gap-3 sm:grid-cols-2">
       <Panel label="组件 A · useCartStore()">
         <p className="text-sm text-muted">
-          count:{" "}
-          <span className="font-mono text-primary tabular-nums">{count}</span>
+          count: <span className="font-mono text-primary tabular-nums">{count}</span>
         </p>
         <div className="mt-2 flex gap-2">
           <input
@@ -708,12 +707,7 @@ function PiniaDemo() {
             </li>
           ))}
         </ul>
-        <Button
-          size="sm"
-          variant="secondary"
-          className="mt-2"
-          onClick={() => setItems([])}
-        >
+        <Button size="sm" variant="secondary" className="mt-2" onClick={() => setItems([])}>
           clear()
         </Button>
       </Panel>
@@ -722,16 +716,11 @@ function PiniaDemo() {
 }
 
 function ChallengeDemo() {
-  const [code, setCode] = useState(
-    `let count = 0\nfunction inc() { count++ }\n// 视图不更新？`,
-  );
+  const [code, setCode] = useState(`let count = 0\nfunction inc() { count++ }\n// 视图不更新？`);
   const [status, setStatus] = useState<"idle" | "pass" | "fail">("idle");
 
   function check() {
-    const ok =
-      /ref\s*\(/.test(code) &&
-      /\.value/.test(code) &&
-      !/let count = 0/.test(code);
+    const ok = /ref\s*\(/.test(code) && /\.value/.test(code) && !/let count = 0/.test(code);
     setStatus(ok ? "pass" : "fail");
   }
 
@@ -768,9 +757,7 @@ function ChallengeDemo() {
           <p className="mt-2 text-sm text-primary">通过：响应式写法正确</p>
         ) : null}
         {status === "fail" ? (
-          <p className="mt-2 text-sm text-warn">
-            未通过：需要 ref(...) 且使用 .value 更新
-          </p>
+          <p className="mt-2 text-sm text-warn">未通过：需要 ref(...) 且使用 .value 更新</p>
         ) : null}
       </Panel>
     </div>
@@ -844,24 +831,18 @@ function ProvideDemo() {
       <div
         className={cn(
           "rounded-lg border p-4 transition-colors",
-          theme === "dark"
-            ? "border-border bg-bg text-fg"
-            : "border-border-strong bg-fg text-bg",
+          theme === "dark" ? "border-border bg-bg text-fg" : "border-border-strong bg-fg text-bg",
         )}
       >
         <p className="text-xs opacity-70">深层子组件 inject(themeKey)</p>
-        <p className="mt-1 text-sm font-medium">
-          当前主题：{theme}（无需 props 逐层传递）
-        </p>
+        <p className="mt-1 text-sm font-medium">当前主题：{theme}（无需 props 逐层传递）</p>
       </div>
     </div>
   );
 }
 
 function AsyncDemo() {
-  const [status, setStatus] = useState<"idle" | "loading" | "ok" | "error">(
-    "idle",
-  );
+  const [status, setStatus] = useState<"idle" | "loading" | "ok" | "error">("idle");
   const [items, setItems] = useState<{ id: number; title: string }[]>([]);
 
   function load(mode: "ok" | "error") {
@@ -900,12 +881,8 @@ function AsyncDemo() {
         <p className="mt-3 font-mono text-xs text-muted">status = {status}</p>
       </Panel>
       <Panel label="UI 三态">
-        {status === "idle" ? (
-          <p className="text-sm text-muted">尚未请求</p>
-        ) : null}
-        {status === "loading" ? (
-          <p className="text-sm text-primary">loading…</p>
-        ) : null}
+        {status === "idle" ? <p className="text-sm text-muted">尚未请求</p> : null}
+        {status === "loading" ? <p className="text-sm text-primary">loading…</p> : null}
         {status === "error" ? (
           <p className="text-sm text-danger">error: HTTP 500（可点重试）</p>
         ) : null}
@@ -941,11 +918,7 @@ function GuardDemo() {
     }
     setPage(target);
     setMsg(
-      target === "dash"
-        ? "进入 /dashboard（受保护）"
-        : target === "login"
-          ? "登录页"
-          : "首页",
+      target === "dash" ? "进入 /dashboard（受保护）" : target === "login" ? "登录页" : "首页",
     );
   }
 
@@ -954,7 +927,7 @@ function GuardDemo() {
       <Panel label="导航">
         <div className="flex flex-wrap gap-2">
           <Button size="sm" variant="secondary" onClick={() => go("home")}>
-            / 
+            /
           </Button>
           <Button size="sm" variant="secondary" onClick={() => go("dash")}>
             /dashboard
@@ -985,9 +958,7 @@ function GuardDemo() {
             退出
           </Button>
         </div>
-        <p className="mt-2 font-mono text-xs text-muted">
-          token: {token ? "present" : "null"}
-        </p>
+        <p className="mt-2 font-mono text-xs text-muted">token: {token ? "present" : "null"}</p>
       </Panel>
       <Panel label="当前视图">
         <p className="font-mono text-xs text-subtle">page = {page}</p>
@@ -1007,9 +978,7 @@ function GuardDemo() {
 function ValidateDemo() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const [errors, setErrors] = useState<{ email?: string; password?: string }>(
-    {},
-  );
+  const [errors, setErrors] = useState<{ email?: string; password?: string }>({});
   const [ok, setOk] = useState(false);
 
   function submit() {
@@ -1036,9 +1005,7 @@ function ValidateDemo() {
           )}
           placeholder="you@example.com"
         />
-        {errors.email ? (
-          <p className="mt-1 text-xs text-danger">{errors.email}</p>
-        ) : null}
+        {errors.email ? <p className="mt-1 text-xs text-danger">{errors.email}</p> : null}
       </div>
       <div>
         <label className="text-xs text-muted">password</label>
@@ -1055,18 +1022,13 @@ function ValidateDemo() {
           )}
           placeholder="至少 8 位"
         />
-        {errors.password ? (
-          <p className="mt-1 text-xs text-danger">{errors.password}</p>
-        ) : null}
+        {errors.password ? <p className="mt-1 text-xs text-danger">{errors.password}</p> : null}
       </div>
       <Button onClick={submit}>提交</Button>
-      {ok ? (
-        <p className="text-sm text-primary">校验通过，可以请求 /api/login</p>
-      ) : null}
+      {ok ? <p className="text-sm text-primary">校验通过，可以请求 /api/login</p> : null}
     </div>
   );
 }
-
 
 function TeleportDemo() {
   const [open, setOpen] = useState(false);
@@ -1089,9 +1051,7 @@ function TeleportDemo() {
             onClick={(e) => e.stopPropagation()}
           >
             <h4 className="font-display text-base font-semibold text-fg">对话框</h4>
-            <p className="mt-2 text-sm text-muted">
-              内容仍由当前组件状态控制，DOM 挂在高层。
-            </p>
+            <p className="mt-2 text-sm text-muted">内容仍由当前组件状态控制，DOM 挂在高层。</p>
             <Button className="mt-4" size="sm" onClick={() => setOpen(false)}>
               关闭
             </Button>
@@ -1109,10 +1069,18 @@ function KeepAliveDemo() {
   return (
     <div>
       <div className="flex gap-2">
-        <Button size="sm" variant={tab === "a" ? "default" : "secondary"} onClick={() => setTab("a")}>
+        <Button
+          size="sm"
+          variant={tab === "a" ? "default" : "secondary"}
+          onClick={() => setTab("a")}
+        >
           Tab A
         </Button>
-        <Button size="sm" variant={tab === "b" ? "default" : "secondary"} onClick={() => setTab("b")}>
+        <Button
+          size="sm"
+          variant={tab === "b" ? "default" : "secondary"}
+          onClick={() => setTab("b")}
+        >
           Tab B
         </Button>
       </div>
@@ -1150,7 +1118,13 @@ function DirectiveDemo() {
   return (
     <div>
       <div className="flex flex-wrap gap-2">
-        <Button size="sm" onClick={() => { setShow(true); setKey((k) => k + 1); }}>
+        <Button
+          size="sm"
+          onClick={() => {
+            setShow(true);
+            setKey((k) => k + 1);
+          }}
+        >
           挂载并聚焦
         </Button>
         <Button size="sm" variant="secondary" onClick={() => setShow(false)}>

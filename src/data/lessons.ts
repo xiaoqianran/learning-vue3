@@ -55,6 +55,17 @@ export const LESSONS: Lesson[] = [
     track: "基础",
     minutes: 6,
     blocks: [
+      {
+        type: "text",
+        title: "Vue 是什么",
+        body: "Vue 是渐进式 UI 框架：声明式模板 + 响应式数据。改数据，视图自动更新。Vue 3 推荐 Composition API（setup / ref / reactive）。\n\n学习方法：先看「对应源码」，再点 Demo 验证 — 源码里的 count 就是 Demo 里跳动的数字。",
+      },
+      {
+        type: "code",
+        title: "对应源码 · 计数器 · Composition API",
+        lang: "vue",
+        code: '<script setup>\nimport { ref } from \'vue\'\nconst count = ref(0)\n</script>\n\n<template>\n  <p>点了 {{ count }} 次</p>\n  <button @click="count++">count++</button>\n  <button @click="count = 0">重置</button>\n</template>',
+      },
       { type: "demo", kind: "counter", title: "动手：计数器" },
       {
         type: "quiz",
@@ -85,6 +96,17 @@ export const LESSONS: Lesson[] = [
     track: "基础",
     minutes: 8,
     blocks: [
+      {
+        type: "text",
+        title: "模板语法",
+        body: "模板里用 {{ }} 插值，用 :attr / v-bind 绑属性，用 v-if / v-show 控制显示。v-html 会插入原始 HTML，注意 XSS。\n\n改 Demo 左侧数据，右侧立刻反映绑定结果。",
+      },
+      {
+        type: "code",
+        title: "对应源码 · 模板插值与绑定",
+        lang: "vue",
+        code: "<script setup>\nimport { ref } from 'vue'\nconst msg = ref('你好，Vue')\nconst isActive = ref(true)\n</script>\n\n<template>\n  <p>{{ msg }}</p>\n  <p :class=\"{ active: isActive }\">\n    :class 绑定 → {{ isActive ? 'active' : 'inactive' }}\n  </p>\n</template>",
+      },
       { type: "demo", kind: "template", title: "动手：模板" },
       {
         type: "quiz",
@@ -115,6 +137,17 @@ export const LESSONS: Lesson[] = [
     track: "基础",
     minutes: 10,
     blocks: [
+      {
+        type: "text",
+        title: "ref 与 reactive",
+        body: "ref 适合基本类型，脚本里用 .value；模板自动解包。reactive 适合对象，但不能直接解构（会丢响应式，需 toRefs）。\n\n对照 Demo：左边点 count.value++，右边改 reactive 字段。",
+      },
+      {
+        type: "code",
+        title: "对应源码 · ref 与 reactive",
+        lang: "vue",
+        code: "<script setup>\nimport { ref, reactive } from 'vue'\nconst count = ref(0)\nconst state = reactive({ name: 'Vue', n: 1 })\n// 脚本中读/写 ref 用 .value\n// 解构 reactive 会丢响应式 → 用 toRefs(state)\n</script>\n\n<template>\n  <p>{{ count }}</p>\n  <button @click=\"count++\">count.value++</button>\n  <p>{{ state.name }} / {{ state.n }}</p>\n  <button @click=\"state.n++\">state.n++</button>\n</template>",
+      },
       { type: "demo", kind: "ref-vs-reactive", title: "动手：响应式" },
       {
         type: "quiz",
@@ -145,6 +178,17 @@ export const LESSONS: Lesson[] = [
     track: "基础",
     minutes: 10,
     blocks: [
+      {
+        type: "text",
+        title: "computed 与 watch",
+        body: "computed 是有缓存的派生值，依赖不变不重算。watch / watchEffect 做副作用（日志、请求）。不要在 computed 里发请求。",
+      },
+      {
+        type: "code",
+        title: "对应源码 · computed + watch",
+        lang: "vue",
+        code: "<script setup>\nimport { ref, computed, watch } from 'vue'\nconst first = ref('Ada')\nconst last = ref('Lovelace')\nconst full = computed(() => `${first.value} ${last.value}`)\nwatch(full, (v) => console.log('watch →', v))\n</script>\n\n<template>\n  <input v-model=\"first\" />\n  <input v-model=\"last\" />\n  <p>{{ full }}</p>\n</template>",
+      },
       { type: "demo", kind: "computed", title: "动手：computed" },
       {
         type: "quiz",
@@ -175,6 +219,17 @@ export const LESSONS: Lesson[] = [
     track: "基础",
     minutes: 9,
     blocks: [
+      {
+        type: "text",
+        title: "条件与列表",
+        body: "v-if 真正挂载/卸载节点；频繁切换用 v-show。v-for 必须绑稳定 :key（业务 id），避免用会变的 index 当 key。",
+      },
+      {
+        type: "code",
+        title: "对应源码 · v-if / v-for + key",
+        lang: "vue",
+        code: '<script setup>\nimport { ref } from \'vue\'\nconst show = ref(true)\nconst items = ref([\n  { id: 1, text: \'学 ref\' },\n  { id: 2, text: \'学 v-for\' },\n])\nlet nextId = 3\nfunction add(text) {\n  items.value.push({ id: nextId++, text })\n}\nfunction remove(id) {\n  items.value = items.value.filter((x) => x.id !== id)\n}\n</script>\n\n<template>\n  <label><input type="checkbox" v-model="show" /> v-if</label>\n  <ul v-if="show">\n    <li v-for="item in items" :key="item.id">\n      {{ item.text }}\n      <button @click="remove(item.id)">删</button>\n    </li>\n  </ul>\n  <p v-else>已隐藏</p>\n</template>',
+      },
       { type: "demo", kind: "list", title: "动手：列表" },
       {
         type: "quiz",
@@ -205,6 +260,17 @@ export const LESSONS: Lesson[] = [
     track: "基础",
     minutes: 7,
     blocks: [
+      {
+        type: "text",
+        title: "事件处理",
+        body: "@click 是 v-on:click 简写。修饰符 .prevent / .stop / .once 覆盖常见 DOM 需求。方法里可接收 $event。",
+      },
+      {
+        type: "code",
+        title: "对应源码 · 事件与修饰符",
+        lang: "vue",
+        code: '<script setup>\nimport { ref } from \'vue\'\nconst n = ref(0)\nfunction add(step = 1) { n.value += step }\nfunction onSubmit(e) { /* .prevent 已拦默认提交 */ }\n</script>\n\n<template>\n  <p>{{ n }}</p>\n  <button @click="n++">@click +1</button>\n  <button @click="add(5)">@click="add(5)"</button>\n  <form @submit.prevent="onSubmit">\n    <button type="submit">@submit.prevent</button>\n  </form>\n</template>',
+      },
       { type: "demo", kind: "events", title: "动手：事件" },
       {
         type: "quiz",
@@ -228,6 +294,17 @@ export const LESSONS: Lesson[] = [
     track: "基础",
     minutes: 9,
     blocks: [
+      {
+        type: "text",
+        title: "v-model",
+        body: "v-model 是 :value + @input 的语法糖。修饰符 .trim / .number / .lazy 很实用。复选框绑定布尔，select 绑定字符串。",
+      },
+      {
+        type: "code",
+        title: "对应源码 · v-model 表单",
+        lang: "vue",
+        code: '<script setup>\nimport { ref } from \'vue\'\nconst name = ref(\'\')\nconst age = ref(18)\nconst agree = ref(false)\nconst color = ref(\'green\')\n</script>\n\n<template>\n  <input v-model.trim="name" />\n  <input v-model.number="age" type="number" />\n  <input type="checkbox" v-model="agree" />\n  <select v-model="color">\n    <option value="green">绿</option>\n    <option value="blue">蓝</option>\n  </select>\n  <pre>{{ { name, age, agree, color } }}</pre>\n</template>',
+      },
       { type: "demo", kind: "form", title: "动手：表单" },
       {
         type: "quiz",
@@ -251,6 +328,17 @@ export const LESSONS: Lesson[] = [
     track: "基础",
     minutes: 10,
     blocks: [
+      {
+        type: "text",
+        title: "单文件组件",
+        body: "SFC = template + script + style。每个组件实例有独立状态：父组件挂两个 CounterCard，各自的 n 互不影响。",
+      },
+      {
+        type: "code",
+        title: "对应源码 · 父子组件实例",
+        lang: "vue",
+        code: '<!-- CounterCard.vue -->\n<script setup>\nimport { ref } from \'vue\'\ndefineProps<{ label: string }>()\nconst n = ref(0)\n</script>\n<template>\n  <div>\n    <p>{{ label }}</p>\n    <p>{{ n }}</p>\n    <button @click="n++">子组件 +1</button>\n  </div>\n</template>\n\n<!-- Parent.vue -->\n<template>\n  <CounterCard label="#1" />\n  <CounterCard label="#2" />\n</template>',
+      },
       { type: "demo", kind: "component", title: "动手：组件" },
       {
         type: "quiz",
@@ -274,6 +362,17 @@ export const LESSONS: Lesson[] = [
     track: "基础",
     minutes: 11,
     blocks: [
+      {
+        type: "text",
+        title: "Props 与 Emits",
+        body: "数据父→子用 props（单向）；子→父用 emit 事件。不要在子组件里改 props。Todo 是练习 props/emit 的好场景。",
+      },
+      {
+        type: "code",
+        title: "对应源码 · Todo：props / emit 思路",
+        lang: "vue",
+        code: '<script setup>\nimport { ref } from \'vue\'\nconst items = ref([\n  { id: 1, text: \'读完 Props\', done: false },\n  { id: 2, text: \'完成测验\', done: true },\n])\nconst draft = ref(\'\')\nlet nextId = 3\nfunction add() {\n  const t = draft.value.trim()\n  if (!t) return\n  items.value.push({ id: nextId++, text: t, done: false })\n  draft.value = \'\'\n}\nfunction toggle(id) {\n  const it = items.value.find((x) => x.id === id)\n  if (it) it.done = !it.done\n}\nfunction remove(id) {\n  items.value = items.value.filter((x) => x.id !== id)\n}\n</script>\n\n<template>\n  <input v-model="draft" @keyup.enter="add" />\n  <button @click="add">添加</button>\n  <li v-for="it in items" :key="it.id">\n    <input type="checkbox" :checked="it.done" @change="toggle(it.id)" />\n    <span :class="{ done: it.done }">{{ it.text }}</span>\n    <button @click="remove(it.id)">删</button>\n  </li>\n</template>',
+      },
       { type: "demo", kind: "todo", title: "动手：Todo" },
       {
         type: "quiz",
@@ -297,6 +396,17 @@ export const LESSONS: Lesson[] = [
     track: "基础",
     minutes: 8,
     blocks: [
+      {
+        type: "text",
+        title: "生命周期",
+        body: "onMounted 适合 DOM 操作与启动定时器/订阅；onUnmounted 必须清理，否则泄漏。组合式 API 用函数注册钩子。",
+      },
+      {
+        type: "code",
+        title: "对应源码 · onMounted / onUnmounted",
+        lang: "vue",
+        code: "<script setup>\nimport { ref, onMounted, onUnmounted } from 'vue'\nconst ticks = ref(0)\nlet id\nonMounted(() => {\n  id = setInterval(() => ticks.value++, 1000)\n})\nonUnmounted(() => clearInterval(id))\n</script>\n\n<template>\n  <p>{{ ticks }}s</p>\n</template>",
+      },
       { type: "demo", kind: "lifecycle", title: "动手：生命周期" },
       {
         type: "quiz",
@@ -320,6 +430,17 @@ export const LESSONS: Lesson[] = [
     track: "基础",
     minutes: 12,
     blocks: [
+      {
+        type: "text",
+        title: "Composable",
+        body: "把可复用逻辑抽成 useXxx()，在多个组件 setup 中调用。命名约定 use 前缀，内部仍用 ref/computed。",
+      },
+      {
+        type: "code",
+        title: "对应源码 · 计数器 · Composition API",
+        lang: "vue",
+        code: '<script setup>\nimport { ref } from \'vue\'\nconst count = ref(0)\n</script>\n\n<template>\n  <p>点了 {{ count }} 次</p>\n  <button @click="count++">count++</button>\n  <button @click="count = 0">重置</button>\n</template>',
+      },
       { type: "demo", kind: "counter", title: "useXxx 思路" },
       {
         type: "quiz",
@@ -350,6 +471,17 @@ export const LESSONS: Lesson[] = [
     track: "进阶",
     minutes: 14,
     blocks: [
+      {
+        type: "text",
+        title: "Vue Router",
+        body: "RouterLink 做 SPA 导航（不整页刷新），RouterView 渲染匹配组件。useRoute 读参数，useRouter 编程式跳转。",
+      },
+      {
+        type: "code",
+        title: "对应源码 · Vue Router 最小结构",
+        lang: "vue",
+        code: "// router/index.ts\nimport { createRouter, createWebHistory } from 'vue-router'\nconst routes = [\n  { path: '/', component: Home },\n  { path: '/lesson/:slug', component: Lesson },\n  { path: '/about', component: About },\n]\nexport default createRouter({ history: createWebHistory(), routes })\n\n// App.vue\n<template>\n  <RouterLink to=\"/\">/</RouterLink>\n  <RouterLink to=\"/lesson/intro\">/lesson/intro</RouterLink>\n  <RouterView />\n</template>\n\n// 页面里\nimport { useRoute, useRouter } from 'vue-router'\nconst route = useRoute()   // route.params.slug\nconst router = useRouter() // router.push(...)",
+      },
       { type: "demo", kind: "router", title: "动手：路由" },
       {
         type: "quiz",
@@ -380,6 +512,17 @@ export const LESSONS: Lesson[] = [
     track: "进阶",
     minutes: 12,
     blocks: [
+      {
+        type: "text",
+        title: "Pinia",
+        body: "官方推荐的全局状态。setup store 写法与组件一致：ref + computed + function。多个组件 useXxxStore() 共享同一份状态。",
+      },
+      {
+        type: "code",
+        title: "对应源码 · Pinia setup store",
+        lang: "ts",
+        code: "// stores/cart.ts\nimport { defineStore } from 'pinia'\nimport { ref, computed } from 'vue'\nexport const useCartStore = defineStore('cart', () => {\n  const items = ref<string[]>(['学 Pinia'])\n  const count = computed(() => items.value.length)\n  function add(text: string) {\n    if (text.trim()) items.value.push(text.trim())\n  }\n  return { items, count, add }\n})\n\n// 任意组件\nconst cart = useCartStore()\ncart.add('新商品')\n// cart.items / cart.count 跨组件共享",
+      },
       { type: "demo", kind: "pinia", title: "动手：Pinia" },
       {
         type: "quiz",
@@ -410,6 +553,17 @@ export const LESSONS: Lesson[] = [
     track: "进阶",
     minutes: 11,
     blocks: [
+      {
+        type: "text",
+        title: "常见坑",
+        body: "解构 reactive、在 computed 里请求、忘记 key、大列表深度响应式——这些是性能与正确性的高频坑。用 Demo 对照错误/正确写法。",
+      },
+      {
+        type: "code",
+        title: "对应源码 · 响应式陷阱（错误 vs 正确）",
+        lang: "vue",
+        code: "// ❌ 解构 reactive 丢响应\nconst state = reactive({ n: 0 })\nlet { n } = state  // n 不再响应\nn++\n\n// ✅ toRefs\nconst { n } = toRefs(state)\nn.value++\n\n// ❌ computed 里发请求\nconst data = computed(() => fetch('/api')) // 副作用！\n\n// ✅ watch / 事件里请求\nwatch(id, async (v) => { data.value = await api(v) })\n\n// 大对象用 shallowRef，替换整个 .value 才触发",
+      },
       { type: "demo", kind: "challenge", title: "挑战：修响应式" },
       {
         type: "quiz",
@@ -440,6 +594,17 @@ export const LESSONS: Lesson[] = [
     track: "进阶",
     minutes: 13,
     blocks: [
+      {
+        type: "text",
+        title: "从零小项目",
+        body: "Vite 脚手架 create vue@latest；环境变量前缀 VITE_。先跑通 Todo + 路由，再接 API。",
+      },
+      {
+        type: "code",
+        title: "对应源码 · Todo：props / emit 思路",
+        lang: "vue",
+        code: '<script setup>\nimport { ref } from \'vue\'\nconst items = ref([\n  { id: 1, text: \'读完 Props\', done: false },\n  { id: 2, text: \'完成测验\', done: true },\n])\nconst draft = ref(\'\')\nlet nextId = 3\nfunction add() {\n  const t = draft.value.trim()\n  if (!t) return\n  items.value.push({ id: nextId++, text: t, done: false })\n  draft.value = \'\'\n}\nfunction toggle(id) {\n  const it = items.value.find((x) => x.id === id)\n  if (it) it.done = !it.done\n}\nfunction remove(id) {\n  items.value = items.value.filter((x) => x.id !== id)\n}\n</script>\n\n<template>\n  <input v-model="draft" @keyup.enter="add" />\n  <button @click="add">添加</button>\n  <li v-for="it in items" :key="it.id">\n    <input type="checkbox" :checked="it.done" @change="toggle(it.id)" />\n    <span :class="{ done: it.done }">{{ it.text }}</span>\n    <button @click="remove(it.id)">删</button>\n  </li>\n</template>',
+      },
       { type: "demo", kind: "todo", title: "综合 Todo" },
       {
         type: "tip",
@@ -474,6 +639,17 @@ export const LESSONS: Lesson[] = [
     track: "全栈准备",
     minutes: 12,
     blocks: [
+      {
+        type: "text",
+        title: "插槽",
+        body: "slot 让父组件填充子组件的「洞」。#header 是具名插槽；作用域插槽让父用上子暴露的数据。",
+      },
+      {
+        type: "code",
+        title: "对应源码 · 默认 / 具名 / 作用域插槽",
+        lang: "vue",
+        code: '<!-- Card.vue -->\n<template>\n  <header><slot name="header">默认标题</slot></header>\n  <main><slot /></main>\n  <footer>\n    <slot name="footer" :count="3">默认脚</slot>\n  </footer>\n</template>\n\n<!-- 使用 -->\n<Card>\n  <template #header>自定义头</template>\n  默认插槽内容\n  <template #footer="{ count }">共 {{ count }} 项</template>\n</Card>',
+      },
       { type: "demo", kind: "slots", title: "动手：插槽" },
       {
         type: "quiz",
@@ -504,6 +680,17 @@ export const LESSONS: Lesson[] = [
     track: "全栈准备",
     minutes: 11,
     blocks: [
+      {
+        type: "text",
+        title: "Provide / Inject",
+        body: "跨多层传值不必层层 props。树内共享用 provide/inject；全局复杂状态用 Pinia。TS 用 InjectionKey。",
+      },
+      {
+        type: "code",
+        title: "对应源码 · provide / inject",
+        lang: "vue",
+        code: "// keys.ts\nimport type { InjectionKey, Ref } from 'vue'\nexport const themeKey: InjectionKey<Ref<'dark'|'light'>> = Symbol('theme')\n\n// Ancestor.vue\nimport { provide, ref } from 'vue'\nimport { themeKey } from './keys'\nconst theme = ref<'dark'|'light'>('dark')\nprovide(themeKey, theme)\n\n// DeepChild.vue\nimport { inject } from 'vue'\nimport { themeKey } from './keys'\nconst theme = inject(themeKey)!\n// theme.value",
+      },
       { type: "demo", kind: "provide", title: "动手：注入" },
       {
         type: "quiz",
@@ -534,6 +721,17 @@ export const LESSONS: Lesson[] = [
     track: "全栈准备",
     minutes: 14,
     blocks: [
+      {
+        type: "text",
+        title: "异步三态",
+        body: "每个请求至少处理 loading / error / success。离开页面用 AbortController 取消，避免卸载后仍更新状态。",
+      },
+      {
+        type: "code",
+        title: "对应源码 · 请求三态 loading / error / data",
+        lang: "vue",
+        code: "<script setup>\nimport { ref } from 'vue'\nconst status = ref('idle') // idle | loading | ok | error\nconst items = ref([])\nasync function load(ok = true) {\n  status.value = 'loading'\n  items.value = []\n  try {\n    await new Promise((r) => setTimeout(r, 700))\n    if (!ok) throw new Error('fail')\n    items.value = ['学 fetch', '处理 loading', '处理 error']\n    status.value = 'ok'\n  } catch {\n    status.value = 'error'\n  }\n}\n// 离开页面：AbortController.abort()\n</script>\n\n<template>\n  <button @click=\"load(true)\">成功</button>\n  <button @click=\"load(false)\">失败</button>\n  <p v-if=\"status==='loading'\">loading…</p>\n  <p v-else-if=\"status==='error'\">error</p>\n  <ul v-else-if=\"status==='ok'\">\n    <li v-for=\"t in items\" :key=\"t\">{{ t }}</li>\n  </ul>\n</template>",
+      },
       { type: "demo", kind: "async", title: "动手：三态" },
       {
         type: "quiz",
@@ -564,6 +762,17 @@ export const LESSONS: Lesson[] = [
     track: "全栈准备",
     minutes: 13,
     blocks: [
+      {
+        type: "text",
+        title: "路由守卫",
+        body: "beforeEach 可做登录门禁，未登录带 redirect 回跳。前端守卫只改善体验，真正安全靠服务端验 token。",
+      },
+      {
+        type: "code",
+        title: "对应源码 · 路由守卫门禁",
+        lang: "ts",
+        code: "// router/index.ts\nrouter.beforeEach((to) => {\n  const token = localStorage.getItem('token')\n  if (to.meta.requiresAuth && !token) {\n    return { path: '/login', query: { redirect: to.fullPath } }\n  }\n})\n\n// 路由表\n{ path: '/dashboard', component: Dash, meta: { requiresAuth: true } }\n\n// 登录成功后\nrouter.push((route.query.redirect as string) || '/dashboard')\n\n// 注意：前端守卫 ≠ 安全，服务端必须再验 token",
+      },
       { type: "demo", kind: "guard", title: "动手：门禁" },
       {
         type: "quiz",
@@ -594,6 +803,17 @@ export const LESSONS: Lesson[] = [
     track: "全栈准备",
     minutes: 12,
     blocks: [
+      {
+        type: "text",
+        title: "表单校验",
+        body: "字段级错误信息比笼统 toast 更可修正。前端校验提升 UX，后端仍须校验。",
+      },
+      {
+        type: "code",
+        title: "对应源码 · 字段级表单校验",
+        lang: "vue",
+        code: "<script setup>\nimport { reactive, ref } from 'vue'\nconst form = reactive({ email: '', password: '' })\nconst errors = reactive({ email: '', password: '' })\nconst ok = ref(false)\nfunction submit() {\n  errors.email = /@/.test(form.email) ? '' : '邮箱格式不对'\n  errors.password = form.password.length >= 6 ? '' : '至少 6 位'\n  ok.value = !errors.email && !errors.password\n}\n</script>\n\n<template>\n  <input v-model=\"form.email\" />\n  <p v-if=\"errors.email\">{{ errors.email }}</p>\n  <input v-model=\"form.password\" type=\"password\" />\n  <p v-if=\"errors.password\">{{ errors.password }}</p>\n  <button @click=\"submit\">提交</button>\n  <p v-if=\"ok\">校验通过</p>\n</template>",
+      },
       { type: "demo", kind: "validate", title: "动手：校验" },
       {
         type: "quiz",
@@ -628,6 +848,17 @@ export const LESSONS: Lesson[] = [
         type: "tip",
         body: "去全栈工坊完成 6 关闯关，对照请求日志。",
       },
+      {
+        type: "text",
+        title: "REST / CRUD",
+        body: "资源用名词路径；POST 创建、GET 读、PATCH/PUT 改、DELETE 删。401 未认证、403 无权限、404 不存在。",
+      },
+      {
+        type: "code",
+        title: "对应源码 · 请求三态 loading / error / data",
+        lang: "vue",
+        code: "<script setup>\nimport { ref } from 'vue'\nconst status = ref('idle') // idle | loading | ok | error\nconst items = ref([])\nasync function load(ok = true) {\n  status.value = 'loading'\n  items.value = []\n  try {\n    await new Promise((r) => setTimeout(r, 700))\n    if (!ok) throw new Error('fail')\n    items.value = ['学 fetch', '处理 loading', '处理 error']\n    status.value = 'ok'\n  } catch {\n    status.value = 'error'\n  }\n}\n// 离开页面：AbortController.abort()\n</script>\n\n<template>\n  <button @click=\"load(true)\">成功</button>\n  <button @click=\"load(false)\">失败</button>\n  <p v-if=\"status==='loading'\">loading…</p>\n  <p v-else-if=\"status==='error'\">error</p>\n  <ul v-else-if=\"status==='ok'\">\n    <li v-for=\"t in items\" :key=\"t\">{{ t }}</li>\n  </ul>\n</template>",
+      },
       { type: "demo", kind: "async", title: "复习：请求态" },
       {
         type: "quiz",
@@ -658,6 +889,17 @@ export const LESSONS: Lesson[] = [
     track: "全栈实训",
     minutes: 13,
     blocks: [
+      {
+        type: "text",
+        title: "Token 会话",
+        body: "登录后带 Authorization: Bearer <token>。HttpOnly Cookie 可降低 XSS 偷 token 风险。401 时清会话并跳登录。",
+      },
+      {
+        type: "code",
+        title: "对应源码 · 路由守卫门禁",
+        lang: "ts",
+        code: "// router/index.ts\nrouter.beforeEach((to) => {\n  const token = localStorage.getItem('token')\n  if (to.meta.requiresAuth && !token) {\n    return { path: '/login', query: { redirect: to.fullPath } }\n  }\n})\n\n// 路由表\n{ path: '/dashboard', component: Dash, meta: { requiresAuth: true } }\n\n// 登录成功后\nrouter.push((route.query.redirect as string) || '/dashboard')\n\n// 注意：前端守卫 ≠ 安全，服务端必须再验 token",
+      },
       { type: "demo", kind: "guard", title: "复习：门禁" },
       {
         type: "quiz",
@@ -688,6 +930,11 @@ export const LESSONS: Lesson[] = [
     track: "全栈实训",
     minutes: 15,
     blocks: [
+      {
+        type: "text",
+        title: "Nuxt 地图",
+        body: "pages/ 文件系统路由；server/api/*.ts 是 Nitro 服务端接口；useFetch 对 SSR 友好。",
+      },
       {
         type: "code",
         title: "结构",
@@ -729,6 +976,11 @@ export const LESSONS: Lesson[] = [
         lang: "text",
         code: `[ ] 登录退出\n[ ] CRUD\n[ ] 校验\n[ ] 部署`,
       },
+      {
+        type: "text",
+        title: "毕业作品",
+        body: "可演示的最小全栈：登录退出 + CRUD + 校验 + 部署链接 + README 演示账号。",
+      },
       { type: "demo", kind: "todo", title: "热身" },
       {
         type: "quiz",
@@ -765,6 +1017,11 @@ export const LESSONS: Lesson[] = [
         lang: "ts",
         code: `defineProps<{ title: string; count?: number }>()\ndefineEmits<{ save: [id: string] }>()`,
       },
+      {
+        type: "text",
+        title: "Vue + TS",
+        body: "defineProps / defineEmits 泛型让模板与脚本同类型。API 响应定义 interface，禁止 any 甩锅。",
+      },
       { type: "demo", kind: "form", title: "表单也要类型" },
       {
         type: "quiz",
@@ -799,6 +1056,17 @@ export const LESSONS: Lesson[] = [
         type: "tip",
         body: "组件不直接 fetch；走 notesApi.list(token)。",
       },
+      {
+        type: "text",
+        title: "API 客户端",
+        body: "统一封装 baseURL、token、错误映射。组件只调 notesApi.list()，不直接 fetch。",
+      },
+      {
+        type: "code",
+        title: "对应源码 · 请求三态 loading / error / data",
+        lang: "vue",
+        code: "<script setup>\nimport { ref } from 'vue'\nconst status = ref('idle') // idle | loading | ok | error\nconst items = ref([])\nasync function load(ok = true) {\n  status.value = 'loading'\n  items.value = []\n  try {\n    await new Promise((r) => setTimeout(r, 700))\n    if (!ok) throw new Error('fail')\n    items.value = ['学 fetch', '处理 loading', '处理 error']\n    status.value = 'ok'\n  } catch {\n    status.value = 'error'\n  }\n}\n// 离开页面：AbortController.abort()\n</script>\n\n<template>\n  <button @click=\"load(true)\">成功</button>\n  <button @click=\"load(false)\">失败</button>\n  <p v-if=\"status==='loading'\">loading…</p>\n  <p v-else-if=\"status==='error'\">error</p>\n  <ul v-else-if=\"status==='ok'\">\n    <li v-for=\"t in items\" :key=\"t\">{{ t }}</li>\n  </ul>\n</template>",
+      },
       { type: "demo", kind: "async", title: "client 与三态" },
       {
         type: "quiz",
@@ -829,6 +1097,17 @@ export const LESSONS: Lesson[] = [
     track: "工程化",
     minutes: 12,
     blocks: [
+      {
+        type: "text",
+        title: "测试分层",
+        body: "Vitest 单测逻辑；Vue Test Utils 测组件；Playwright/Cypress 做 E2E。先测纯函数与 composable。",
+      },
+      {
+        type: "code",
+        title: "VTU 示例",
+        lang: "ts",
+        code: "import { mount } from '@vue/test-utils'\nimport Counter from './Counter.vue'\n\ntest('increments', async () => {\n  const w = mount(Counter)\n  await w.get('button').trigger('click')\n  expect(w.text()).toContain('1')\n})",
+      },
       {
         type: "tip",
         body: "工坊 6 关 ≈ E2E 用例清单。",
@@ -862,6 +1141,11 @@ export const LESSONS: Lesson[] = [
     track: "工程化",
     minutes: 11,
     blocks: [
+      {
+        type: "text",
+        title: "生产部署",
+        body: "npm run build → 静态资源上 CDN/Pages；配好 base 路径与环境变量；检查路由 history 回退。",
+      },
       {
         type: "code",
         title: "检查",
@@ -940,12 +1224,7 @@ const open = ref(false)
           {
             id: "tp1",
             question: "Teleport 主要解决？",
-            options: [
-              "替代路由",
-              "DOM 挂载位置与组件逻辑解耦",
-              "替代 Pinia",
-              "服务端鉴权",
-            ],
+            options: ["替代路由", "DOM 挂载位置与组件逻辑解耦", "替代 Pinia", "服务端鉴权"],
             answer: 1,
             explain: "挂到 body 等目标。",
           },
@@ -954,7 +1233,7 @@ const open = ref(false)
             question: "to 属性？",
             options: ["只能 #app", "CSS 选择器或元素，如 body", "只能 string 数字", "仅 iframe"],
             answer: 1,
-            explain: "常见 to=\"body\"。",
+            explain: '常见 to="body"。',
           },
         ],
       },
@@ -1004,12 +1283,7 @@ const current = ref<'A' | 'B'>('A')
           {
             id: "ka1",
             question: "KeepAlive 作用？",
-            options: [
-              "永久内存泄漏",
-              "缓存组件实例避免反复销毁",
-              "替代 v-if",
-              "只缓存 CSS",
-            ],
+            options: ["永久内存泄漏", "缓存组件实例避免反复销毁", "替代 v-if", "只缓存 CSS"],
             answer: 1,
             explain: "缓存实例。",
           },
@@ -1067,12 +1341,7 @@ app.directive('focus', vFocus)
           {
             id: "cd1",
             question: "自定义指令更适合？",
-            options: [
-              "整页业务状态",
-              "底层 DOM 行为复用",
-              "替代 Router",
-              "替代数据库",
-            ],
+            options: ["整页业务状态", "底层 DOM 行为复用", "替代 Router", "替代数据库"],
             answer: 1,
             explain: "DOM 级横切。",
           },
@@ -1125,24 +1394,14 @@ const Admin = defineAsyncComponent(() => import('./Admin.vue'))`,
           {
             id: "pfp1",
             question: "shallowRef 适合？",
-            options: [
-              "每个字段都要细粒度更新",
-              "大体量数据整表替换",
-              "替代 computed",
-              "仅字符串",
-            ],
+            options: ["每个字段都要细粒度更新", "大体量数据整表替换", "替代 computed", "仅字符串"],
             answer: 1,
             explain: "减少深度代理成本。",
           },
           {
             id: "pfp2",
             question: "defineAsyncComponent？",
-            options: [
-              "SSR 禁用一切",
-              "按需加载组件代码拆包",
-              "自动写测试",
-              "替代 props",
-            ],
+            options: ["SSR 禁用一切", "按需加载组件代码拆包", "自动写测试", "替代 props"],
             answer: 1,
             explain: "代码分割。",
           },
@@ -1178,6 +1437,12 @@ const Admin = defineAsyncComponent(() => import('./Admin.vue'))`,
         body: "开口顺序：场景 → 原理一句话 → 代码点 → 坑。可配合速查表背骨架。",
       },
       {
+        type: "code",
+        title: "对应源码 · ref 与 reactive",
+        lang: "vue",
+        code: "<script setup>\nimport { ref, reactive } from 'vue'\nconst count = ref(0)\nconst state = reactive({ name: 'Vue', n: 1 })\n// 脚本中读/写 ref 用 .value\n// 解构 reactive 会丢响应式 → 用 toRefs(state)\n</script>\n\n<template>\n  <p>{{ count }}</p>\n  <button @click=\"count++\">count.value++</button>\n  <p>{{ state.name }} / {{ state.n }}</p>\n  <button @click=\"state.n++\">state.n++</button>\n</template>",
+      },
+      {
         type: "demo",
         kind: "ref-vs-reactive",
         title: "口述时配合此 Demo",
@@ -1205,14 +1470,7 @@ const Admin = defineAsyncComponent(() => import('./Admin.vue'))`,
   },
 ];
 
-export const TRACKS = [
-  "基础",
-  "进阶",
-  "全栈准备",
-  "全栈实训",
-  "工程化",
-  "进阶模式",
-] as const;
+export const TRACKS = ["基础", "进阶", "全栈准备", "全栈实训", "工程化", "进阶模式"] as const;
 
 export function getLesson(slug: string): Lesson | undefined {
   return LESSONS.find((l) => l.slug === slug);
@@ -1241,9 +1499,7 @@ export function getLessonsByTrack(track: Lesson["track"]) {
 export function getAllQuizQuestions(): Array<
   QuizQuestion & { lessonSlug: string; lessonTitle: string }
 > {
-  const out: Array<
-    QuizQuestion & { lessonSlug: string; lessonTitle: string }
-  > = [];
+  const out: Array<QuizQuestion & { lessonSlug: string; lessonTitle: string }> = [];
   for (const lesson of LESSONS) {
     for (const block of lesson.blocks) {
       if (block.type === "quiz") {
