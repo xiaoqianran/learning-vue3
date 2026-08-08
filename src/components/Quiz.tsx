@@ -12,6 +12,7 @@ export function Quiz({ slug, questions }: { slug: string; questions: QuizQuestio
   const [submitted, setSubmitted] = useState(false);
   const setQuizScore = useProgress((s) => s.setQuizScore);
   const markComplete = useProgress((s) => s.markComplete);
+  const markMastered = useProgress((s) => s.markMastered);
   const addWrong = useProgress((s) => s.addWrong);
   const checkInToday = useProgress((s) => s.checkInToday);
 
@@ -43,8 +44,9 @@ export function Quiz({ slug, questions }: { slug: string; questions: QuizQuestio
       }
     }
 
-    // 交卷即计进度（掌握度看分数/错题本）；全对额外提示
-    markComplete(slug);
+    // completed = 交卷；mastered = ≥80%
+    if (realPct >= 80) markMastered(slug);
+    else markComplete(slug);
   }
 
   function reset() {
@@ -139,13 +141,13 @@ export function Quiz({ slug, questions }: { slug: string; questions: QuizQuestio
             <Button onClick={reset} variant="secondary">
               再测一次
             </Button>
-            {score === questions.length ? (
+            {Math.round((score / questions.length) * 100) >= 80 ? (
               <span className="inline-flex items-center text-sm text-primary">
-                全部正确 · 本节已完成
+                ≥80% · 已掌握（mastered）
               </span>
             ) : (
               <span className="inline-flex items-center text-sm text-muted">
-                本节已计完成 · 错题已入错题本
+                已计完成 · 错题入错题本 · 再测到 80% 可掌握
               </span>
             )}
           </>

@@ -138,6 +138,14 @@ function AppShell({ children }: { children: ReactNode }) {
   }, []);
 
   useEffect(() => {
+    void import("@/mocks/browser")
+      .then((m) => m.startMockApi())
+      .catch(() => {
+        /* studio 仍可提示；未启动时 fetch 会失败 */
+      });
+  }, []);
+
+  useEffect(() => {
     if (!moreOpen) return;
     function onKey(e: KeyboardEvent) {
       if (e.key === "Escape") setMoreOpen(false);

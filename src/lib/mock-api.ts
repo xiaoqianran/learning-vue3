@@ -1,110 +1,20 @@
 /**
- * Browser-side mock REST API for the v5 全栈实训 studio.
- * Looks like fetch + JSON APIs; persists to localStorage.
+ * Studio HTTP client — 真实 fetch + Authorization。
+ * 请求由 MSW Service Worker 拦截（见 src/mocks），DevTools Network 可见。
  */
 
-export type ApiUser = {
-  id: string;
-  email: string;
-  name: string;
-};
+export type {
+  ApiUser,
+  ApiNote,
+  ApiLog,
+} from "@/mocks/db";
 
-export type ApiNote = {
-  id: string;
-  title: string;
-  body: string;
-  updatedAt: number;
-};
-
-export type ApiLog = {
-  id: string;
-  at: number;
-  method: string;
-  path: string;
-  status: number;
-  detail?: string;
-};
-
-type Db = {
-  users: Array<ApiUser & { password: string }>;
-  notes: Record<string, ApiNote[]>; // userId -> notes
-  sessions: Record<string, string>; // token -> userId
-};
-
-const DB_KEY = "vue3-learn-mock-api-v1";
-const LOG_KEY = "vue3-learn-mock-api-logs-v1";
-
-const DEMO_USER = {
-  id: "u_demo",
-  email: "demo@vue.dev",
-  name: "Vue 学员",
-  password: "password123",
-};
-
-function delay(ms = 350) {
-  return new Promise((r) => setTimeout(r, ms));
-}
-
-function loadDb(): Db {
-  try {
-    const raw = localStorage.getItem(DB_KEY);
-    if (raw) return JSON.parse(raw) as Db;
-  } catch {
-    /* ignore */
-  }
-  const seed: Db = {
-    users: [DEMO_USER],
-    notes: {
-      [DEMO_USER.id]: [
-        {
-          id: "n1",
-          title: "欢迎来到全栈实训",
-          body: "这是模拟后端返回的第一条笔记。试试新增 / 编辑 / 删除。",
-          updatedAt: Date.now(),
-        },
-      ],
-    },
-    sessions: {},
-  };
-  saveDb(seed);
-  return seed;
-}
-
-function saveDb(db: Db) {
-  localStorage.setItem(DB_KEY, JSON.stringify(db));
-}
-
-function pushLog(entry: Omit<ApiLog, "id" | "at">) {
-  const logs = getLogs();
-  const next: ApiLog[] = [
-    {
-      id: `log_${Date.now()}_${Math.random().toString(36).slice(2, 6)}`,
-      at: Date.now(),
-      ...entry,
-    },
-    ...logs,
-  ].slice(0, 40);
-  localStorage.setItem(LOG_KEY, JSON.stringify(next));
-  return next;
-}
-
-export function getLogs(): ApiLog[] {
-  try {
-    const raw = localStorage.getItem(LOG_KEY);
-    if (raw) return JSON.parse(raw) as ApiLog[];
-  } catch {
-    /* ignore */
-  }
-  return [];
-}
-
-export function clearLogs() {
-  localStorage.removeItem(LOG_KEY);
-}
-
-export function getDemoCredentials() {
-  return { email: DEMO_USER.email, password: DEMO_USER.password };
-}
+export {
+  getLogs,
+  clearLogs,
+  resetMockDb as resetMockApi,
+  getDemoCredentials,
+} from "@/mocks/db";
 
 export class ApiError extends Error {
   status: number;
@@ -114,212 +24,103 @@ export class ApiError extends Error {
   }
 }
 
-function authUser(token: string | null): ApiUser {
-  if (!token) throw new ApiError(401, "未登录");
-  const db = loadDb();
-  const userId = db.sessions[token];
-  if (!userId) throw new ApiError(401, "token 无效或已过期");
-  const user = db.users.find((u) => u.id === userId);
-  if (!user) throw new ApiError(401, "用户不存在");
-  const { password: _, ...safe } = user;
-  return safe;
+function apiPath(path: string) {
+  const base = import.meta.env.BASE_URL || "/";
+  const root = base.endsWith("/") ? base : `${base}/`;
+  const p = path.replace(/^\//, "");
+  return `${root}${p}`;
+}
+
+async function parseError(res: Response): Promise<ApiError> {
+  let message = res.statusText || "请求失败";
+  try {
+    const data = (await res.json()) as { message?: string };
+    if (data.message) message = data.message;
+  } catch {
+    /* ignore */
+  }
+  return new ApiError(res.status, message);
+}
+
+function authHeaders(token: string | null): HeadersInit {
+  const h: Record<string, string> = {
+    "Content-Type": "application/json",
+    Accept: "application/json",
+  };
+  if (token) h.Authorization = `Bearer ${token}`;
+  return h;
 }
 
 export async function apiLogin(
   email: string,
   password: string,
-): Promise<{ token: string; user: ApiUser }> {
-  await delay();
-  const db = loadDb();
-  const user = db.users.find(
-    (u) => u.email === email.trim() && u.password === password,
-  );
-  if (!user) {
-    pushLog({
-      method: "POST",
-      path: "/api/auth/login",
-      status: 401,
-      detail: "邮箱或密码错误",
-    });
-    throw new ApiError(401, "邮箱或密码错误");
-  }
-  const token = `tok_${Math.random().toString(36).slice(2)}${Date.now().toString(36)}`;
-  db.sessions[token] = user.id;
-  saveDb(db);
-  const { password: _, ...safe } = user;
-  pushLog({
+): Promise<{ token: string; user: import("@/mocks/db").ApiUser }> {
+  const res = await fetch(apiPath("api/auth/login"), {
     method: "POST",
-    path: "/api/auth/login",
-    status: 200,
-    detail: `user=${safe.email}`,
+    headers: authHeaders(null),
+    body: JSON.stringify({ email, password }),
   });
-  return { token, user: safe };
+  if (!res.ok) throw await parseError(res);
+  return res.json();
 }
 
-export async function apiMe(token: string | null): Promise<ApiUser> {
-  await delay(200);
-  try {
-    const user = authUser(token);
-    pushLog({ method: "GET", path: "/api/me", status: 200 });
-    return user;
-  } catch (e) {
-    const status = e instanceof ApiError ? e.status : 500;
-    pushLog({
-      method: "GET",
-      path: "/api/me",
-      status,
-      detail: (e as Error).message,
-    });
-    throw e;
-  }
+export async function apiMe(token: string | null) {
+  const res = await fetch(apiPath("api/me"), {
+    method: "GET",
+    headers: authHeaders(token),
+  });
+  if (!res.ok) throw await parseError(res);
+  return res.json() as Promise<import("@/mocks/db").ApiUser>;
 }
 
 export async function apiLogout(token: string | null): Promise<void> {
-  await delay(150);
-  if (token) {
-    const db = loadDb();
-    delete db.sessions[token];
-    saveDb(db);
-  }
-  pushLog({ method: "POST", path: "/api/auth/logout", status: 204 });
+  const res = await fetch(apiPath("api/auth/logout"), {
+    method: "POST",
+    headers: authHeaders(token),
+  });
+  if (!res.ok && res.status !== 204) throw await parseError(res);
 }
 
-export async function apiListNotes(token: string | null): Promise<ApiNote[]> {
-  await delay();
-  try {
-    const user = authUser(token);
-    const db = loadDb();
-    const list = [...(db.notes[user.id] ?? [])].sort(
-      (a, b) => b.updatedAt - a.updatedAt,
-    );
-    pushLog({
-      method: "GET",
-      path: "/api/notes",
-      status: 200,
-      detail: `${list.length} items`,
-    });
-    return list;
-  } catch (e) {
-    const status = e instanceof ApiError ? e.status : 500;
-    pushLog({
-      method: "GET",
-      path: "/api/notes",
-      status,
-      detail: (e as Error).message,
-    });
-    throw e;
-  }
+export async function apiListNotes(token: string | null) {
+  const res = await fetch(apiPath("api/notes"), {
+    method: "GET",
+    headers: authHeaders(token),
+  });
+  if (!res.ok) throw await parseError(res);
+  return res.json() as Promise<import("@/mocks/db").ApiNote[]>;
 }
 
 export async function apiCreateNote(
   token: string | null,
   input: { title: string; body: string },
-): Promise<ApiNote> {
-  await delay();
-  try {
-    const user = authUser(token);
-    const title = input.title.trim();
-    if (!title) throw new ApiError(400, "标题不能为空");
-    const note: ApiNote = {
-      id: `n_${Date.now().toString(36)}`,
-      title,
-      body: input.body.trim(),
-      updatedAt: Date.now(),
-    };
-    const db = loadDb();
-    db.notes[user.id] = [note, ...(db.notes[user.id] ?? [])];
-    saveDb(db);
-    pushLog({
-      method: "POST",
-      path: "/api/notes",
-      status: 201,
-      detail: note.id,
-    });
-    return note;
-  } catch (e) {
-    const status = e instanceof ApiError ? e.status : 500;
-    pushLog({
-      method: "POST",
-      path: "/api/notes",
-      status,
-      detail: (e as Error).message,
-    });
-    throw e;
-  }
+) {
+  const res = await fetch(apiPath("api/notes"), {
+    method: "POST",
+    headers: authHeaders(token),
+    body: JSON.stringify(input),
+  });
+  if (!res.ok) throw await parseError(res);
+  return res.json() as Promise<import("@/mocks/db").ApiNote>;
 }
 
 export async function apiUpdateNote(
   token: string | null,
   id: string,
   input: { title: string; body: string },
-): Promise<ApiNote> {
-  await delay();
-  try {
-    const user = authUser(token);
-    const title = input.title.trim();
-    if (!title) throw new ApiError(400, "标题不能为空");
-    const db = loadDb();
-    const list = db.notes[user.id] ?? [];
-    const idx = list.findIndex((n) => n.id === id);
-    if (idx < 0) throw new ApiError(404, "笔记不存在");
-    const next: ApiNote = {
-      ...list[idx],
-      title,
-      body: input.body.trim(),
-      updatedAt: Date.now(),
-    };
-    list[idx] = next;
-    db.notes[user.id] = list;
-    saveDb(db);
-    pushLog({
-      method: "PUT",
-      path: `/api/notes/${id}`,
-      status: 200,
-    });
-    return next;
-  } catch (e) {
-    const status = e instanceof ApiError ? e.status : 500;
-    pushLog({
-      method: "PUT",
-      path: `/api/notes/${id}`,
-      status,
-      detail: (e as Error).message,
-    });
-    throw e;
-  }
+) {
+  const res = await fetch(apiPath(`api/notes/${id}`), {
+    method: "PUT",
+    headers: authHeaders(token),
+    body: JSON.stringify(input),
+  });
+  if (!res.ok) throw await parseError(res);
+  return res.json() as Promise<import("@/mocks/db").ApiNote>;
 }
 
-export async function apiDeleteNote(
-  token: string | null,
-  id: string,
-): Promise<void> {
-  await delay(250);
-  try {
-    const user = authUser(token);
-    const db = loadDb();
-    const list = db.notes[user.id] ?? [];
-    if (!list.some((n) => n.id === id)) throw new ApiError(404, "笔记不存在");
-    db.notes[user.id] = list.filter((n) => n.id !== id);
-    saveDb(db);
-    pushLog({
-      method: "DELETE",
-      path: `/api/notes/${id}`,
-      status: 204,
-    });
-  } catch (e) {
-    const status = e instanceof ApiError ? e.status : 500;
-    pushLog({
-      method: "DELETE",
-      path: `/api/notes/${id}`,
-      status,
-      detail: (e as Error).message,
-    });
-    throw e;
-  }
-}
-
-export function resetMockApi() {
-  localStorage.removeItem(DB_KEY);
-  localStorage.removeItem(LOG_KEY);
-  loadDb();
+export async function apiDeleteNote(token: string | null, id: string): Promise<void> {
+  const res = await fetch(apiPath(`api/notes/${id}`), {
+    method: "DELETE",
+    headers: authHeaders(token),
+  });
+  if (!res.ok && res.status !== 204) throw await parseError(res);
 }

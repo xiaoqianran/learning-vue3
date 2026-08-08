@@ -11,7 +11,7 @@ import {
   type LucideIcon,
 } from "lucide-react";
 import type { Lesson } from "@/data/lessons";
-import { LESSONS, TRACKS } from "@/data/lessons";
+import { LESSONS, TRACKS, getCourseLessons } from "@/data/lessons";
 
 /** 用户向路径命名（序号 + 短名） */
 export const TRACK_META: Record<Lesson["track"], { order: number; label: string; blurb: string }> =
@@ -41,20 +41,25 @@ export function getValidCompleted(completed: string[]): string[] {
 }
 
 export function completedCount(completed: string[]): number {
-  return getValidCompleted(completed).length;
+  const set = new Set(getValidCompleted(completed));
+  return getCourseLessons().filter((l) => set.has(l.slug)).length;
 }
 
 export function progressPercent(completed: string[]): number {
-  if (LESSONS.length === 0) return 0;
-  return Math.round((completedCount(completed) / LESSONS.length) * 100);
+  const core = getCourseLessons();
+  if (core.length === 0) return 0;
+  return Math.round((completedCount(completed) / core.length) * 100);
 }
 
 export function isAllComplete(completed: string[]): boolean {
-  return LESSONS.every((l) => completed.includes(l.slug));
+  // 主修课全部 completed（结业硬门槛另看 mastered）
+  return getCourseLessons().every((l) => completed.includes(l.slug));
 }
 
 /** 下一未完成课；若已全部完成则返回最后一课 */
 export function getContinueLesson(completed: string[]): Lesson {
+  const coreNext = getCourseLessons().find((l) => !completed.includes(l.slug));
+  if (coreNext) return coreNext;
   const next = LESSONS.find((l) => !completed.includes(l.slug));
   if (next) return next;
   return LESSONS[LESSONS.length - 1] ?? LESSONS[0]!;

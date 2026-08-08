@@ -1,5 +1,5 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { LESSONS, getLessonsByTrack } from "@/data/lessons";
+import { LESSONS, getLessonsByTrack, getCourseLessons } from "@/data/lessons";
 import {
   completedCount,
   getContinueLesson,
@@ -18,6 +18,7 @@ export const Route = createFileRoute("/hub")({
 
 function HubPage() {
   const completed = useProgress((s) => s.completed);
+  const mastered = useProgress((s) => s.mastered);
   const quizScores = useProgress((s) => s.quizScores);
   const bookmarks = useProgress((s) => s.bookmarks);
   const notes = useProgress((s) => s.notes);
@@ -75,9 +76,17 @@ function HubPage() {
       </div>
 
       <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
-        <Stat icon={Target} label="完成课程" value={`${doneCount}/${LESSONS.length}`} />
+        <Stat
+          icon={Target}
+          label="主修完成"
+          value={`${doneCount}/${getCourseLessons().length}`}
+        />
+        <Stat
+          icon={Award}
+          label="掌握 ≥80%"
+          value={`${mastered.filter((s) => getCourseLessons().some((l) => l.slug === s)).length}/${getCourseLessons().length}`}
+        />
         <Stat icon={Flame} label="连续打卡" value={`${streak} 天`} />
-        <Stat icon={BookMarked} label="收藏" value={String(bookmarks.length)} />
         <Stat icon={BookX} label="错题" value={String(wrongBook.length)} />
       </div>
 

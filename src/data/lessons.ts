@@ -60,11 +60,18 @@ export type Lesson = {
   summary: string;
   level: "入门" | "进阶" | "实战";
   track: "基础" | "进阶" | "全栈准备" | "全栈实训" | "工程化" | "进阶模式" | "官网对齐";
+  /**
+   * course = 主修路径（计入结业）
+   * reference = 知识卡片/官网补全（文档地图为主，不阻塞结业）
+   */
+  format?: "course" | "reference";
   minutes: number;
   /** 官网路径（相对 cn.vuejs.org），如 /guide/essentials/template-syntax.html */
   official?: string;
   blocks: LessonBlock[];
 };
+
+
 
 export const LESSONS: Lesson[] = [
   {
@@ -1518,6 +1525,7 @@ const Admin = defineAsyncComponent(() => import('./Admin.vue'))`,
     summary: "对象/数组语法绑定 class 与 style，对应官网 essentials/class-and-style。",
     level: "入门",
     track: "官网对齐",
+    format: "reference",
     minutes: 10,
     official: "/guide/essentials/class-and-style.html",
     blocks: [
@@ -1581,6 +1589,7 @@ const styleObj = reactive({ color: 'tomato', fontSize: '18px' })
     summary: "watch / watchEffect / 清理副作用，对应官网 essentials/watchers。",
     level: "入门",
     track: "官网对齐",
+    format: "reference",
     minutes: 12,
     official: "/guide/essentials/watchers.html",
     blocks: [
@@ -1641,6 +1650,7 @@ watchEffect(() => {
     summary: "ref 拿到 DOM / 子组件实例，对应官网 essentials/template-refs。",
     level: "入门",
     track: "官网对齐",
+    format: "reference",
     minutes: 10,
     official: "/guide/essentials/template-refs.html",
     blocks: [
@@ -1697,6 +1707,7 @@ function focus() { input.value?.focus() }
     summary: "modelValue + update:modelValue，对应官网 components/v-model。",
     level: "进阶",
     track: "官网对齐",
+    format: "reference",
     minutes: 12,
     official: "/guide/components/v-model.html",
     blocks: [
@@ -1752,6 +1763,7 @@ const model = defineModel({ type: String })
     summary: 'class/监听器自动落入根元素；inheritAttrs 与 v-bind="$attrs"。',
     level: "进阶",
     track: "官网对齐",
+    format: "reference",
     minutes: 11,
     official: "/guide/components/attrs.html",
     blocks: [
@@ -1815,6 +1827,7 @@ defineProps<{ label: string }>()
     summary: "defineAsyncComponent 分包与加载态，对应 components/async。",
     level: "进阶",
     track: "官网对齐",
+    format: "reference",
     minutes: 11,
     official: "/guide/components/async.html",
     blocks: [
@@ -1862,6 +1875,7 @@ const HeavyChart = defineAsyncComponent({
     summary: "app.use 安装全局能力，对应 reusability/plugins。",
     level: "进阶",
     track: "官网对齐",
+    format: "reference",
     minutes: 10,
     official: "/guide/reusability/plugins.html",
     blocks: [
@@ -1909,6 +1923,7 @@ app.use(i18nPlugin, { messages: { hello: '你好' } })`,
     summary: "内置 Transition / TransitionGroup，对应 built-ins/transition。",
     level: "进阶",
     track: "官网对齐",
+    format: "reference",
     minutes: 12,
     official: "/guide/built-ins/transition.html",
     blocks: [
@@ -1961,6 +1976,7 @@ const show = ref(true)
     summary: "等待异步依赖的实验性内置组件，对应 built-ins/suspense。",
     level: "进阶",
     track: "官网对齐",
+    format: "reference",
     minutes: 11,
     official: "/guide/built-ins/suspense.html",
     blocks: [
@@ -2007,6 +2023,7 @@ const show = ref(true)
     summary: "a11y + XSS/敏感数据，对应 best-practices/accessibility & security。",
     level: "实战",
     track: "官网对齐",
+    format: "reference",
     minutes: 14,
     official: "/guide/best-practices/security.html",
     blocks: [
@@ -2065,6 +2082,7 @@ const show = ref(true)
     summary: "Proxy、依赖收集、shallow / readonly，对应 extras/reactivity-in-depth。",
     level: "进阶",
     track: "官网对齐",
+    format: "reference",
     minutes: 14,
     official: "/guide/extras/reactivity-in-depth.html",
     blocks: [
@@ -2118,6 +2136,7 @@ const raw = markRaw({ huge: true }) // 永不变成代理`,
     summary: "h() / JSX 场景，对应 extras/render-function。",
     level: "进阶",
     track: "官网对齐",
+    format: "reference",
     minutes: 12,
     official: "/guide/extras/render-function.html",
     blocks: [
@@ -2164,6 +2183,7 @@ export default {
     summary: "同构、水合、数据获取边界，对应 scaling-up/ssr。",
     level: "实战",
     track: "官网对齐",
+    format: "reference",
     minutes: 13,
     official: "/guide/scaling-up/ssr.html",
     blocks: [
@@ -2213,6 +2233,7 @@ app.mount('#app') // hydrate`,
     summary: "Priority A/B 规则压缩版，对应 style-guide。",
     level: "进阶",
     track: "官网对齐",
+    format: "reference",
     minutes: 10,
     official: "/style-guide/",
     blocks: [
@@ -2261,6 +2282,7 @@ defineProps<{ id: string; done: boolean }>()
     summary: "CDN / create-vue / 在线演练场，对应官网 quick-start。",
     level: "入门",
     track: "官网对齐",
+    format: "reference",
     minutes: 10,
     official: "/guide/quick-start.html",
     blocks: [
@@ -2310,6 +2332,7 @@ defineProps<{ id: string; done: boolean }>()
     summary: "应用实例、挂载与多应用，对应 essentials/application。",
     level: "入门",
     track: "官网对齐",
+    format: "reference",
     minutes: 10,
     official: "/guide/essentials/application.html",
     blocks: [
@@ -2357,6 +2380,7 @@ app.mount('#app')
     summary: "v-if 家族与 v-show，对应 essentials/conditional。",
     level: "入门",
     track: "官网对齐",
+    format: "reference",
     minutes: 10,
     official: "/guide/essentials/conditional.html",
     blocks: [
@@ -2402,6 +2426,7 @@ const show = ref(true)
     summary: "局部 vs 全局注册，对应 components/registration。",
     level: "进阶",
     track: "官网对齐",
+    format: "reference",
     minutes: 10,
     official: "/guide/components/registration.html",
     blocks: [
@@ -2445,6 +2470,7 @@ import TodoItem from './TodoItem.vue'
     summary: "defineEmits、校验与 once，对应 components/events。",
     level: "进阶",
     track: "官网对齐",
+    format: "reference",
     minutes: 11,
     official: "/guide/components/events.html",
     blocks: [
@@ -2492,6 +2518,7 @@ function onInput(e: Event) {
     summary: "列表过渡与 FLIP 移动，对应 built-ins/transition-group。",
     level: "进阶",
     track: "官网对齐",
+    format: "reference",
     minutes: 11,
     official: "/guide/built-ins/transition-group.html",
     blocks: [
@@ -2531,6 +2558,7 @@ function onInput(e: Event) {
     summary: "结构、工具链与优势，对应 scaling-up/sfc。",
     level: "入门",
     track: "官网对齐",
+    format: "reference",
     minutes: 11,
     official: "/guide/scaling-up/sfc.html",
     blocks: [
@@ -2581,6 +2609,7 @@ h1 { color: #42b883; }
     summary: "编译期语法糖与宏，对应 api/sfc-script-setup。",
     level: "进阶",
     track: "官网对齐",
+    format: "reference",
     minutes: 12,
     official: "/api/sfc-script-setup.html",
     blocks: [
@@ -2622,6 +2651,7 @@ function focus() {}
     summary: "scoped、:deep、v-bind(css)、modules，对应 api/sfc-css-features。",
     level: "进阶",
     track: "官网对齐",
+    format: "reference",
     minutes: 12,
     official: "/api/sfc-css-features.html",
     blocks: [
@@ -2667,6 +2697,7 @@ const color = ref('tomato')
     summary: "Vite、Volar、DevTools、ESLint，对应 scaling-up/tooling。",
     level: "实战",
     track: "官网对齐",
+    format: "reference",
     minutes: 12,
     official: "/guide/scaling-up/tooling.html",
     blocks: [
@@ -2706,6 +2737,7 @@ npm run test:unit`,
     summary: "data/methods/computed 与 Composition 映射，对应 typescript/options-api 与 FAQ。",
     level: "进阶",
     track: "官网对齐",
+    format: "reference",
     minutes: 13,
     official: "/guide/extras/composition-api-faq.html",
     blocks: [
@@ -2750,6 +2782,7 @@ npm run test:unit`,
     summary: "虚拟 DOM、编译优化与 patch，对应 extras/rendering-mechanism。",
     level: "进阶",
     track: "官网对齐",
+    format: "reference",
     minutes: 13,
     official: "/guide/extras/rendering-mechanism.html",
     blocks: [
@@ -2789,6 +2822,7 @@ npm run test:unit`,
     summary: "自定义元素互操作，对应 extras/web-components。",
     level: "进阶",
     track: "官网对齐",
+    format: "reference",
     minutes: 12,
     official: "/guide/extras/web-components.html",
     blocks: [
@@ -2829,6 +2863,7 @@ customElements.define('my-widget', defineCustomElement(Widget))`,
     summary: "class 驱动、Transition、FLIP、与 GSAP 协作，对应 extras/animation。",
     level: "进阶",
     track: "官网对齐",
+    format: "reference",
     minutes: 11,
     official: "/guide/extras/animation.html",
     blocks: [
@@ -2874,6 +2909,7 @@ const on = ref(false)
     summary: "渐进式：增强 HTML → SPA → Web Components，对应 extras/ways-of-using-vue。",
     level: "入门",
     track: "官网对齐",
+    format: "reference",
     minutes: 9,
     official: "/guide/extras/ways-of-using-vue.html",
     blocks: [
@@ -2912,6 +2948,7 @@ const on = ref(false)
     summary: "v-if/v-for/v-model/v-memo… 对应 api/built-in-directives。",
     level: "入门",
     track: "官网对齐",
+    format: "reference",
     minutes: 12,
     official: "/api/built-in-directives.html",
     blocks: [
@@ -2950,6 +2987,7 @@ const on = ref(false)
     summary: "component / slot / template 与 key/ref/is，对应 built-in specials。",
     level: "进阶",
     track: "官网对齐",
+    format: "reference",
     minutes: 11,
     official: "/api/built-in-special-elements.html",
     blocks: [
@@ -2995,6 +3033,7 @@ const map = { Foo, Bar }
     summary: "isRef、toValue、toRaw、unref… 对应 api/reactivity-utilities。",
     level: "进阶",
     track: "官网对齐",
+    format: "reference",
     minutes: 12,
     official: "/api/reactivity-utilities.html",
     blocks: [
@@ -3039,6 +3078,7 @@ console.log(toRaw(state) === state) // 取原始对象`,
     summary: "errorHandler、globalProperties、provide，对应 api/application。",
     level: "进阶",
     track: "官网对齐",
+    format: "reference",
     minutes: 11,
     official: "/api/application.html",
     blocks: [
@@ -3080,6 +3120,7 @@ app.mount('#app')`,
     summary: "XSS、敏感数据与规则，对应 best-practices/security。",
     level: "实战",
     track: "官网对齐",
+    format: "reference",
     minutes: 12,
     official: "/guide/best-practices/security.html",
     blocks: [
@@ -3120,6 +3161,7 @@ app.mount('#app')`,
     summary: "语义、键盘、焦点与表单，对应 best-practices/accessibility。",
     level: "实战",
     track: "官网对齐",
+    format: "reference",
     minutes: 12,
     official: "/guide/best-practices/accessibility.html",
     blocks: [
@@ -3165,6 +3207,7 @@ const open = ref(false)
     summary: "官方 TS 使用方式，对应 typescript/overview。",
     level: "实战",
     track: "官网对齐",
+    format: "reference",
     minutes: 11,
     official: "/guide/typescript/overview.html",
     blocks: [
@@ -3252,4 +3295,14 @@ export function getAllQuizQuestions(): Array<
     }
   }
   return out;
+}
+
+export function isCourseLesson(l: Lesson): boolean {
+  if (l.format === "reference") return false;
+  if (l.format === "course") return true;
+  return l.track !== "官网对齐";
+}
+
+export function getCourseLessons(): Lesson[] {
+  return LESSONS.filter(isCourseLesson);
 }

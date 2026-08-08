@@ -88,7 +88,7 @@ function HomePage() {
           <div className="flex flex-wrap items-center gap-2">
             <p className="inline-flex items-center gap-1.5 rounded-full border border-border bg-bg/60 px-2.5 py-1 text-xs font-medium text-primary">
               <Sparkles className="h-3.5 w-3.5" />
-              v8 · 系统路径
+              v9 · 源码即运行
             </p>
             {streak > 0 ? (
               <span className="rounded-full bg-surface-3 px-2.5 py-1 font-mono text-xs text-muted">
@@ -100,7 +100,7 @@ function HomePage() {
             带你系统学 Vue 3
           </h1>
           <p className="mt-3 max-w-xl text-base leading-relaxed text-muted">
-            讲解 → 对应源码 → 动手 Demo → 测验。对照官网{" "}
+            讲解 → 同一段 Vue 源码真运行 → 测验（≥80% 掌握）。对照官网{" "}
             <Link to="/docs" className="text-primary no-underline hover:underline">
               文档地图
             </Link>

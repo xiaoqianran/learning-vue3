@@ -34,6 +34,8 @@ function LessonPage() {
   const { prev, next } = getAdjacent(slug);
   const completed = useProgress((s) => s.completed);
   const markComplete = useProgress((s) => s.markComplete);
+  const markVisited = useProgress((s) => s.markVisited);
+  const mastered = useProgress((s) => s.mastered);
   const bookmarks = useProgress((s) => s.bookmarks);
   const toggleBookmark = useProgress((s) => s.toggleBookmark);
   const notes = useProgress((s) => s.notes);
@@ -46,7 +48,8 @@ function LessonPage() {
   useEffect(() => {
     window.scrollTo({ top: 0 });
     setNoteLocal(notes[slug] ?? "");
-  }, [slug]); // 切课时重置；不把 notes 放依赖以免回写抖动
+    markVisited(slug);
+  }, [slug, markVisited]); // 切课时重置；不把 notes 放依赖以免回写抖动
 
   // 输入后自动保存（不必等 blur，避免点「下一节」丢笔记）
   useEffect(() => {
@@ -76,6 +79,20 @@ function LessonPage() {
           <span className="rounded-full bg-primary-soft px-2.5 py-0.5 text-[11px] font-medium text-primary">
             {lesson.level}
           </span>
+          {(lesson.format === "reference" || lesson.track === "官网对齐") ? (
+            <span className="rounded-full bg-surface-3 px-2.5 py-0.5 text-[11px] text-muted">
+              知识卡片 · 不计入结业硬门槛
+            </span>
+          ) : (
+            <span className="rounded-full bg-surface-3 px-2.5 py-0.5 text-[11px] text-muted">
+              主修课
+            </span>
+          )}
+          {mastered.includes(slug) ? (
+            <span className="rounded-full bg-primary/15 px-2 py-0.5 text-[11px] text-primary">
+              已掌握
+            </span>
+          ) : null}
           <span className="inline-flex items-center gap-1 text-xs text-muted">
             <Clock className="h-3.5 w-3.5" />约 {lesson.minutes} 分钟
           </span>

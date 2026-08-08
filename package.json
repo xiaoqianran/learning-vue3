@@ -8,17 +8,18 @@
   },
   "scripts": {
     "dev": "vite dev --host 0.0.0.0 --port 8080",
-    "build": "vite build && npm run db:migrate",
-    "build:pages": "GITHUB_PAGES=true vite build",
+    "build": "node scripts/sync-manifest.mjs && vite build",
+    "build:pages": "node scripts/sync-manifest.mjs && GITHUB_PAGES=true vite build",
     "db:migrate": "node scripts/migrate.mjs",
     "build:dev": "vite build --mode development",
     "preview": "vite preview --host 0.0.0.0 --port 8080",
     "typecheck": "tsc --noEmit",
     "lint": "eslint .",
-    "format": "prettier --write ."
+    "format": "prettier --write .",
+    "sync:manifest": "node scripts/sync-manifest.mjs",
+    "test:content": "node scripts/check-content.mjs"
   },
   "dependencies": {
-    "@electric-sql/pglite": "^0.5.3",
     "@hookform/resolvers": "^5.0.0",
     "@radix-ui/react-accordion": "^1.2.12",
     "@radix-ui/react-alert-dialog": "^1.1.15",
@@ -48,14 +49,11 @@
     "@tanstack/react-table": "^8.21.0",
     "@tanstack/router-plugin": "^1.160.0",
     "@vue/repl": "^4.7.2",
-    "better-auth": "^1.4.0",
     "class-variance-authority": "^0.7.1",
     "clsx": "^2.1.1",
     "cmdk": "^1.1.1",
     "date-fns": "^4.0.0",
-    "kysely": "^0.28.5",
     "lucide-react": "^0.510.0",
-    "pg": "^8.16.3",
     "react": "^19.1.0",
     "react-day-picker": "^9.14.0",
     "react-dom": "^19.1.0",
@@ -74,7 +72,6 @@
   "devDependencies": {
     "@eslint/js": "^9.20.0",
     "@types/node": "^22.16.5",
-    "@types/pg": "^8.11.10",
     "@types/react": "^19.1.0",
     "@types/react-dom": "^19.1.0",
     "@vitejs/plugin-react": "^5.0.0",
@@ -85,11 +82,17 @@
     "eslint-plugin-react-refresh": "^0.4.20",
     "globals": "^15.15.0",
     "lightningcss": "^1.28.0",
+    "msw": "^2.15.0",
     "nitro": "3.0.260603-beta",
     "playwright": "^1.52.0",
     "prettier": "^3.4.0",
     "typescript": "^5.7.0",
     "typescript-eslint": "^8.56.1",
     "vite": "^8.1.0"
+  },
+  "msw": {
+    "workerDirectory": [
+      "public"
+    ]
   }
 }

@@ -102,6 +102,7 @@ function StudioPage() {
       setBooting(true);
       setError(null);
       try {
+        await (await import("@/mocks/browser")).startMockApi();
         if (!token) {
           setUser(null);
           setNotes([]);
@@ -136,6 +137,7 @@ function StudioPage() {
     setBusy(true);
     setError(null);
     try {
+      await (await import("@/mocks/browser")).startMockApi();
       const res = await apiLogin(email, password);
       localStorage.setItem(TOKEN_KEY, res.token);
       setToken(res.token);
@@ -311,6 +313,10 @@ function StudioPage() {
                 登录
               </h2>
               <p className="mt-1 text-sm text-muted">
+          真实 <code className="font-mono text-xs">fetch</code> + MSW Service Worker。
+          打开浏览器 DevTools → Network 可看到 POST /api/auth/login、Authorization。
+        </p>
+        <p className="mt-1 hidden text-sm text-muted">
                 模拟{" "}
                 <span className="font-mono text-xs">POST /api/auth/login</span>
               </p>

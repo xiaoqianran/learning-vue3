@@ -1,5 +1,6 @@
 import { create } from "zustand";
 import { persist } from "zustand/middleware";
+import { getCourseLessons, LESSONS } from "@/data/lessons";
 
 export type WrongItem = {
   id: string;
@@ -13,15 +14,21 @@ export type WrongItem = {
 };
 
 type ProgressState = {
+  /** 打开过课程页 */
+  visited: string[];
+  /** 交过测验或手动标记完成 */
   completed: string[];
+  /** 测验 ≥ 80% */
+  mastered: string[];
   quizScores: Record<string, number>;
   bookmarks: string[];
   notes: Record<string, string>;
   wrongBook: WrongItem[];
-  /** YYYY-MM-DD check-in dates */
   checkIns: string[];
   streak: number;
+  markVisited: (slug: string) => void;
   markComplete: (slug: string) => void;
+  markMastered: (slug: string) => void;
   setQuizScore: (slug: string, score: number) => void;
   toggleBookmark: (slug: string) => void;
   setNote: (slug: string, text: string) => void;
@@ -54,7 +61,6 @@ function computeStreak(checkIns: string[]): number {
   const set = new Set(checkIns);
   let streak = 0;
   const cursor = new Date();
-  // If not checked in today, start from yesterday (streak still valid until end of day)
   if (!set.has(todayKey())) {
     cursor.setDate(cursor.getDate() - 1);
   }
@@ -70,22 +76,35 @@ function computeStreak(checkIns: string[]): number {
   return streak;
 }
 
+function uniqPush(list: string[], slug: string) {
+  return list.includes(slug) ? list : [...list, slug];
+}
+
 export const useProgress = create<ProgressState>()(
   persist(
     (set, get) => ({
+      visited: [],
       completed: [],
+      mastered: [],
       quizScores: {},
       bookmarks: [],
       notes: {},
       wrongBook: [],
       checkIns: [],
       streak: 0,
+      markVisited: (slug) =>
+        set((s) => ({ visited: uniqPush(s.visited, slug) })),
       markComplete: (slug) =>
-        set((s) =>
-          s.completed.includes(slug)
-            ? s
-            : { completed: [...s.completed, slug] },
-        ),
+        set((s) => ({
+          visited: uniqPush(s.visited, slug),
+          completed: uniqPush(s.completed, slug),
+        })),
+      markMastered: (slug) =>
+        set((s) => ({
+          visited: uniqPush(s.visited, slug),
+          completed: uniqPush(s.completed, slug),
+          mastered: uniqPush(s.mastered, slug),
+        })),
       setQuizScore: (slug, score) =>
         set((s) => ({
           quizScores: { ...s.quizScores, [slug]: score },
@@ -125,7 +144,9 @@ export const useProgress = create<ProgressState>()(
       },
       reset: () =>
         set({
+          visited: [],
           completed: [],
+          mastered: [],
           quizScores: {},
           bookmarks: [],
           notes: {},
@@ -135,12 +156,17 @@ export const useProgress = create<ProgressState>()(
         }),
     }),
     {
-      name: "vue3-learn-progress-v2",
-      version: 2,
+      name: "vue3-learn-progress-v3",
+      version: 3,
       migrate: (persisted) => {
-        const p = (persisted ?? {}) as Partial<ProgressState>;
+        const p = (persisted ?? {}) as Partial<ProgressState> & {
+          completed?: string[];
+        };
+        const completed = p.completed ?? [];
         return {
-          completed: p.completed ?? [],
+          visited: p.visited ?? completed,
+          completed,
+          mastered: p.mastered ?? [],
           quizScores: p.quizScores ?? {},
           bookmarks: p.bookmarks ?? [],
           notes: p.notes ?? {},
@@ -154,3 +180,35 @@ export const useProgress = create<ProgressState>()(
 );
 
 export { todayKey, computeStreak };
+
+/** 结业：主修课全部 mastered（测验 ≥80%） */
+export function isCertificateReady(mastered: string[], completed?: string[]) {
+  const core = getCourseLessons();
+  // 允许用 completed 兜底旧进度，但新逻辑以 mastered 为准；若旧用户已 completed 主修且无 mastered，暂用 completed
+  const hasAnyMastered = mastered.length > 0;
+  if (hasAnyMastered) {
+    return core.every((l) => mastered.includes(l.slug));
+  }
+  if (completed) {
+    return core.every((l) => completed.includes(l.slug));
+  }
+  return false;
+}
+
+export function coreProgress(completed: string[], mastered: string[]) {
+  const core = getCourseLessons();
+  const done = core.filter((l) => completed.includes(l.slug)).length;
+  const mast = core.filter((l) => mastered.includes(l.slug)).length;
+  return {
+    total: core.length,
+    completed: done,
+    mastered: mast,
+    pctComplete: core.length ? Math.round((done / core.length) * 100) : 0,
+    pctMastered: core.length ? Math.round((mast / core.length) * 100) : 0,
+  };
+}
+
+/** @deprecated use core-aware helpers; kept for nav */
+export function lessonUniverse() {
+  return LESSONS;
+}
