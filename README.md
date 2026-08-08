@@ -13,7 +13,7 @@
 
 你可以：
 
-- 按路径学完 **47 节** 课程（**讲解 + 对应源码 + 交互 Demo + 小测验**，源码与 Demo 一一对应）
+- 按路径学完 **69 节** 课程（**讲解 + 对应源码 + 交互 Demo + 小测验**，源码与 Demo 一一对应）
 - 在 **SFC 编辑器** 里写并运行真实 `.vue` 文件
 - 在 **全栈工坊** 里练登录、401、笔记 CRUD（模拟 REST API）
 - 用 **速查表** 复习，用 **学习中心 / 错题本 / 结业证明** 跟进度
@@ -79,6 +79,7 @@
 | v6 | 工坊闯关 + 工程化课 |
 | v7 | 进阶模式 + 速查表 |
 | v8 | 官网 llms.txt 对齐补强 + 代码即组件 + 对照外链 |
+| v8.1 | Guide 全目录迁移：条件渲染/注册/事件/SFC CSS/Options/Web Components/API 精选等 |
 
 Release 见：[GitHub Releases](https://github.com/xiaoqianran/learning-vue3/releases)
 

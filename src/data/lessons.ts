@@ -36,7 +36,16 @@ export type DemoKind =
   | "async-comp"
   | "transition"
   | "suspense"
-  | "plugins";
+  | "plugins"
+  | "conditional"
+  | "transition-group"
+  | "sfc-css"
+  | "options-api"
+  | "web-components"
+  | "animation"
+  | "registration"
+  | "script-setup"
+  | "directives-ref";
 
 export type LessonBlock =
   | { type: "text"; title?: string; body: string }
@@ -2244,6 +2253,951 @@ defineProps<{ id: string; done: boolean }>()
       },
     ],
   },
+
+  // ========== 官网迁移补全（Guide 全覆盖）==========
+  {
+    slug: "quick-start",
+    title: "快速开始",
+    summary: "CDN / create-vue / 在线演练场，对应官网 quick-start。",
+    level: "入门",
+    track: "官网对齐",
+    minutes: 10,
+    official: "/guide/quick-start.html",
+    blocks: [
+      {
+        type: "text",
+        title: "三种上手方式",
+        body: "1) 构建工具：npm create vue@latest（推荐真实项目）。2) CDN：页面引入 vue.global.js 快速试验。3) 演练场：play.vuejs.org。课站另提供 SFC 编辑器路径 /playground。",
+      },
+      {
+        type: "code",
+        title: "对应源码 · CDN 最小例",
+        lang: "html",
+        code: `<div id="app">{{ message }}</div>
+<script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
+<script>
+  const { createApp, ref } = Vue
+  createApp({
+    setup() {
+      const message = ref('Hello Vue!')
+      return { message }
+    }
+  }).mount('#app')
+</script>`,
+      },
+      {
+        type: "demo",
+        kind: "counter",
+        title: "对照：最小响应式",
+      },
+      {
+        type: "quiz",
+        questions: [
+          {
+            id: "qs1",
+            question: "正式项目更推荐？",
+            options: ["只贴 CDN", "create-vue / Vite 工程", "一个 HTML 永远够", "禁止 SFC"],
+            answer: 1,
+            explain: "工程化与 SFC 工具链。",
+          },
+        ],
+      },
+    ],
+  },
+  {
+    slug: "create-app",
+    title: "创建应用 createApp",
+    summary: "应用实例、挂载与多应用，对应 essentials/application。",
+    level: "入门",
+    track: "官网对齐",
+    minutes: 10,
+    official: "/guide/essentials/application.html",
+    blocks: [
+      {
+        type: "text",
+        title: "应用实例",
+        body: "每个 createApp 返回独立应用实例，有自己的配置、组件、指令。mount('#app') 把根组件挂到容器。不要复用同一 app 多次 mount；SSR/测试里常见「每请求/每测例新建 app」。",
+      },
+      {
+        type: "code",
+        title: "对应源码",
+        lang: "ts",
+        code: `import { createApp } from 'vue'
+import App from './App.vue'
+import router from './router'
+
+const app = createApp(App)
+app.use(router)
+app.config.errorHandler = (err) => console.error(err)
+app.mount('#app')
+// app.unmount()`,
+      },
+      {
+        type: "demo",
+        kind: "plugins",
+        title: "对照：use 插件再挂载",
+      },
+      {
+        type: "quiz",
+        questions: [
+          {
+            id: "ca1",
+            question: "createApp 的作用？",
+            options: ["创建 DOM", "创建独立 Vue 应用实例", "仅路由", "编译 SFC"],
+            answer: 1,
+            explain: "隔离配置与全局注册。",
+          },
+        ],
+      },
+    ],
+  },
+  {
+    slug: "conditional",
+    title: "条件渲染",
+    summary: "v-if 家族与 v-show，对应 essentials/conditional。",
+    level: "入门",
+    track: "官网对齐",
+    minutes: 10,
+    official: "/guide/essentials/conditional.html",
+    blocks: [
+      {
+        type: "text",
+        title: "v-if vs v-show",
+        body: "v-if 真正创建/销毁节点（可配 v-else-if/v-else），切换成本高、初始可惰性。v-show 只切 CSS display，初始必渲染，适合频繁切换。template 上可用 v-if 包裹多元素。",
+      },
+      {
+        type: "code",
+        title: "对应源码",
+        lang: "vue",
+        code: `<script setup>
+import { ref } from 'vue'
+const type = ref('A')
+const show = ref(true)
+</script>
+<template>
+  <div v-if="type === 'A'">A</div>
+  <div v-else-if="type === 'B'">B</div>
+  <div v-else>Other</div>
+  <p v-show="show">频繁切换用 show</p>
+</template>`,
+      },
+      { type: "demo", kind: "conditional", title: "动手：条件分支" },
+      {
+        type: "quiz",
+        questions: [
+          {
+            id: "cd1",
+            question: "频繁显隐更合适？",
+            options: ["v-if", "v-show", "v-html", "v-pre"],
+            answer: 1,
+            explain: "避免反复卸载。",
+          },
+        ],
+      },
+    ],
+  },
+  {
+    slug: "component-registration",
+    title: "组件注册",
+    summary: "局部 vs 全局注册，对应 components/registration。",
+    level: "进阶",
+    track: "官网对齐",
+    minutes: 10,
+    official: "/guide/components/registration.html",
+    blocks: [
+      {
+        type: "text",
+        title: "推荐局部",
+        body: "script setup 里 import 的组件自动局部可用。全局 app.component 适合极基础的展示组件或递归便利，但会妨碍 tree-shaking、让依赖变隐式。命名：PascalCase 多词。",
+      },
+      {
+        type: "code",
+        title: "对应源码",
+        lang: "vue",
+        code: `<script setup>
+import TodoItem from './TodoItem.vue'
+</script>
+<template>
+  <TodoItem />
+</template>
+
+// 全局
+// app.component('TodoItem', TodoItem)`,
+      },
+      { type: "demo", kind: "registration", title: "动手：局部 / 全局" },
+      {
+        type: "quiz",
+        questions: [
+          {
+            id: "rg1",
+            question: "默认更推荐？",
+            options: ["全部全局", "局部注册", "字符串模板仅", "禁止 import"],
+            answer: 1,
+            explain: "清晰依赖与 tree-shaking。",
+          },
+        ],
+      },
+    ],
+  },
+  {
+    slug: "component-events",
+    title: "组件事件",
+    summary: "defineEmits、校验与 once，对应 components/events。",
+    level: "进阶",
+    track: "官网对齐",
+    minutes: 11,
+    official: "/guide/components/events.html",
+    blocks: [
+      {
+        type: "text",
+        title: "声明式事件",
+        body: "子组件通过 emit 通知父组件。defineEmits(['change']) 或类型版 defineEmits<{ change: [id: string] }>()。事件名推荐 camelCase 声明、模板可 kebab-case 监听。不要用 $on（Vue 3 实例事件总线已移除）。",
+      },
+      {
+        type: "code",
+        title: "对应源码",
+        lang: "vue",
+        code: `<script setup lang="ts">
+const emit = defineEmits<{
+  change: [value: string]
+  close: []
+}>()
+function onInput(e: Event) {
+  emit('change', (e.target as HTMLInputElement).value)
+}
+</script>
+<template>
+  <input @input="onInput" />
+  <button @click="emit('close')">关</button>
+</template>`,
+      },
+      { type: "demo", kind: "component-vmodel", title: "对照：事件向上同步" },
+      {
+        type: "quiz",
+        questions: [
+          {
+            id: "ce1",
+            question: "Vue3 推荐跨组件通信？",
+            options: ["this.$on 总线", "props/emit 或状态库", "改子 props", "直接 DOM"],
+            answer: 1,
+            explain: "实例事件 API 已移除。",
+          },
+        ],
+      },
+    ],
+  },
+  {
+    slug: "transition-group",
+    title: "TransitionGroup",
+    summary: "列表过渡与 FLIP 移动，对应 built-ins/transition-group。",
+    level: "进阶",
+    track: "官网对齐",
+    minutes: 11,
+    official: "/guide/built-ins/transition-group.html",
+    blocks: [
+      {
+        type: "text",
+        title: "和 Transition 的差别",
+        body: "TransitionGroup 渲染真实列表元素（可设 tag），每个子项必须有唯一 key。支持进入/离开/位置移动（FLIP）。不要把 mode 属性当成 Transition 同款使用场景。",
+      },
+      {
+        type: "code",
+        title: "对应源码",
+        lang: "vue",
+        code: `<TransitionGroup name="list" tag="ul">
+  <li v-for="item in items" :key="item.id">
+    {{ item.text }}
+  </li>
+</TransitionGroup>`,
+      },
+      { type: "demo", kind: "transition-group", title: "动手：打乱列表" },
+      {
+        type: "quiz",
+        questions: [
+          {
+            id: "tg1",
+            question: "TransitionGroup 子节点？",
+            options: ["可无 key", "必须稳定 key", "只能一个子", "禁止 tag"],
+            answer: 1,
+            explain: "定位与复用依赖 key。",
+          },
+        ],
+      },
+    ],
+  },
+  {
+    slug: "sfc",
+    title: "单文件组件 SFC",
+    summary: "结构、工具链与优势，对应 scaling-up/sfc。",
+    level: "入门",
+    track: "官网对齐",
+    minutes: 11,
+    official: "/guide/scaling-up/sfc.html",
+    blocks: [
+      {
+        type: "text",
+        title: "为什么是 SFC",
+        body: ".vue = template + script + style 内聚。配合 Vite：编译模板、scoped CSS、TS、热更新。官方推荐用 SFC + Composition API 作为默认开发模型。",
+      },
+      {
+        type: "code",
+        title: "对应源码 · 结构",
+        lang: "vue",
+        code: `<script setup lang="ts">
+import { ref } from 'vue'
+const msg = ref('SFC')
+</script>
+
+<template>
+  <h1>{{ msg }}</h1>
+</template>
+
+<style scoped>
+h1 { color: #42b883; }
+</style>`,
+      },
+      { type: "demo", kind: "component", title: "对照：组件实例" },
+      {
+        type: "tip",
+        body: "课站 /playground 可运行真实 SFC（@vue/repl）。",
+      },
+      {
+        type: "quiz",
+        questions: [
+          {
+            id: "sf1",
+            question: "SFC 扩展名？",
+            options: [".jsx", ".vue", ".svx", ".v"],
+            answer: 1,
+            explain: ".vue",
+          },
+        ],
+      },
+    ],
+  },
+  {
+    slug: "script-setup",
+    title: "script setup 详解",
+    summary: "编译期语法糖与宏，对应 api/sfc-script-setup。",
+    level: "进阶",
+    track: "官网对齐",
+    minutes: 12,
+    official: "/api/sfc-script-setup.html",
+    blocks: [
+      {
+        type: "text",
+        title: "宏",
+        body: "defineProps、defineEmits、defineExpose、defineModel、defineOptions 是编译器宏，无需 import。顶层绑定自动暴露给模板。与普通 script 可共存（普通 script 跑模块副作用/导出）。",
+      },
+      {
+        type: "code",
+        title: "对应源码",
+        lang: "vue",
+        code: `<script setup lang="ts">
+const props = defineProps<{ title: string }>()
+const emit = defineEmits<{ save: [id: string] }>()
+const model = defineModel<string>()
+defineExpose({ focus })
+function focus() {}
+</script>`,
+      },
+      { type: "demo", kind: "script-setup", title: "动手：顶层绑定" },
+      {
+        type: "quiz",
+        questions: [
+          {
+            id: "ss1",
+            question: "defineProps 需要 import 吗？",
+            options: ["必须", "编译器宏，无需 import", "仅 CDN 需要", "已废弃"],
+            answer: 1,
+            explain: "宏。",
+          },
+        ],
+      },
+    ],
+  },
+  {
+    slug: "sfc-css",
+    title: "SFC CSS 特性",
+    summary: "scoped、:deep、v-bind(css)、modules，对应 api/sfc-css-features。",
+    level: "进阶",
+    track: "官网对齐",
+    minutes: 12,
+    official: "/api/sfc-css-features.html",
+    blocks: [
+      {
+        type: "text",
+        title: "样式封装",
+        body: "scoped 给选择器加唯一属性，避免泄漏。子组件内部要用 :deep()。CSS 中 v-bind(color) 可绑定脚本状态。module 开启 CSS Modules。",
+      },
+      {
+        type: "code",
+        title: "对应源码",
+        lang: "vue",
+        code: `<script setup>
+import { ref } from 'vue'
+const color = ref('tomato')
+</script>
+<template>
+  <p class="text">hi</p>
+</template>
+<style scoped>
+.text { color: v-bind(color); }
+:deep(a) { text-decoration: underline; }
+</style>`,
+      },
+      { type: "demo", kind: "sfc-css", title: "动手：v-bind in CSS" },
+      {
+        type: "quiz",
+        questions: [
+          {
+            id: "sc1",
+            question: "穿透子组件样式？",
+            options: [":deep()", "！important 即可", "禁止", "仅 inline"],
+            answer: 0,
+            explain: ":deep / ::v-deep。",
+          },
+        ],
+      },
+    ],
+  },
+  {
+    slug: "tooling",
+    title: "工具链 Tooling",
+    summary: "Vite、Volar、DevTools、ESLint，对应 scaling-up/tooling。",
+    level: "实战",
+    track: "官网对齐",
+    minutes: 12,
+    official: "/guide/scaling-up/tooling.html",
+    blocks: [
+      {
+        type: "text",
+        title: "官方推荐栈",
+        body: "创建：create-vue（Vite）。IDE：VS Code + Vue - Official (Volar)。调试：Vue DevTools。质量：ESLint + oxlint/prettier 生态。浏览器内原型可用演练场；课站 playground 同类。",
+      },
+      {
+        type: "code",
+        title: "常用命令",
+        lang: "bash",
+        code: `npm create vue@latest
+npm install
+npm run dev
+npm run build
+npm run test:unit`,
+      },
+      { type: "demo", kind: "challenge", title: "自检：本地工具是否就绪" },
+      {
+        type: "quiz",
+        questions: [
+          {
+            id: "tl1",
+            question: "Vue3 官方脚手架底层？",
+            options: ["webpack only", "Vite", "Parcel only", "Browserify"],
+            answer: 1,
+            explain: "create-vue → Vite。",
+          },
+        ],
+      },
+    ],
+  },
+  {
+    slug: "options-api",
+    title: "Options API 对照",
+    summary: "data/methods/computed 与 Composition 映射，对应 typescript/options-api 与 FAQ。",
+    level: "进阶",
+    track: "官网对齐",
+    minutes: 13,
+    official: "/guide/extras/composition-api-faq.html",
+    blocks: [
+      {
+        type: "text",
+        title: "还要学 Options 吗",
+        body: "新项目推荐 Composition + script setup。Options 仍大量存在于旧代码与部分教程。映射：data→ref/reactive，computed→computed()，methods→function，生命周期钩子→onXxx，watch→watch。this 在 Options 指向实例；Composition 无此依赖。",
+      },
+      {
+        type: "code",
+        title: "对应源码 · Options",
+        lang: "vue",
+        code: `export default {
+  data: () => ({ count: 0 }),
+  computed: {
+    double() { return this.count * 2 },
+  },
+  methods: {
+    inc() { this.count++ },
+  },
+  mounted() { /* ... */ },
+}`,
+      },
+      { type: "demo", kind: "options-api", title: "动手：Options 行为" },
+      {
+        type: "quiz",
+        questions: [
+          {
+            id: "oa1",
+            question: "Options data 必须？",
+            options: ["对象字面量共享", "函数返回新对象", "全局变量", "仅字符串"],
+            answer: 1,
+            explain: "避免实例间共享状态。",
+          },
+        ],
+      },
+    ],
+  },
+  {
+    slug: "rendering-mechanism",
+    title: "渲染机制",
+    summary: "虚拟 DOM、编译优化与 patch，对应 extras/rendering-mechanism。",
+    level: "进阶",
+    track: "官网对齐",
+    minutes: 13,
+    official: "/guide/extras/rendering-mechanism.html",
+    blocks: [
+      {
+        type: "text",
+        title: "编译器 + 运行时",
+        body: "模板被编译成渲染函数，生成 VNode 树。更新时与旧树 diff/patch。Vue 3 编译器做静态提升、补丁标记（PatchFlags）、树结构打平，减少运行时工作。理解 key 与稳定结构对 diff 极重要。",
+      },
+      {
+        type: "code",
+        title: "心智模型",
+        lang: "text",
+        code: `template
+  → compile
+  → render() → VNode
+  → mount / patch
+  → 真实 DOM`,
+      },
+      { type: "demo", kind: "list", title: "对照：key 对复用的影响" },
+      {
+        type: "quiz",
+        questions: [
+          {
+            id: "rm1",
+            question: "Vue 模板最终会变成？",
+            options: ["字符串 HTML only", "渲染函数 / VNode", "jQuery", "WASM 必须"],
+            answer: 1,
+            explain: "编译为渲染函数。",
+          },
+        ],
+      },
+    ],
+  },
+  {
+    slug: "web-components",
+    title: "Vue 与 Web Components",
+    summary: "自定义元素互操作，对应 extras/web-components。",
+    level: "进阶",
+    track: "官网对齐",
+    minutes: 12,
+    official: "/guide/extras/web-components.html",
+    blocks: [
+      {
+        type: "text",
+        title: "两个方向",
+        body: "1) 在 Vue 里使用已有 CE：配置 isCustomElement，避免当 Vue 组件解析。2) 把 Vue 组件导出为 CE：defineCustomElement，便于跨框架嵌入。注意 props/事件/插槽在 CE 边界上的限制。",
+      },
+      {
+        type: "code",
+        title: "对应源码",
+        lang: "ts",
+        code: `app.config.compilerOptions.isCustomElement = (tag) =>
+  tag.includes('-')
+
+import { defineCustomElement } from 'vue'
+import Widget from './Widget.ce.vue'
+customElements.define('my-widget', defineCustomElement(Widget))`,
+      },
+      { type: "demo", kind: "web-components", title: "动手：自定义标签" },
+      {
+        type: "quiz",
+        questions: [
+          {
+            id: "wc1",
+            question: "避免把 CE 当 Vue 组件解析？",
+            options: ["isCustomElement", "v-pre", "markRaw", "Teleport"],
+            answer: 0,
+            explain: "compilerOptions.isCustomElement。",
+          },
+        ],
+      },
+    ],
+  },
+  {
+    slug: "animation",
+    title: "动画技巧",
+    summary: "class 驱动、Transition、FLIP、与 GSAP 协作，对应 extras/animation。",
+    level: "进阶",
+    track: "官网对齐",
+    minutes: 11,
+    official: "/guide/extras/animation.html",
+    blocks: [
+      {
+        type: "text",
+        title: "层次",
+        body: "1) 状态 class + CSS transition/animation。2) 内置 Transition / TransitionGroup。3) 监听钩子里调用 Web Animations API 或 GSAP。保持动画可中断、不破坏可访问性（注意 prefers-reduced-motion）。",
+      },
+      {
+        type: "code",
+        title: "对应源码",
+        lang: "vue",
+        code: `<script setup>
+import { ref } from 'vue'
+const on = ref(false)
+</script>
+<template>
+  <div class="box" :class="{ big: on }" @click="on = !on" />
+</template>
+<style>
+.box { transition: all .3s; width: 48px; height: 48px; }
+.box.big { width: 96px; height: 96px; }
+</style>`,
+      },
+      { type: "demo", kind: "animation", title: "动手：状态动画" },
+      {
+        type: "quiz",
+        questions: [
+          {
+            id: "an1",
+            question: "列表位移动画优先？",
+            options: ["Transition", "TransitionGroup", "v-html", "v-once"],
+            answer: 1,
+            explain: "FLIP 列表。",
+          },
+        ],
+      },
+    ],
+  },
+  {
+    slug: "ways-of-using-vue",
+    title: "使用 Vue 的多种方式",
+    summary: "渐进式：增强 HTML → SPA → Web Components，对应 extras/ways-of-using-vue。",
+    level: "入门",
+    track: "官网对齐",
+    minutes: 9,
+    official: "/guide/extras/ways-of-using-vue.html",
+    blocks: [
+      {
+        type: "text",
+        title: "渐进式",
+        body: "Vue 不必一上来就上全家桶：可在多页里渐进增强；可做完整 SPA；可编译为自定义元素嵌入别的系统。按团队与产品边界选型，而不是追最重架构。",
+      },
+      {
+        type: "code",
+        title: "光谱",
+        lang: "text",
+        code: `CDN 增强一小块 UI
+  → Vite SPA + Router + Pinia
+  → Nuxt 全栈 / SSR
+  → defineCustomElement 嵌入`,
+      },
+      { type: "demo", kind: "counter", title: "最小增强示例" },
+      {
+        type: "quiz",
+        questions: [
+          {
+            id: "wu1",
+            question: "Vue 定位？",
+            options: ["只能大型 SPA", "渐进式框架", "只能 CDN", "只能小程序"],
+            answer: 1,
+            explain: "Progressive。",
+          },
+        ],
+      },
+    ],
+  },
+  {
+    slug: "built-in-directives",
+    title: "内置指令参考",
+    summary: "v-if/v-for/v-model/v-memo… 对应 api/built-in-directives。",
+    level: "入门",
+    track: "官网对齐",
+    minutes: 12,
+    official: "/api/built-in-directives.html",
+    blocks: [
+      {
+        type: "text",
+        title: "指令清单",
+        body: "v-text、v-html、v-show、v-if、v-else、v-else-if、v-for、v-on、v-bind、v-model、v-slot、v-pre、v-once、v-memo、v-cloak。v-memo 可跳过子树更新；v-once 只渲染一次。细节与参数以官网 API 为准。",
+      },
+      {
+        type: "code",
+        title: "对应源码 · v-memo",
+        lang: "vue",
+        code: `<div v-for="item in list" :key="item.id" v-memo="[item.id === selected]">
+  <!-- 仅当选中态相关变化时更新该项 -->
+  <Heavy :item="item" />
+</div>`,
+      },
+      { type: "demo", kind: "directives-ref", title: "速览：常用指令" },
+      {
+        type: "quiz",
+        questions: [
+          {
+            id: "bd1",
+            question: "跳过更新优化？",
+            options: ["v-pre", "v-memo", "v-cloak", "v-html"],
+            answer: 1,
+            explain: "v-memo。",
+          },
+        ],
+      },
+    ],
+  },
+  {
+    slug: "special-elements",
+    title: "内置特殊元素与属性",
+    summary: "component / slot / template 与 key/ref/is，对应 built-in specials。",
+    level: "进阶",
+    track: "官网对齐",
+    minutes: 11,
+    official: "/api/built-in-special-elements.html",
+    blocks: [
+      {
+        type: "text",
+        title: "特殊点",
+        body: '<component :is="..."> 动态组件；<slot> 出口；<template> 不渲染的包裹。特殊属性：key（diff 身份）、ref（模板引用）、is（原生/自定义元素场景）。',
+      },
+      {
+        type: "code",
+        title: "对应源码",
+        lang: "vue",
+        code: `<script setup>
+import Foo from './Foo.vue'
+import Bar from './Bar.vue'
+import { ref } from 'vue'
+const view = ref('Foo')
+const map = { Foo, Bar }
+</script>
+<template>
+  <button @click="view = view === 'Foo' ? 'Bar' : 'Foo'">切</button>
+  <component :is="map[view]" />
+</template>`,
+      },
+      { type: "demo", kind: "keepalive", title: "对照：动态组件 + KeepAlive" },
+      {
+        type: "quiz",
+        questions: [
+          {
+            id: "se1",
+            question: "动态组件标签？",
+            options: ["<dynamic>", "<component :is>", "<switch>", "<view>"],
+            answer: 1,
+            explain: "component :is。",
+          },
+        ],
+      },
+    ],
+  },
+  {
+    slug: "reactivity-utilities",
+    title: "响应式工具 API",
+    summary: "isRef、toValue、toRaw、unref… 对应 api/reactivity-utilities。",
+    level: "进阶",
+    track: "官网对齐",
+    minutes: 12,
+    official: "/api/reactivity-utilities.html",
+    blocks: [
+      {
+        type: "text",
+        title: "常用工具",
+        body: "isRef / unref / toValue（Vue 3.3+，兼容 ref 与 getter）、toRefs、toRef、isProxy、isReactive、isReadonly、toRaw、markRaw。写库/composable 时 toValue 特别好用。",
+      },
+      {
+        type: "code",
+        title: "对应源码",
+        lang: "ts",
+        code: `import { ref, toValue, toRaw, isRef } from 'vue'
+
+function useTitle(src: MaybeRefOrGetter<string>) {
+  watchEffect(() => {
+    document.title = toValue(src)
+  })
+}
+
+const state = reactive({ n: 1 })
+console.log(toRaw(state) === state) // 取原始对象`,
+      },
+      { type: "demo", kind: "ref-vs-reactive", title: "复习：ref/reactive 边界" },
+      {
+        type: "quiz",
+        questions: [
+          {
+            id: "ru1",
+            question: "统一读取 ref 或 getter？",
+            options: ["toValue", "toRaw", "markRaw", "reactive"],
+            answer: 0,
+            explain: "toValue。",
+          },
+        ],
+      },
+    ],
+  },
+  {
+    slug: "app-config",
+    title: "应用配置与全局 API",
+    summary: "errorHandler、globalProperties、provide，对应 api/application。",
+    level: "进阶",
+    track: "官网对齐",
+    minutes: 11,
+    official: "/api/application.html",
+    blocks: [
+      {
+        type: "text",
+        title: "app 级能力",
+        body: "app.config.errorHandler 捕获渲染错误；warnHandler 开发警告；globalProperties 挂全局（慎用）；app.provide 根提供；app.component / directive 全局注册；app.use 插件。",
+      },
+      {
+        type: "code",
+        title: "对应源码",
+        lang: "ts",
+        code: `const app = createApp(App)
+app.config.errorHandler = (err, instance, info) => {
+  // 上报
+}
+app.provide('apiBase', '/api')
+app.config.globalProperties.$http = fetch
+app.mount('#app')`,
+      },
+      { type: "demo", kind: "plugins", title: "对照：全局扩展" },
+      {
+        type: "quiz",
+        questions: [
+          {
+            id: "ap1",
+            question: "捕获组件渲染错误？",
+            options: ["window.onerror only", "app.config.errorHandler", "v-memo", "key"],
+            answer: 1,
+            explain: "应用配置。",
+          },
+        ],
+      },
+    ],
+  },
+  {
+    slug: "security",
+    title: "安全",
+    summary: "XSS、敏感数据与规则，对应 best-practices/security。",
+    level: "实战",
+    track: "官网对齐",
+    minutes: 12,
+    official: "/guide/best-practices/security.html",
+    blocks: [
+      {
+        type: "text",
+        title: "官网安全底线",
+        body: "模板插值默认转义。v-html / 动态 :href=javascript: / 用户样式都可能成为 XSS 面。永远别把私钥、长期 token 明文塞进前端包。鉴权与授权在服务端强制执行。",
+      },
+      {
+        type: "code",
+        title: "对应源码",
+        lang: "vue",
+        code: `<!-- ✅ 默认安全 -->
+<p>{{ userProvidedText }}</p>
+
+<!-- ❌ 危险 -->
+<div v-html="userProvidedHtml"></div>
+<a :href="userUrl">链接</a> <!-- 需校验协议 -->`,
+      },
+      { type: "demo", kind: "challenge", title: "挑战：标出危险写法" },
+      {
+        type: "quiz",
+        questions: [
+          {
+            id: "sec1",
+            question: "插值 {{ }} 默认？",
+            options: ["执行脚本", "转义文本", "等于 v-html", "禁用中文"],
+            answer: 1,
+            explain: "防 XSS 基础。",
+          },
+        ],
+      },
+    ],
+  },
+  {
+    slug: "accessibility",
+    title: "无障碍 Accessibility",
+    summary: "语义、键盘、焦点与表单，对应 best-practices/accessibility。",
+    level: "实战",
+    track: "官网对齐",
+    minutes: 12,
+    official: "/guide/best-practices/accessibility.html",
+    blocks: [
+      {
+        type: "text",
+        title: "基础清单",
+        body: "用 button/a 而不是 div 点击；表单控件绑定 label；管理焦点（对话框打开聚焦、关闭归还）；颜色对比；为图标按钮提供 aria-label；路由切换可考虑焦点重置。",
+      },
+      {
+        type: "code",
+        title: "对应源码",
+        lang: "vue",
+        code: `<script setup>
+import { ref } from 'vue'
+const open = ref(false)
+</script>
+<template>
+  <button type="button" @click="open = true">打开</button>
+  <div v-if="open" role="dialog" aria-modal="true" aria-labelledby="t">
+    <h2 id="t">标题</h2>
+    <button type="button" @click="open = false">关闭</button>
+  </div>
+</template>`,
+      },
+      { type: "demo", kind: "template-ref", title: "对照：焦点管理用 ref" },
+      {
+        type: "quiz",
+        questions: [
+          {
+            id: "a11y1",
+            question: "可点击交互优先？",
+            options: ["div+onclick", "button/a 语义元素", "span", "p"],
+            answer: 1,
+            explain: "键盘与读屏友好。",
+          },
+        ],
+      },
+    ],
+  },
+  {
+    slug: "ts-overview",
+    title: "TypeScript 概览",
+    summary: "官方 TS 使用方式，对应 typescript/overview。",
+    level: "实战",
+    track: "官网对齐",
+    minutes: 11,
+    official: "/guide/typescript/overview.html",
+    blocks: [
+      {
+        type: "text",
+        title: "官方立场",
+        body: "Vue 对 TS 一等支持。用 create-vue 勾选 TS；Volar 接管 .vue。API 优先 defineComponent 或 script setup + 泛型宏。避免 any 穿透 props/API 边界。",
+      },
+      {
+        type: "code",
+        title: "对应源码",
+        lang: "vue",
+        code: `<script setup lang="ts">
+import { ref } from 'vue'
+const count = ref<number>(0)
+defineProps<{ msg: string }>()
+</script>`,
+      },
+      { type: "demo", kind: "form", title: "对照：表单也要类型" },
+      {
+        type: "quiz",
+        questions: [
+          {
+            id: "to1",
+            question: ".vue 里 TS 推荐插件？",
+            options: ["仅 ESLint", "Volar (Vue Official)", "jQuery", "Babel only"],
+            answer: 1,
+            explain: "官方 IDE 支持。",
+          },
+        ],
+      },
+    ],
+  },
 ];
 
 export const TRACKS = [
@@ -2283,7 +3237,9 @@ export function getLessonsByTrack(track: Lesson["track"]) {
 export function getAllQuizQuestions(): Array<
   QuizQuestion & { lessonSlug: string; lessonTitle: string }
 > {
-  const out: Array<QuizQuestion & { lessonSlug: string; lessonTitle: string }> = [];
+  const out: Array<
+    QuizQuestion & { lessonSlug: string; lessonTitle: string }
+  > = [];
   for (const lesson of LESSONS) {
     for (const block of lesson.blocks) {
       if (block.type === "quiz") {

@@ -568,6 +568,134 @@ const show = ref(true)
 }
 app.use(plugin, { messages: { hello: '你好' } })`,
   },
+  conditional: {
+    lang: "vue",
+    title: "v-if / v-else / v-show",
+    code: `<script setup>
+import { ref } from 'vue'
+const type = ref('A')
+const show = ref(true)
+</script>
+<template>
+  <div v-if="type === 'A'">A</div>
+  <div v-else-if="type === 'B'">B</div>
+  <div v-else>Other</div>
+  <p v-show="show">v-show 仅 CSS 显隐</p>
+</template>`,
+  },
+  "transition-group": {
+    lang: "vue",
+    title: "TransitionGroup 列表",
+    code: `<script setup>
+import { ref } from 'vue'
+const items = ref([1,2,3])
+function shuffle() {
+  items.value = [...items.value].sort(() => Math.random() - 0.5)
+}
+</script>
+<template>
+  <button @click="shuffle">shuffle</button>
+  <TransitionGroup name="list" tag="ul">
+    <li v-for="i in items" :key="i">{{ i }}</li>
+  </TransitionGroup>
+</template>`,
+  },
+  "sfc-css": {
+    lang: "vue",
+    title: "SFC CSS 特性",
+    code: `<script setup>
+import { ref } from 'vue'
+const color = ref('tomato')
+</script>
+<template>
+  <p class="text">scoped 文本</p>
+  <div class="child"><span>deep 子级</span></div>
+</template>
+<style scoped>
+.text { color: v-bind(color); }
+.child :deep(span) { font-weight: bold; }
+</style>`,
+  },
+  "options-api": {
+    lang: "vue",
+    title: "Options API 对照",
+    code: `export default {
+  data() {
+    return { count: 0 }
+  },
+  computed: {
+    double() { return this.count * 2 }
+  },
+  methods: {
+    inc() { this.count++ }
+  },
+  mounted() {
+    console.log('mounted')
+  },
+}`,
+  },
+  "web-components": {
+    lang: "vue",
+    title: "Vue ↔ Web Components",
+    code: `// 跳过组件解析，当作原生自定义元素
+app.config.compilerOptions.isCustomElement = (tag) =>
+  tag.includes('-')
+
+// 把 Vue 组件编译成自定义元素
+import { defineCustomElement } from 'vue'
+import MyCe from './MyCe.ce.vue'
+customElements.define('my-ce', defineCustomElement(MyCe))`,
+  },
+  animation: {
+    lang: "vue",
+    title: "动画技巧",
+    code: `<!-- CSS transition / animation + Transition -->
+<!-- 状态驱动 class -->
+<!-- 列表 FLIP：TransitionGroup -->
+<!-- 第三方：GSAP 可在钩子中调用 -->
+<script setup>
+import { ref } from 'vue'
+const on = ref(false)
+</script>
+<template>
+  <div :class="{ big: on }" class="box" @click="on = !on" />
+</template>`,
+  },
+  registration: {
+    lang: "vue",
+    title: "组件注册",
+    code: `// 局部（推荐）
+import TodoItem from './TodoItem.vue'
+// script setup 下 import 即可用
+
+// 全局
+app.component('TodoItem', TodoItem)
+// 全局便于递归/极高频基础组件，但不利于 tree-shaking`,
+  },
+  "script-setup": {
+    lang: "vue",
+    title: "script setup",
+    code: `<script setup lang="ts">
+import { ref } from 'vue'
+const count = ref(0)
+defineProps<{ title: string }>()
+const emit = defineEmits<{ save: [id: string] }>()
+defineExpose({ count })
+</script>
+<template>
+  <button @click="emit('save', '1')">{{ title }} {{ count }}</button>
+</template>`,
+  },
+  "directives-ref": {
+    lang: "vue",
+    title: "内置指令速览",
+    code: `v-text / v-html
+v-show / v-if / v-else-if / v-else
+v-for
+v-on (@) / v-bind (:) / v-model
+v-slot (#)
+v-pre / v-once / v-memo / v-cloak`,
+  },
 };
 
 export function getDemoSource(kind: DemoKind): DemoSource {

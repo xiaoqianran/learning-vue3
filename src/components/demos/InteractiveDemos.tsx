@@ -133,6 +133,24 @@ function DemoBody({ kind }: { kind: DemoKind }) {
       return <SuspenseDemo />;
     case "plugins":
       return <PluginsDemo />;
+    case "conditional":
+      return <ConditionalDemo />;
+    case "transition-group":
+      return <TransitionGroupDemo />;
+    case "sfc-css":
+      return <SfcCssDemo />;
+    case "options-api":
+      return <OptionsApiDemo />;
+    case "web-components":
+      return <WebComponentsDemo />;
+    case "animation":
+      return <AnimationDemo />;
+    case "registration":
+      return <RegistrationDemo />;
+    case "script-setup":
+      return <ScriptSetupDemo />;
+    case "directives-ref":
+      return <DirectivesRefDemo />;
     default:
       return null;
   }
@@ -1467,5 +1485,238 @@ function PluginsDemo() {
         </p>
       </Panel>
     </div>
+  );
+}
+
+function ConditionalDemo() {
+  const [type, setType] = useState<"A" | "B" | "C">("A");
+  const [show, setShow] = useState(true);
+  return (
+    <div className="grid gap-3 sm:grid-cols-2">
+      <Panel label="控制">
+        <div className="flex flex-wrap gap-2">
+          {(["A", "B", "C"] as const).map((t) => (
+            <Button
+              key={t}
+              size="sm"
+              variant={type === t ? "default" : "secondary"}
+              onClick={() => setType(t)}
+            >
+              type={t}
+            </Button>
+          ))}
+        </div>
+        <label className="mt-3 flex items-center gap-2 text-sm">
+          <input type="checkbox" checked={show} onChange={(e) => setShow(e.target.checked)} />
+          v-show
+        </label>
+      </Panel>
+      <Panel label="渲染">
+        <p className="text-sm text-primary">
+          {type === "A" ? "v-if A" : type === "B" ? "v-else-if B" : "v-else Other"}
+        </p>
+        <p className={cn("mt-2 text-sm", show ? "opacity-100" : "opacity-30")}>
+          v-show 段落（DOM 仍在）
+        </p>
+      </Panel>
+    </div>
+  );
+}
+
+function TransitionGroupDemo() {
+  const [items, setItems] = useState([1, 2, 3, 4]);
+  function shuffle() {
+    setItems((xs) => [...xs].sort(() => Math.random() - 0.5));
+  }
+  function add() {
+    setItems((xs) => [...xs, Math.max(0, ...xs) + 1]);
+  }
+  function remove() {
+    setItems((xs) => xs.slice(0, -1));
+  }
+  return (
+    <div>
+      <div className="mb-3 flex flex-wrap gap-2">
+        <Button size="sm" onClick={shuffle}>
+          shuffle
+        </Button>
+        <Button size="sm" variant="secondary" onClick={add}>
+          add
+        </Button>
+        <Button size="sm" variant="ghost" onClick={remove}>
+          remove
+        </Button>
+      </div>
+      <ul className="flex flex-wrap gap-2">
+        {items.map((i) => (
+          <li
+            key={i}
+            className="rounded-md border border-primary/40 bg-primary-soft px-3 py-1.5 font-mono text-sm text-primary transition-all"
+          >
+            #{i}
+          </li>
+        ))}
+      </ul>
+      <p className="mt-2 text-xs text-muted">TransitionGroup：子项必须有稳定 key</p>
+    </div>
+  );
+}
+
+function SfcCssDemo() {
+  const [color, setColor] = useState("#42b883");
+  return (
+    <div className="grid gap-3 sm:grid-cols-2">
+      <Panel label="v-bind in css">
+        <input type="color" value={color} onChange={(e) => setColor(e.target.value)} />
+        <pre className="mt-2 font-mono text-[11px] text-muted">{`color: v-bind(color)`}</pre>
+      </Panel>
+      <Panel label="scoped 预览">
+        <p style={{ color }} className="text-sm font-medium">
+          .text 使用 v-bind 颜色
+        </p>
+        <p className="mt-2 text-xs text-muted">:deep() 可穿透子组件根内元素</p>
+      </Panel>
+    </div>
+  );
+}
+
+function OptionsApiDemo() {
+  const [count, setCount] = useState(0);
+  return (
+    <div className="grid gap-3 sm:grid-cols-2">
+      <Panel label="Options 运行时">
+        <p className="font-mono text-2xl text-primary">{count}</p>
+        <p className="text-sm text-muted">double = {count * 2}</p>
+        <Button className="mt-2" size="sm" onClick={() => setCount((c) => c + 1)}>
+          methods.inc()
+        </Button>
+      </Panel>
+      <Panel label="对照 Composition">
+        <pre className="font-mono text-[11px] leading-relaxed text-code-fg">
+          {`data → ref/reactive
+computed → computed()
+methods → function
+mounted → onMounted`}
+        </pre>
+      </Panel>
+    </div>
+  );
+}
+
+function WebComponentsDemo() {
+  const [tag, setTag] = useState("my-widget");
+  return (
+    <div className="grid gap-3 sm:grid-cols-2">
+      <Panel label="isCustomElement">
+        <input
+          value={tag}
+          onChange={(e) => setTag(e.target.value)}
+          className="h-10 w-full rounded-md border border-border bg-bg px-3 font-mono text-sm"
+        />
+        <p className="mt-2 text-xs text-muted">含 "-" 的标签可视为原生自定义元素</p>
+      </Panel>
+      <Panel label="结果">
+        <div className="rounded-md border border-dashed border-border px-3 py-2 font-mono text-sm">
+          {`<${tag}>…</${tag}>`}
+        </div>
+        <p className="mt-2 text-xs text-muted">defineCustomElement 可将 Vue SFC 打成 CE</p>
+      </Panel>
+    </div>
+  );
+}
+
+function AnimationDemo() {
+  const [on, setOn] = useState(false);
+  return (
+    <div className="grid gap-3 sm:grid-cols-2">
+      <Panel label="状态驱动">
+        <Button onClick={() => setOn((v) => !v)}>toggle big={String(on)}</Button>
+      </Panel>
+      <Panel label="动画盒">
+        <div
+          className={cn(
+            "rounded-lg bg-primary transition-all duration-300",
+            on ? "h-24 w-24" : "h-12 w-12 opacity-80",
+          )}
+        />
+        <p className="mt-2 text-xs text-muted">class 切换 / Transition / GSAP 钩子</p>
+      </Panel>
+    </div>
+  );
+}
+
+function RegistrationDemo() {
+  const [mode, setMode] = useState<"local" | "global">("local");
+  return (
+    <div className="grid gap-3 sm:grid-cols-2">
+      <Panel label="注册方式">
+        <div className="flex gap-2">
+          <Button
+            size="sm"
+            variant={mode === "local" ? "default" : "secondary"}
+            onClick={() => setMode("local")}
+          >
+            局部 import
+          </Button>
+          <Button
+            size="sm"
+            variant={mode === "global" ? "default" : "secondary"}
+            onClick={() => setMode("global")}
+          >
+            app.component
+          </Button>
+        </div>
+      </Panel>
+      <Panel label="说明">
+        {mode === "local" ? (
+          <p className="text-sm text-muted">script setup 中 import 即注册，利于分包与类型。</p>
+        ) : (
+          <p className="text-sm text-muted">
+            全局注册写起来省事，但影响 tree-shaking 与依赖清晰度。
+          </p>
+        )}
+      </Panel>
+    </div>
+  );
+}
+
+function ScriptSetupDemo() {
+  const [count, setCount] = useState(0);
+  return (
+    <div className="grid gap-3 sm:grid-cols-2">
+      <Panel label="顶层绑定">
+        <p className="text-sm">defineProps / defineEmits / defineExpose</p>
+        <Button className="mt-2" size="sm" onClick={() => setCount((c) => c + 1)}>
+          count++ → {count}
+        </Button>
+      </Panel>
+      <Panel label="编译结果心智">
+        <pre className="font-mono text-[11px] text-muted">
+          {`setup() 返回的绑定
+直接暴露给模板
+无手动 return`}
+        </pre>
+      </Panel>
+    </div>
+  );
+}
+
+function DirectivesRefDemo() {
+  const items = [
+    ["v-if", "条件挂载"],
+    ["v-for", "列表"],
+    ["v-model", "双向绑定"],
+    ["v-memo", "跳过更新"],
+    ["v-once", "只渲染一次"],
+  ];
+  return (
+    <ul className="grid gap-2 sm:grid-cols-2">
+      {items.map(([k, v]) => (
+        <li key={k} className="rounded-md border border-border bg-surface-2 px-3 py-2">
+          <code className="text-xs text-primary">{k}</code>
+          <p className="text-sm text-muted">{v}</p>
+        </li>
+      ))}
+    </ul>
   );
 }
