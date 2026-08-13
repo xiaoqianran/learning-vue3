@@ -34,7 +34,7 @@ function HomePage() {
       <WorldCatalog progress={labs} />
 
       <p className="mt-8 text-xs leading-relaxed text-subtle">
-        World 1 是响应式。World 2 是 Todo 长成组件。World 3 是共享状态和页面。World 4 是异步、写回和身份。World 5 是跨树、寿命和传送。World 6 是诊断和测试。World 7 是水合、请求隔离和首屏数据。World 8 是入口、出口和钥匙上的契约。World 9 是组件上的那扇双向门。World 10 是追踪停在哪一层。World 11 是贴到哪一层 DOM，开哪一扇窗。World 12 是指令碰到了那颗节点。World 13 是还没到的组件。World 14 是样式也有边界。World 15 是安装才接通。World 16 是有些节点不必再画。World 17 是读到的才会订。
+        World 1 是响应式。World 2 是 Todo 长成组件。World 3 是共享状态和页面。World 4 是异步、写回和身份。World 5 是跨树、寿命和传送。World 6 是诊断和测试。World 7 是水合、请求隔离和首屏数据。World 8 是入口、出口和钥匙上的契约。World 9 是组件上的那扇双向门。World 10 是追踪停在哪一层。World 11 是贴到哪一层 DOM，开哪一扇窗。World 12 是指令碰到了那颗节点。World 13 是还没到的组件。World 14 是样式也有边界。World 15 是安装才接通。World 16 是有些节点不必再画。World 17 是读到的才会订。World 18 是真正画出来的那颗节点。
       </p>
     </div>
   );

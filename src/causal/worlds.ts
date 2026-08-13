@@ -154,4 +154,13 @@ export const PROGRAM_WORLDS: ProgramWorld[] = [
     labIds: ["watcheffect", "watchestop", "watchclean"],
     topics: ["watchEffect", "stop", "onCleanup"],
   },
+  {
+    id: "w18",
+    n: 18,
+    title: "真正画出来的是这颗节点",
+    blurb: "h() / 快照 vnode / 插槽是函数",
+    status: "ready",
+    labIds: ["hnode", "hsnap", "hslot"],
+    topics: ["h()", "vnode", "slots"],
+  },
 ];
