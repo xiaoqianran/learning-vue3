@@ -13,7 +13,7 @@ import { cn } from "@/lib/utils";
 import appCss from "@/styles.css?url";
 import { CatppuccinSwitcher } from "@/components/CatppuccinSwitcher";
 import { applyCtpAccent, applyCtpFlavor, readCtpAccent, readCtpFlavor } from "@/lib/catppuccin";
-import { CAUSAL_LABS } from "@/causal/labs";
+import { CAUSAL_LABS, labsForWorld } from "@/causal/labs";
 import { labMastery, useCausal } from "@/store/causal";
 
 export const Route = createRootRoute({
@@ -76,6 +76,7 @@ function AppShell({ children }: { children: ReactNode }) {
   const playerLab = isCausalPlayer
     ? CAUSAL_LABS.find((lab) => pathname.endsWith(`/causal/${lab.id}`))
     : undefined;
+  const navLabs = labsForWorld(playerLab?.world ?? 1);
   const labs = useCausal((s) => s.labs);
 
   useEffect(() => {
@@ -107,20 +108,22 @@ function AppShell({ children }: { children: ReactNode }) {
             </span>
           </Link>
 
-          <nav className="ml-1 hidden items-center gap-0.5 sm:flex">
-            {CAUSAL_LABS.map((lab) => (
-              <Link
-                key={lab.id}
-                to="/causal/$labId"
-                params={{ labId: lab.id }}
-                className="rounded-full px-2.5 py-1 font-mono text-xs text-muted no-underline transition-[background-color,color] duration-200 hover:bg-surface-2 hover:text-fg [&.active]:bg-primary-soft [&.active]:text-primary"
-                activeProps={{ className: "active" }}
-              >
-                {lab.concept}
-                <span className="ml-1 text-[10px] tabular-nums text-subtle">{labMastery(lab.id, labs)}%</span>
-              </Link>
-            ))}
-          </nav>
+          {isCausalPlayer ? (
+            <nav className="ml-1 hidden items-center gap-0.5 sm:flex">
+              {navLabs.map((lab) => (
+                <Link
+                  key={lab.id}
+                  to="/causal/$labId"
+                  params={{ labId: lab.id }}
+                  className="rounded-full px-2.5 py-1 font-mono text-xs text-muted no-underline transition-[background-color,color] duration-200 hover:bg-surface-2 hover:text-fg [&.active]:bg-primary-soft [&.active]:text-primary"
+                  activeProps={{ className: "active" }}
+                >
+                  {lab.concept}
+                  <span className="ml-1 text-[10px] tabular-nums text-subtle">{labMastery(lab.id, labs)}%</span>
+                </Link>
+              ))}
+            </nav>
+          ) : null}
 
           <div className="ml-auto flex items-center gap-2">
             {isCausalPlayer ? (
@@ -128,7 +131,7 @@ function AppShell({ children }: { children: ReactNode }) {
                 to="/causal"
                 className="text-xs text-muted no-underline transition-colors duration-200 hover:text-fg"
               >
-                World 1
+                World {playerLab?.world ?? 1}
               </Link>
             ) : (
               <Link

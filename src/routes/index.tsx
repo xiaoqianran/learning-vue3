@@ -1,8 +1,7 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { CAUSAL_LABS } from "@/causal/labs";
-import { labMastery, useCausal } from "@/store/causal";
+import { useCausal } from "@/store/causal";
 import { Button } from "@/components/ui/button";
-import { LabCard, LoopSteps } from "@/components/causal/LabCard";
+import { LoopSteps, WorldCatalog } from "@/components/causal/LabCard";
 import { ArrowRight } from "lucide-react";
 
 export const Route = createFileRoute("/")({
@@ -32,17 +31,10 @@ function HomePage() {
       </div>
 
       <LoopSteps />
-
-      <ol className="mt-8 space-y-2.5">
-        {CAUSAL_LABS.map((lab, i) => (
-          <li key={lab.id}>
-            <LabCard lab={lab} index={i} mastery={labMastery(lab.id, labs)} />
-          </li>
-        ))}
-      </ol>
+      <WorldCatalog progress={labs} />
 
       <p className="mt-8 text-xs leading-relaxed text-subtle">
-        第一版只做 ref → computed → watch。World 2 以后（组件、路由、Pinia）还没长出来。
+        World 1 是响应式。World 2 是 Todo 长成组件。World 3 以后（路由、Pinia、异步）还没长出来。
       </p>
     </div>
   );

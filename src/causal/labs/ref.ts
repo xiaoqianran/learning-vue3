@@ -87,7 +87,7 @@ export const REF_LAB: CausalLab = {
   title: "一个按钮活起来",
   subtitle: "普通变量为什么动不了界面",
   promise: "亲眼看见：有 ref → 界面跟着变；没有 ref → 值变了界面不知道。",
-  minutes: 12,
+  minutes: 16,
   official: "/guide/essentials/reactivity-fundamentals.html",
   scenes: [
     {
@@ -268,6 +268,14 @@ export const REF_LAB: CausalLab = {
         { from: "ref", to: "render", label: "通知" },
         { from: "render", to: "dom" },
       ],
+      why: {
+        question: "模板里 count++ 为什么不用 .value？",
+        choices: [
+          { id: "unwrap", label: "模板自动解包 ref，编译后相当于 count.value++", correct: true, why: "script 里 count 是 Ref 对象。模板里 Vue 帮你拆开。两条世界，一条规则。" },
+          { id: "sugar", label: "++ 只能用在模板，script 里会失败", correct: false, why: "script 里写 count.value++ 完全合法，而且是正道。" },
+          { id: "same", label: "模板和 script 是同一套作用域，都不需要 .value", correct: false, why: "script 里漏 .value 是最常见的静默/报错之一。" },
+        ],
+      },
       explanation: {
         headline: "这就是 Vue 响应式",
         body: "不是「数据变了页面就变」这句空话。是：写入 ref → 找到订阅过它的 effect → 重新渲染 → 补丁 DOM。你可以在右侧真点这个按钮验证。",
@@ -276,6 +284,7 @@ export const REF_LAB: CausalLab = {
         { q: "count++ 为什么能用？", a: "模板自动解包。编译后大致是 count.value++。script 里你必须自己写 .value。" },
         { q: "如果改成 count.value++ 放模板？", a: "模板里不需要，也不推荐。那会把实现细节泄漏进标记。" },
       ],
+      tryThis: "在右侧连点按钮三次。数字必须变成 1、2、3。X-Ray 里 count 应跟着走。",
       mapping: [
         { code: '@click="count++"', runtime: "event → count.value++", ui: "点击后数字 +1" },
         { code: "{{ count }}", runtime: "template effect", ui: "按钮文本" },
@@ -347,6 +356,7 @@ export const REF_LAB: CausalLab = {
         { q: "为什么 let 不报错？", a: "因为对 JavaScript 来说完全合法。失败发生在 Vue 的更新协议上，不是语法上。" },
         { q: "reactive 可以吗？", a: "对对象可以。对数字/布尔这种原始值，ref 才是对的工具。一次只改一个机制。" },
       ],
+      tryThis: "先点按钮确认正确版本会加。再试「如果不要 ref」：内存在变，页面冻在 0。看完点「恢复」。",
     },
     {
       id: "ref-s5",
@@ -408,6 +418,7 @@ export const REF_LAB: CausalLab = {
       faqs: [
         { q: "这里 React 会怎么写？", a: "useState。setLiked 会触发重渲染。普通 let liked 在 React 里同样不会更新界面——同一条因果。" },
       ],
+      tryThis: "先点「喜欢」——文案不应变。再打开「补上 ref」，它应能切换。",
       mapping: [
         { code: "let liked = false", runtime: "普通绑定，无订阅者", ui: "冻在「喜欢」" },
         { code: "const liked = ref(false)", runtime: "ref → template effect", ui: "喜欢 ⇄ 已喜欢" },

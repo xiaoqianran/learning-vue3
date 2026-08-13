@@ -295,6 +295,7 @@ export const COMPUTED_LAB: CausalLab = {
       },
       faqs: [
         { q: "和在模板里写 price * quantity 有何不同？", a: "结果一样。computed 的价值是：有名字、可复用、有缓存、能在 X-Ray 里成为一颗节点。" },
+        { q: "写成 function total() { return price.value * quantity.value } 再 {{ total() }} 呢？", a: "每次渲染都会重算，没有缓存，也不是一颗可失效的节点。依赖没变时 computed 不会重跑。方法每次都跑。看起来像，图不一样。" },
       ],
       mapping: [
         { code: "{{ total }}", runtime: "读取 computed → 20", ui: "合计 20" },
@@ -351,6 +352,7 @@ export const COMPUTED_LAB: CausalLab = {
       faqs: [
         { q: "为什么这里不用 watch？", a: "因为你要的是一个值，不是一个副作用。watch 适合去 fetch、打日志、改 title。下一节会把两个世界并排放。" },
       ],
+      tryThis: "连点「多买一件」。合计必须是 30、40、50。没有人给 total 赋值。",
     },
     {
       id: "computed-s4",

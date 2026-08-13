@@ -1,5 +1,9 @@
 import { Link } from "@tanstack/react-router";
-import type { CausalLab } from "@/causal/types";
+import type { CausalLab, ProgramWorld } from "@/causal/types";
+import { getCausalLab } from "@/causal/labs";
+import { PROGRAM_WORLDS } from "@/causal/worlds";
+import { labMastery } from "@/store/causal";
+import type { LabProgress } from "@/store/causal";
 import { cn } from "@/lib/utils";
 
 export function LabCard({
@@ -52,5 +56,53 @@ export function LoopSteps() {
         </li>
       ))}
     </ol>
+  );
+}
+
+export function WorldSection({
+  world,
+  progress,
+}: {
+  world: ProgramWorld;
+  progress: Record<string, LabProgress>;
+}) {
+  const labs = world.labIds.map((id) => getCausalLab(id)).filter((l): l is CausalLab => Boolean(l));
+  const ready = world.status === "ready" && labs.length > 0;
+
+  return (
+    <section className="mt-10">
+      <div className="flex items-baseline justify-between gap-3">
+        <h2 className="font-display text-lg font-semibold text-fg">
+          World {world.n} · {world.title}
+        </h2>
+        {ready ? null : (
+          <span className="shrink-0 rounded-full border border-border px-2 py-0.5 text-[10px] uppercase tracking-wider text-subtle">
+            即将到来
+          </span>
+        )}
+      </div>
+      <p className="mt-1 text-sm text-muted">{world.blurb}</p>
+      {ready ? (
+        <ol className="mt-3 space-y-2.5">
+          {labs.map((lab, i) => (
+            <li key={lab.id}>
+              <LabCard lab={lab} index={i} mastery={labMastery(lab.id, progress)} />
+            </li>
+          ))}
+        </ol>
+      ) : (
+        <p className={cn("mt-2 font-mono text-[11px] text-subtle")}>{world.topics.join(" · ")}</p>
+      )}
+    </section>
+  );
+}
+
+export function WorldCatalog({ progress }: { progress: Record<string, LabProgress> }) {
+  return (
+    <div>
+      {PROGRAM_WORLDS.map((world) => (
+        <WorldSection key={world.id} world={world} progress={progress} />
+      ))}
+    </div>
   );
 }

@@ -20,6 +20,26 @@ export function appVue(files: Files): string {
   return files["src/App.vue"] ?? files["App.vue"] ?? Object.values(files)[0] ?? "";
 }
 
+/** The file that actually changed this scene — child SFCs win over App.vue. */
+export function mutatedSource(
+  before: Files,
+  after: Files,
+): { path: string; before: string; after: string } {
+  const names = [...new Set([...Object.keys(before), ...Object.keys(after)])];
+  const changed = names.filter((n) => (before[n] ?? "") !== (after[n] ?? ""));
+  const path =
+    changed.find((n) => !/App\.vue$/.test(n)) ??
+    changed[0] ??
+    names.find((n) => /App\.vue$/.test(n)) ??
+    "src/App.vue";
+  return { path, before: before[path] ?? "", after: after[path] ?? "" };
+}
+
+export function fileLabel(path: string): string {
+  const base = path.split("/").pop() ?? path;
+  return base;
+}
+
 export type MasteryScores = {
   predict: { correct: number; total: number };
   causal: { correct: number; total: number };

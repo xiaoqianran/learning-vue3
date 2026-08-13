@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import type {
@@ -8,7 +8,7 @@ import type {
   Prediction,
   Scene,
 } from "@/causal/types";
-import { ChevronRight, FlaskConical, GitCompare, HelpCircle } from "lucide-react";
+import { ChevronRight, FlaskConical, GitCompare, Hand, HelpCircle } from "lucide-react";
 import { PaneHeader } from "./PaneHeader";
 
 type Props = {
@@ -49,6 +49,9 @@ export function NarrativePanel({
   replaying,
 }: Props) {
   const [faq, setFaq] = useState<string | null>(null);
+  useEffect(() => {
+    setFaq(null);
+  }, [scene.id]);
   const layerLabel =
     scene.layer === "see"
       ? "SEE 看变化"
@@ -89,6 +92,16 @@ export function NarrativePanel({
                 {scene.explanation.body}
               </p>
             </div>
+
+            {scene.tryThis ? (
+              <div className="rounded-lg border border-sapphire/35 bg-sapphire/10 p-3">
+                <p className="inline-flex items-center gap-1 text-[10px] font-medium uppercase tracking-wider text-sapphire">
+                  <Hand className="h-3 w-3" />
+                  现在请你动手
+                </p>
+                <p className="mt-1.5 text-[13px] leading-relaxed text-fg">{scene.tryThis}</p>
+              </div>
+            ) : null}
 
             {lastChoice && scene.prediction ? (
               <p

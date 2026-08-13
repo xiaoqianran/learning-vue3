@@ -1,6 +1,7 @@
 import { useEffect, useRef } from "react";
 import { cn } from "@/lib/utils";
 import type { DiffLine } from "@/causal/diff";
+import { fileLabel } from "@/causal/engine";
 import type { SemanticBlock } from "@/causal/types";
 import type { CodeWrite } from "./useCodeWrite";
 import { PaneHeader } from "./PaneHeader";
@@ -17,6 +18,7 @@ type Props = {
   onSelect: (symbol: string) => void;
   clickable: string[];
   waiting?: boolean;
+  filePath?: string;
 };
 
 export function CodeEvolution({
@@ -26,6 +28,7 @@ export function CodeEvolution({
   onSelect,
   clickable,
   waiting,
+  filePath = "src/App.vue",
 }: Props) {
   const scrollerRef = useRef<HTMLPreElement>(null);
 
@@ -37,7 +40,10 @@ export function CodeEvolution({
 
   return (
     <div className="flex h-full min-h-0 flex-col">
-      <PaneHeader kicker="代码演化" meta={write.writing ? "写入中…" : "App.vue"} />
+      <PaneHeader
+        kicker="代码演化"
+        meta={write.writing ? "写入中…" : fileLabel(filePath)}
+      />
       {blocks.length > 0 ? (
         <ol className="flex min-h-[2.35rem] shrink-0 flex-wrap items-center gap-1.5 border-b border-border px-3 py-2">
           {blocks.map((b, i) => (
