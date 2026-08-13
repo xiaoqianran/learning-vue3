@@ -46,6 +46,9 @@ const causalLabs = [
   "definemodel",
   "modelmod",
   "multimodel",
+  "shallow",
+  "markraw",
+  "customref",
 ];
 
 const staticPages = [

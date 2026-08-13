@@ -30,6 +30,9 @@ import { INJECTKEY_LAB } from "./injectkey";
 import { DEFINEMODEL_LAB } from "./definemodel";
 import { MODELMOD_LAB } from "./modelmod";
 import { MULTIMODEL_LAB } from "./multimodel";
+import { SHALLOW_LAB } from "./shallow";
+import { MARKRAW_LAB } from "./markraw";
+import { CUSTOMREF_LAB } from "./customref";
 import { WATCH_LAB } from "./watch";
 
 export const CAUSAL_LABS: CausalLab[] = [
@@ -64,6 +67,9 @@ export const CAUSAL_LABS: CausalLab[] = [
   DEFINEMODEL_LAB,
   MODELMOD_LAB,
   MULTIMODEL_LAB,
+  SHALLOW_LAB,
+  MARKRAW_LAB,
+  CUSTOMREF_LAB,
 ];
 
 export function getCausalLab(id: string): CausalLab | undefined {

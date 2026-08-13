@@ -82,4 +82,13 @@ export const PROGRAM_WORLDS: ProgramWorld[] = [
     labIds: ["definemodel", "modelmod", "multimodel"],
     topics: ["defineModel", "v-model.trim", "v-model:title"],
   },
+  {
+    id: "w10",
+    n: 10,
+    title: "追踪停在哪一层",
+    blurb: "shallowRef / markRaw / customRef",
+    status: "ready",
+    labIds: ["shallow", "markraw", "customref"],
+    topics: ["shallowRef", "markRaw", "customRef"],
+  },
 ];
