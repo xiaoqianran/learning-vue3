@@ -553,7 +553,7 @@ export const VCLICKOUT_LAB: CausalLab = {
       ],
       explanation: {
         headline: "挂在外面的，都要自己收",
-        body: "World 12 收束：钩子碰到节点、参数换轨道、卸掉时摘掉外面的东西。能用组件就用组件；指令只留给 DOM 这一层。",
+        body: "World 12 收束：钩子碰到节点、参数换轨道、卸掉时摘掉外面的东西。能用组件就用组件；指令只留给 DOM 这一层。下一课：组件还没到。",
       },
       tryThis: "三种消融：冻住、幽灵加一、加 1 不是 10。对上号再恢复 +10。",
       faqs: [
@@ -599,7 +599,7 @@ export const VCLICKOUT_LAB: CausalLab = {
             kind: "stale",
             message: "这是修复：关掉后监听摘掉。再点空白，仍然关着，而且没有幽灵。",
           },
-          lesson: "World 12 收束：指令碰 DOM。挂到 document 上的，卸节点时必须摘。",
+          lesson: "World 12 收束：指令碰 DOM。挂到 document 上的，卸节点时必须摘。下一课：组件自己还在路上。",
         },
       ],
       explanation: {

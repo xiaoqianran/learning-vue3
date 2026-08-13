@@ -109,4 +109,13 @@ export const PROGRAM_WORLDS: ProgramWorld[] = [
     labIds: ["vfocus", "vpaint", "vclickout"],
     topics: ["v-focus", "binding.arg", "unmounted"],
   },
+  {
+    id: "w13",
+    n: 13,
+    title: "还没到的组件",
+    blurb: "defineAsyncComponent / Suspense / retry",
+    status: "ready",
+    labIds: ["asynccomp", "suspense", "asyncerr"],
+    topics: ["defineAsyncComponent", "Suspense", "retry"],
+  },
 ];
