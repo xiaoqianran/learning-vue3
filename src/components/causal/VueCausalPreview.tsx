@@ -22,9 +22,19 @@ const PREVIEW_HEAD = `<style>
   .panel{border:1px solid #313244;border-radius:12px;padding:12px 14px;margin:8px 0;background:#181825;}
   .panel h3{margin:0 0 8px;font-size:13px;letter-spacing:.12em;text-transform:uppercase;color:#a6e3a1;}
   .hint{color:#7f849c;font-size:12px;}
+  nav.links{display:flex;gap:12px;flex-wrap:wrap;margin:0 0 12px;padding-bottom:8px;border-bottom:1px solid #313244;}
+  nav.links a{color:#89b4fa;text-decoration:none;font-size:13px;}
+  nav.links a.router-link-active,nav.links a.active{color:#a6e3a1;}
+  .stats{color:#a6e3a1;font-size:13px;margin:8px 0;}
+  .page{min-height:8rem;}
 </style>`;
 
 const EMPTY_APP = `<script setup>\n</script>\n<template><p>—</p></template>`;
+
+const EXTRA_IMPORTS: Record<string, string> = {
+  pinia: "https://cdn.jsdelivr.net/npm/pinia@2.3.1/dist/pinia.esm-browser.js",
+  "vue-router": "https://cdn.jsdelivr.net/npm/vue-router@4.5.1/dist/vue-router.esm-browser.js",
+};
 
 type StoreApi = {
   setFiles: (files: Record<string, string>, main?: string) => Promise<void>;
@@ -37,14 +47,27 @@ type Props = {
   label?: string;
 };
 
+const SPECIAL_ROOT = new Set(["import-map.json", "tsconfig.json"]);
+
 function asReplFiles(files: Files): Record<string, string> {
   const out: Record<string, string> = {};
   for (const [raw, source] of Object.entries(files)) {
+    const base = raw.split("/").pop() ?? raw;
+    if (SPECIAL_ROOT.has(raw) || SPECIAL_ROOT.has(base)) {
+      out[base] = source;
+      continue;
+    }
     const name = raw.startsWith("src/") ? raw : `src/${raw.replace(/^\//, "")}`;
     out[name] = source;
   }
   if (!out["src/App.vue"]?.trim()) out["src/App.vue"] = EMPTY_APP;
   return out;
+}
+
+function pickMain(files: Record<string, string>): string {
+  if (files["src/main.js"]?.trim()) return "src/main.js";
+  if (files["src/main.ts"]?.trim()) return "src/main.ts";
+  return "src/App.vue";
 }
 
 /**
@@ -90,7 +113,8 @@ export function VueCausalPreview({ files, className, label }: Props) {
         });
         /* eslint-enable react-hooks/rules-of-hooks */
 
-        await store.setFiles(replFiles, "src/App.vue");
+        store.setImportMap({ imports: EXTRA_IMPORTS }, true);
+        await store.setFiles(replFiles, pickMain(replFiles));
         if (cancelled) return;
 
         const app = createApp({
@@ -150,7 +174,7 @@ export function VueCausalPreview({ files, className, label }: Props) {
     if (!api || status !== "ready") return;
     setVeil(true);
     let cancelled = false;
-    void api.setFiles(replFiles, "src/App.vue").finally(() => {
+    void api.setFiles(replFiles, pickMain(replFiles)).finally(() => {
       window.setTimeout(() => {
         if (!cancelled) setVeil(false);
       }, 220);

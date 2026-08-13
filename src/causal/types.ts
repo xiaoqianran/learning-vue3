@@ -51,7 +51,10 @@ export type NodeKind =
   | "dom"
   | "script"
   | "effect"
-  | "component";
+  | "component"
+  | "composable"
+  | "store"
+  | "route";
 
 export type CausalNode = {
   id: string;
