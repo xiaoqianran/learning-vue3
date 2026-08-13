@@ -48,6 +48,9 @@ import { SLOTTED_LAB } from "./slotted";
 import { PLUGIN_LAB } from "./plugin";
 import { GLOBCOMP_LAB } from "./globcomp";
 import { PLUGOPT_LAB } from "./plugopt";
+import { VONCE_LAB } from "./vonce";
+import { VMEMO_LAB } from "./vmemo";
+import { VMEMOLIST_LAB } from "./vmemolist";
 import { WATCH_LAB } from "./watch";
 
 export const CAUSAL_LABS: CausalLab[] = [
@@ -100,6 +103,9 @@ export const CAUSAL_LABS: CausalLab[] = [
   PLUGIN_LAB,
   GLOBCOMP_LAB,
   PLUGOPT_LAB,
+  VONCE_LAB,
+  VMEMO_LAB,
+  VMEMOLIST_LAB,
 ];
 
 export function getCausalLab(id: string): CausalLab | undefined {

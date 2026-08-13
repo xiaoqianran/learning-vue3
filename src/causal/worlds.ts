@@ -136,4 +136,13 @@ export const PROGRAM_WORLDS: ProgramWorld[] = [
     labIds: ["plugin", "globcomp", "plugopt"],
     topics: ["app.use", "app.component", "options"],
   },
+  {
+    id: "w16",
+    n: 16,
+    title: "有些节点不必再画",
+    blurb: "v-once / v-memo / 列表上的名单",
+    status: "ready",
+    labIds: ["vonce", "vmemo", "vmemolist"],
+    topics: ["v-once", "v-memo", "v-for"],
+  },
 ];

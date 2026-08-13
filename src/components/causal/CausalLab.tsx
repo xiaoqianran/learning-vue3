@@ -124,6 +124,8 @@ export function CausalLab({ lab }: Props) {
       "app.use",
       "install",
       "app.component",
+      "v-once",
+      "v-memo",
     ]);
     for (const n of scene.nodes) if (n.symbol) s.add(n.symbol);
     for (const p of [...scene.observe.state, ...scene.observe.dom, ...scene.observe.events]) {
