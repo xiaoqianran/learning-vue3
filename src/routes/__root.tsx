@@ -86,10 +86,15 @@ function AppShell({ children }: { children: ReactNode }) {
   }, []);
 
   return (
-    <div className={cn("min-h-dvh text-fg", isCausalPlayer && "bg-bg")}>
+    <div
+      className={cn(
+        "text-fg",
+        isCausalPlayer ? "flex h-dvh flex-col overflow-hidden bg-bg" : "min-h-dvh",
+      )}
+    >
       <header
         className={cn(
-          "sticky top-0 z-40 border-b border-border/80 bg-bg/80 backdrop-blur-md",
+          "sticky top-0 z-40 shrink-0 border-b border-border/80 bg-bg/80 backdrop-blur-md",
           isCausalPlayer && "bg-bg/95",
         )}
       >
@@ -151,7 +156,7 @@ function AppShell({ children }: { children: ReactNode }) {
       <main
         className={cn(
           isCausalPlayer
-            ? "causal-player flex h-[calc(100dvh-3rem)] min-h-0 flex-col overflow-hidden bg-bg"
+            ? "causal-player flex min-h-0 flex-1 flex-col overflow-hidden bg-bg"
             : "mx-auto max-w-3xl px-4 py-8 sm:px-6",
         )}
       >

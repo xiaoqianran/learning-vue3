@@ -86,6 +86,12 @@ export function CausalLab({ lab }: Props) {
       "nextTick",
       "onErrorCaptured",
       "addItem",
+      "PAYLOAD",
+      "createSession",
+      "createCart",
+      "SERVER",
+      "Date",
+      "window",
     ]);
     for (const n of scene.nodes) if (n.symbol) s.add(n.symbol);
     for (const p of [...scene.observe.state, ...scene.observe.dom, ...scene.observe.events]) {

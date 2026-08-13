@@ -40,6 +40,11 @@ const PREVIEW_HEAD = `<style>
   .specs li{font-size:13px;margin:4px 0;}
   .pass{color:#a6e3a1;}
   .fail{color:#f38ba8;}
+  .stamp{background:#45475a33;border:1px dashed #f9e2af;padding:6px 8px;border-radius:8px;margin:8px 0;font-family:ui-monospace,SFMono-Regular,Menlo,Monaco,Consolas,monospace;font-size:12px;color:#f9e2af;}
+  .row{display:flex;gap:12px;flex-wrap:wrap;}
+  .row .panel{flex:1;min-width:11rem;}
+  .match{color:#a6e3a1;font-weight:700;}
+  .mismatch{color:#f38ba8;font-weight:700;}
 </style>`;
 
 const EMPTY_APP = `<script setup>\n</script>\n<template><p>—</p></template>`;
@@ -83,6 +88,23 @@ function pickMain(files: Record<string, string>): string {
   return "src/App.vue";
 }
 
+function waitForBox(el: HTMLElement | null, timeoutMs = 2000): Promise<void> {
+  if (!el) return Promise.resolve();
+  if (el.clientWidth > 8 && el.clientHeight > 8) return Promise.resolve();
+  return new Promise((resolve) => {
+    const done = () => {
+      ro.disconnect();
+      window.clearTimeout(timer);
+      resolve();
+    };
+    const ro = new ResizeObserver(() => {
+      if (el.clientWidth > 8 && el.clientHeight > 8) done();
+    });
+    ro.observe(el);
+    const timer = window.setTimeout(done, timeoutMs);
+  });
+}
+
 /**
  * Preview-only @vue/repl host. Editor is hidden; files update in place for time travel.
  * The mount node must keep a real layout box — never `sr-only` / 1×1 — or the iframe
@@ -107,6 +129,8 @@ export function VueCausalPreview({ files, className, label }: Props) {
     async function boot() {
       try {
         setStatus("loading");
+        await waitForBox(el);
+        if (cancelled) return;
         const vue = await import("vue");
         const repl = await import("@vue/repl");
         const CodeMirror = (await import("@vue/repl/codemirror-editor")).default;

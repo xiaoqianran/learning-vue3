@@ -684,7 +684,7 @@ export const TEST_LAB: CausalLab = {
       ],
       explanation: {
         headline: "会判断测什么，才算会测",
-        body: "addItem 和 nextLiked 是同一张图：抽出规则，断言行为。World 7 才会问打包、SSR、上线。机制已经可以迁移。",
+        body: "addItem 和 nextLiked 是同一张图：抽出规则，断言行为。下一课才问：两帧是否同一张脸、下一份请求是否认识 Ada、第一帧有没有冻住的数据。",
       },
       faqs: [
         { q: "组件还要不要测？", a: "要。那是「点按钮，文案变成已喜欢」。更贵，也更接近用户。先保住便宜的纯函数。" },
