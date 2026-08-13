@@ -18,6 +18,9 @@ import { ROUTER_LAB } from "./router";
 import { SLOTS_LAB } from "./slots";
 import { TELEPORT_LAB } from "./teleport";
 import { TRANSITION_LAB } from "./transition";
+import { NEXTTICK_LAB } from "./nexttick";
+import { CAPTURE_LAB } from "./capture";
+import { TEST_LAB } from "./test";
 import { WATCH_LAB } from "./watch";
 
 export const CAUSAL_LABS: CausalLab[] = [
@@ -40,6 +43,9 @@ export const CAUSAL_LABS: CausalLab[] = [
   KEEPALIVE_LAB,
   TELEPORT_LAB,
   TRANSITION_LAB,
+  NEXTTICK_LAB,
+  CAPTURE_LAB,
+  TEST_LAB,
 ];
 
 export function getCausalLab(id: string): CausalLab | undefined {
