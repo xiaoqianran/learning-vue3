@@ -349,23 +349,35 @@
 
 .vue-causal-preview .vue-repl {
   height: 100%;
+  width: 100%;
   --bg: #11111b;
   --bg-soft: #181825;
   --border: #313244;
   --text-light: #cdd6f4;
+  --header-height: 0px;
 }
 
 .vue-causal-preview .vue-repl .left,
 .vue-causal-preview .vue-repl .file-selector,
-.vue-causal-preview .vue-repl .tab-buttons {
+.vue-causal-preview .vue-repl .tab-buttons,
+.vue-causal-preview .vue-repl .dragger,
+.vue-causal-preview .vue-repl .toggler {
   display: none !important;
 }
 
+.vue-causal-preview .vue-repl .split-pane,
 .vue-causal-preview .vue-repl .right,
-.vue-causal-preview .vue-repl .output-container {
+.vue-causal-preview .vue-repl .output-container,
+.vue-causal-preview .vue-repl .iframe-container,
+.vue-causal-preview .vue-repl iframe {
+  position: relative !important;
+  inset: auto !important;
   width: 100% !important;
-  flex: 1 !important;
+  height: 100% !important;
   max-width: none !important;
+  flex: 1 1 100% !important;
+  z-index: 1 !important;
+  pointer-events: auto !important;
 }
 
 .vue-causal-preview iframe {

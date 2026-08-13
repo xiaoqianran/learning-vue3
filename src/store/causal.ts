@@ -82,7 +82,12 @@ export const useCausal = create<CausalState>()(
           return { labs: next };
         }),
     }),
-    { name: "vue-causal-lab-v1", version: 2 },
+    {
+      name: "vue-causal-lab-v1",
+      version: 2,
+      // Prerendered Pages HTML must match the first client paint.
+      skipHydration: true,
+    },
   ),
 );
 

@@ -10,6 +10,7 @@
 
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as CausalRouteImport } from './routes/causal'
 import { Route as CertificateRouteImport } from './routes/certificate'
 import { Route as CheatsheetRouteImport } from './routes/cheatsheet'
 import { Route as DocsRouteImport } from './routes/docs'
@@ -18,13 +19,18 @@ import { Route as LabRouteImport } from './routes/lab'
 import { Route as MistakesRouteImport } from './routes/mistakes'
 import { Route as PlaygroundRouteImport } from './routes/playground'
 import { Route as StudioRouteImport } from './routes/studio'
-import { Route as LessonSlugRouteImport } from './routes/lesson.$slug'
-import { Route as CausalRouteImport } from './routes/causal'
+import { Route as CausalIndexRouteImport } from './routes/causal.index'
 import { Route as CausalLabIdRouteImport } from './routes/causal.$labId'
+import { Route as LessonSlugRouteImport } from './routes/lesson.$slug'
 
 const IndexRoute = IndexRouteImport.update({
   id: '/',
   path: '/',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const CausalRoute = CausalRouteImport.update({
+  id: '/causal',
+  path: '/causal',
   getParentRoute: () => rootRouteImport,
 } as any)
 const CertificateRoute = CertificateRouteImport.update({
@@ -67,24 +73,25 @@ const StudioRoute = StudioRouteImport.update({
   path: '/studio',
   getParentRoute: () => rootRouteImport,
 } as any)
+const CausalIndexRoute = CausalIndexRouteImport.update({
+  id: '/',
+  path: '/',
+  getParentRoute: () => CausalRoute,
+} as any)
+const CausalLabIdRoute = CausalLabIdRouteImport.update({
+  id: '/$labId',
+  path: '/$labId',
+  getParentRoute: () => CausalRoute,
+} as any)
 const LessonSlugRoute = LessonSlugRouteImport.update({
   id: '/lesson/$slug',
   path: '/lesson/$slug',
   getParentRoute: () => rootRouteImport,
 } as any)
-const CausalRoute = CausalRouteImport.update({
-  id: '/causal',
-  path: '/causal',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const CausalLabIdRoute = CausalLabIdRouteImport.update({
-  id: '/causal/$labId',
-  path: '/causal/$labId',
-  getParentRoute: () => rootRouteImport,
-} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
+  '/causal': typeof CausalRouteWithChildren
   '/certificate': typeof CertificateRoute
   '/cheatsheet': typeof CheatsheetRoute
   '/docs': typeof DocsRoute
@@ -93,9 +100,9 @@ export interface FileRoutesByFullPath {
   '/mistakes': typeof MistakesRoute
   '/playground': typeof PlaygroundRoute
   '/studio': typeof StudioRoute
-  '/lesson/$slug': typeof LessonSlugRoute
-  '/causal': typeof CausalRoute
   '/causal/$labId': typeof CausalLabIdRoute
+  '/lesson/$slug': typeof LessonSlugRoute
+  '/causal/': typeof CausalIndexRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
@@ -107,13 +114,14 @@ export interface FileRoutesByTo {
   '/mistakes': typeof MistakesRoute
   '/playground': typeof PlaygroundRoute
   '/studio': typeof StudioRoute
-  '/lesson/$slug': typeof LessonSlugRoute
-  '/causal': typeof CausalRoute
   '/causal/$labId': typeof CausalLabIdRoute
+  '/lesson/$slug': typeof LessonSlugRoute
+  '/causal': typeof CausalIndexRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
+  '/causal': typeof CausalRouteWithChildren
   '/certificate': typeof CertificateRoute
   '/cheatsheet': typeof CheatsheetRoute
   '/docs': typeof DocsRoute
@@ -122,14 +130,15 @@ export interface FileRoutesById {
   '/mistakes': typeof MistakesRoute
   '/playground': typeof PlaygroundRoute
   '/studio': typeof StudioRoute
-  '/lesson/$slug': typeof LessonSlugRoute
-  '/causal': typeof CausalRoute
   '/causal/$labId': typeof CausalLabIdRoute
+  '/lesson/$slug': typeof LessonSlugRoute
+  '/causal/': typeof CausalIndexRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
   fullPaths:
     | '/'
+    | '/causal'
     | '/certificate'
     | '/cheatsheet'
     | '/docs'
@@ -138,9 +147,9 @@ export interface FileRouteTypes {
     | '/mistakes'
     | '/playground'
     | '/studio'
-    | '/lesson/$slug'
-    | '/causal'
     | '/causal/$labId'
+    | '/lesson/$slug'
+    | '/causal/'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
@@ -152,12 +161,13 @@ export interface FileRouteTypes {
     | '/mistakes'
     | '/playground'
     | '/studio'
+    | '/causal/$labId'
     | '/lesson/$slug'
     | '/causal'
-    | '/causal/$labId'
   id:
     | '__root__'
     | '/'
+    | '/causal'
     | '/certificate'
     | '/cheatsheet'
     | '/docs'
@@ -166,13 +176,14 @@ export interface FileRouteTypes {
     | '/mistakes'
     | '/playground'
     | '/studio'
-    | '/lesson/$slug'
-    | '/causal'
     | '/causal/$labId'
+    | '/lesson/$slug'
+    | '/causal/'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
+  CausalRoute: typeof CausalRouteWithChildren
   CertificateRoute: typeof CertificateRoute
   CheatsheetRoute: typeof CheatsheetRoute
   DocsRoute: typeof DocsRoute
@@ -182,8 +193,6 @@ export interface RootRouteChildren {
   PlaygroundRoute: typeof PlaygroundRoute
   StudioRoute: typeof StudioRoute
   LessonSlugRoute: typeof LessonSlugRoute
-  CausalRoute: typeof CausalRoute
-  CausalLabIdRoute: typeof CausalLabIdRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -193,6 +202,13 @@ declare module '@tanstack/react-router' {
       path: '/'
       fullPath: '/'
       preLoaderRoute: typeof IndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/causal': {
+      id: '/causal'
+      path: '/causal'
+      fullPath: '/causal'
+      preLoaderRoute: typeof CausalRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/certificate': {
@@ -251,6 +267,20 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof StudioRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/causal/': {
+      id: '/causal/'
+      path: '/'
+      fullPath: '/causal/'
+      preLoaderRoute: typeof CausalIndexRouteImport
+      parentRoute: typeof CausalRoute
+    }
+    '/causal/$labId': {
+      id: '/causal/$labId'
+      path: '/$labId'
+      fullPath: '/causal/$labId'
+      preLoaderRoute: typeof CausalLabIdRouteImport
+      parentRoute: typeof CausalRoute
+    }
     '/lesson/$slug': {
       id: '/lesson/$slug'
       path: '/lesson/$slug'
@@ -258,25 +288,25 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof LessonSlugRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/causal': {
-      id: '/causal'
-      path: '/causal'
-      fullPath: '/causal'
-      preLoaderRoute: typeof CausalRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/causal/$labId': {
-      id: '/causal/$labId'
-      path: '/causal/$labId'
-      fullPath: '/causal/$labId'
-      preLoaderRoute: typeof CausalLabIdRouteImport
-      parentRoute: typeof rootRouteImport
-    }
   }
 }
 
+interface CausalRouteChildren {
+  CausalLabIdRoute: typeof CausalLabIdRoute
+  CausalIndexRoute: typeof CausalIndexRoute
+}
+
+const CausalRouteChildren: CausalRouteChildren = {
+  CausalLabIdRoute: CausalLabIdRoute,
+  CausalIndexRoute: CausalIndexRoute,
+}
+
+const CausalRouteWithChildren =
+  CausalRoute._addFileChildren(CausalRouteChildren)
+
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
+  CausalRoute: CausalRouteWithChildren,
   CertificateRoute: CertificateRoute,
   CheatsheetRoute: CheatsheetRoute,
   DocsRoute: DocsRoute,
@@ -286,8 +316,6 @@ const rootRouteChildren: RootRouteChildren = {
   PlaygroundRoute: PlaygroundRoute,
   StudioRoute: StudioRoute,
   LessonSlugRoute: LessonSlugRoute,
-  CausalRoute: CausalRoute,
-  CausalLabIdRoute: CausalLabIdRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
