@@ -108,6 +108,9 @@ export function CausalLab({ lab }: Props) {
       "inheritAttrs",
       "defineExpose",
       "defineOptions",
+      "v-focus",
+      "mounted",
+      "unmounted",
     ]);
     for (const n of scene.nodes) if (n.symbol) s.add(n.symbol);
     for (const p of [...scene.observe.state, ...scene.observe.dom, ...scene.observe.events]) {

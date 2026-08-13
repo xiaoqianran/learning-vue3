@@ -36,6 +36,9 @@ import { CUSTOMREF_LAB } from "./customref";
 import { ATTRS_LAB } from "./attrs";
 import { INHERIT_LAB } from "./inherit";
 import { EXPOSE_LAB } from "./expose";
+import { VFOCUS_LAB } from "./vfocus";
+import { VPAINT_LAB } from "./vpaint";
+import { VCLICKOUT_LAB } from "./vclickout";
 import { WATCH_LAB } from "./watch";
 
 export const CAUSAL_LABS: CausalLab[] = [
@@ -76,6 +79,9 @@ export const CAUSAL_LABS: CausalLab[] = [
   ATTRS_LAB,
   INHERIT_LAB,
   EXPOSE_LAB,
+  VFOCUS_LAB,
+  VPAINT_LAB,
+  VCLICKOUT_LAB,
 ];
 
 export function getCausalLab(id: string): CausalLab | undefined {

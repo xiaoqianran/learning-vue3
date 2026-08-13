@@ -100,4 +100,13 @@ export const PROGRAM_WORLDS: ProgramWorld[] = [
     labIds: ["attrs", "inherit", "expose"],
     topics: ["$attrs", "inheritAttrs", "defineExpose"],
   },
+  {
+    id: "w12",
+    n: 12,
+    title: "指令碰到了 DOM",
+    blurb: "v-focus / 参数与修饰符 / 卸掉时摘监听",
+    status: "ready",
+    labIds: ["vfocus", "vpaint", "vclickout"],
+    topics: ["v-focus", "binding.arg", "unmounted"],
+  },
 ];
