@@ -145,4 +145,13 @@ export const PROGRAM_WORLDS: ProgramWorld[] = [
     labIds: ["vonce", "vmemo", "vmemolist"],
     topics: ["v-once", "v-memo", "v-for"],
   },
+  {
+    id: "w17",
+    n: 17,
+    title: "读到的，才会订",
+    blurb: "watchEffect / stop / onCleanup",
+    status: "ready",
+    labIds: ["watcheffect", "watchestop", "watchclean"],
+    topics: ["watchEffect", "stop", "onCleanup"],
+  },
 ];
