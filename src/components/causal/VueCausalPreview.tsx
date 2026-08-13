@@ -26,6 +26,8 @@ type Props = {
 
 /**
  * Preview-only @vue/repl host. Editor is hidden; files update in place for time travel.
+ * The mount node must keep a real layout box — never `sr-only` / 1×1 — or the iframe
+ * is created at 1px and stays blank after the pane becomes visible.
  */
 export function VueCausalPreview({ code, className, label }: Props) {
   const hostRef = useRef<HTMLDivElement>(null);
@@ -88,6 +90,7 @@ export function VueCausalPreview({ code, className, label }: Props) {
           },
         });
         app.mount(el);
+        el.querySelector(".split-pane")?.classList.add("show-output");
         apiRef.current = {
           setFiles: (files, main) => store.setFiles(files, main),
           unmount: () => {
@@ -125,31 +128,27 @@ export function VueCausalPreview({ code, className, label }: Props) {
 
   return (
     <div className={cn("flex h-full min-h-0 flex-col overflow-hidden bg-[#11111b]", className)}>
-      <div className="flex items-center justify-between gap-2 border-b border-border/70 px-3 py-1.5">
+      <div className="flex shrink-0 items-center justify-between gap-2 border-b border-border/70 px-3 py-1.5">
         <p className="text-[10px] font-medium uppercase tracking-wider text-primary">
           {label ?? "Live Application"}
         </p>
         <span className="font-mono text-[10px] text-subtle">@vue/repl</span>
       </div>
-      {status === "loading" ? (
-        <div className="flex flex-1 items-center justify-center gap-2 text-sm text-muted">
-          <Loader2 className="h-4 w-4 animate-spin" />
-          加载 Vue 运行时…
-        </div>
-      ) : null}
-      {status === "error" ? (
-        <div className="flex flex-1 items-start gap-2 p-4 text-sm text-warn">
-          <AlertTriangle className="mt-0.5 h-4 w-4 shrink-0" />
-          <span>{error ?? "加载失败"}</span>
-        </div>
-      ) : null}
-      <div
-        ref={hostRef}
-        className={cn(
-          "vue-sfc-repl-host vue-causal-preview min-h-0 flex-1",
-          status !== "ready" && "sr-only",
-        )}
-      />
+      <div className="relative min-h-0 flex-1">
+        <div ref={hostRef} className="vue-sfc-repl-host vue-causal-preview absolute inset-0" />
+        {status === "loading" ? (
+          <div className="absolute inset-0 z-10 flex items-center justify-center gap-2 bg-[#11111b]/80 text-sm text-muted">
+            <Loader2 className="h-4 w-4 animate-spin" />
+            加载 Vue 运行时…
+          </div>
+        ) : null}
+        {status === "error" ? (
+          <div className="absolute inset-0 z-10 flex items-start gap-2 bg-[#11111b] p-4 text-sm text-warn">
+            <AlertTriangle className="mt-0.5 h-4 w-4 shrink-0" />
+            <span>{error ?? "加载失败"}</span>
+          </div>
+        ) : null}
+      </div>
     </div>
   );
 }

@@ -7,20 +7,32 @@ type Props = {
   spec: Counterfactual;
   showTwist: boolean;
   onTwist: () => void;
+  onClose?: () => void;
   selected?: string | null;
   onSelect: (s: string) => void;
 };
 
-export function CounterfactualView({ spec, showTwist, onTwist, selected, onSelect }: Props) {
+export function CounterfactualView({ spec, showTwist, onTwist, onClose, selected, onSelect }: Props) {
   const worlds = showTwist && spec.twist ? spec.twist.worlds : spec.worlds;
   return (
     <div className="flex h-full min-h-0 flex-col">
-      <div className="border-b border-border px-3 py-2">
-        <p className="text-[10px] font-medium uppercase tracking-wider text-primary">
-          Counterfactual Branch
-        </p>
-        <p className="mt-0.5 text-sm text-fg">{spec.title}</p>
-        <p className="text-xs text-muted">{showTwist && spec.twist ? spec.twist.body : spec.setup}</p>
+      <div className="flex items-start justify-between gap-3 border-b border-border px-3 py-2">
+        <div className="min-w-0">
+          <p className="text-[10px] font-medium uppercase tracking-wider text-primary">
+            Counterfactual Branch
+          </p>
+          <p className="mt-0.5 text-sm text-fg">{spec.title}</p>
+          <p className="text-xs text-muted">{showTwist && spec.twist ? spec.twist.body : spec.setup}</p>
+        </div>
+        {onClose ? (
+          <button
+            type="button"
+            onClick={onClose}
+            className="shrink-0 rounded-full border border-border px-3 py-1 text-xs text-muted hover:bg-surface-2 hover:text-fg"
+          >
+            回到实时预览
+          </button>
+        ) : null}
       </div>
       <div className="grid min-h-0 flex-1 grid-cols-1 divide-y divide-border lg:grid-cols-2 lg:divide-x lg:divide-y-0">
         {worlds.map((w) => (
@@ -29,6 +41,16 @@ export function CounterfactualView({ spec, showTwist, onTwist, selected, onSelec
       </div>
       <div className="flex flex-wrap items-center justify-between gap-2 border-t border-border px-3 py-2">
         <p className="text-xs leading-relaxed text-muted">{spec.punchline}</p>
+        <div className="flex shrink-0 flex-wrap items-center gap-2">
+        {onClose ? (
+          <button
+            type="button"
+            onClick={onClose}
+            className="rounded-full border border-border px-3 py-1 text-xs text-muted hover:bg-surface-2 hover:text-fg"
+          >
+            关闭
+          </button>
+        ) : null}
         {spec.twist && !showTwist ? (
           <button
             type="button"
@@ -38,6 +60,7 @@ export function CounterfactualView({ spec, showTwist, onTwist, selected, onSelec
             {spec.twist.title}
           </button>
         ) : null}
+        </div>
       </div>
     </div>
   );

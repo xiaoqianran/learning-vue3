@@ -57,12 +57,12 @@ export function CausalLab({ lab }: Props) {
 
   useEffect(() => {
     setAblation(null);
-    setCfOpen(Boolean(scene.counterfactual) && !waiting);
+    setCfOpen(false);
     setCfTwist(false);
     setReplay(null);
     setSelected(null);
     markScene(lab.id, index, false);
-  }, [lab.id, index, scene.id, scene.counterfactual, waiting, markScene]);
+  }, [lab.id, index, scene.id, markScene]);
 
   useEffect(() => {
     if (waiting) return;
@@ -159,8 +159,8 @@ export function CausalLab({ lab }: Props) {
   }
 
   return (
-    <div className="flex min-h-0 flex-1 flex-col">
-      <div className="flex flex-wrap items-center gap-2 border-b border-border px-3 py-2 sm:px-4">
+    <div className="flex h-full min-h-0 flex-1 flex-col overflow-hidden">
+      <div className="flex shrink-0 flex-wrap items-center gap-2 border-b border-border px-3 py-2 sm:px-4">
         <Link to="/causal" className="text-xs text-muted no-underline hover:text-fg">
           World 1
         </Link>
@@ -204,8 +204,24 @@ export function CausalLab({ lab }: Props) {
         </button>
       </div>
 
-      <div className="grid min-h-0 flex-1 grid-cols-1 grid-rows-[minmax(0,1fr)_minmax(0,1fr)] lg:grid-cols-2">
-        <section className="min-h-0 border-b border-border lg:border-r">
+      <div className="grid min-h-0 flex-1 grid-cols-1 overflow-auto lg:grid-cols-2 lg:grid-rows-2 lg:overflow-hidden">
+        {cfOpen && scene.counterfactual && !waiting ? (
+          <section className="min-h-[min(70vh,36rem)] overflow-hidden lg:col-span-2 lg:row-span-2 lg:min-h-0">
+            <CounterfactualView
+              spec={scene.counterfactual}
+              showTwist={cfTwist}
+              onTwist={() => {
+                setCfTwist(true);
+                recordTried(lab.id, `${scene.counterfactual!.id}:twist`);
+              }}
+              onClose={() => setCfOpen(false)}
+              selected={selected}
+              onSelect={setSelected}
+            />
+          </section>
+        ) : (
+          <>
+        <section className="flex min-h-[min(52vh,22rem)] flex-col overflow-hidden border-b border-border lg:min-h-0 lg:border-r">
           <CodeEvolution
             before={before}
             after={after}
@@ -217,27 +233,14 @@ export function CausalLab({ lab }: Props) {
             waiting={waiting}
           />
         </section>
-        <section className="min-h-0 border-b border-border">
-          {cfOpen && scene.counterfactual && !waiting ? (
-            <CounterfactualView
-              spec={scene.counterfactual}
-              showTwist={cfTwist}
-              onTwist={() => {
-                setCfTwist(true);
-                recordTried(lab.id, `${scene.counterfactual!.id}:twist`);
-              }}
-              selected={selected}
-              onSelect={setSelected}
-            />
-          ) : (
+        <section className="flex min-h-[min(52vh,22rem)] flex-col overflow-hidden border-b border-border lg:min-h-0">
             <VueCausalPreview
               key={lab.id}
               code={liveCode}
               label={ablation ? `Ablation · ${ablation.prompt}` : "Live Application"}
             />
-          )}
         </section>
-        <section className="min-h-0 border-b border-border lg:border-b-0 lg:border-r">
+        <section className="flex min-h-[min(48vh,20rem)] flex-col overflow-hidden border-b border-border lg:min-h-0 lg:border-b-0 lg:border-r">
           <RuntimeXRay
             nodes={scene.nodes}
             edges={scene.edges}
@@ -248,7 +251,7 @@ export function CausalLab({ lab }: Props) {
             flash={replay?.state ?? null}
           />
         </section>
-        <section className="min-h-0">
+        <section className="flex min-h-[min(48vh,20rem)] flex-col overflow-hidden lg:min-h-0">
           <NarrativePanel
             scene={scene}
             waiting={waiting}
@@ -283,9 +286,13 @@ export function CausalLab({ lab }: Props) {
             replaying={replaying}
           />
         </section>
+          </>
+        )}
       </div>
 
-      <TimeMachine scenes={lab.scenes} index={index} maxReached={maxReached} onGo={go} />
+      <div className="shrink-0">
+        <TimeMachine scenes={lab.scenes} index={index} maxReached={maxReached} onGo={go} />
+      </div>
     </div>
   );
 }

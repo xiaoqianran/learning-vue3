@@ -77,6 +77,7 @@ function AppShell({ children }: { children: ReactNode }) {
   useEffect(() => {
     applyCtpFlavor(readCtpFlavor());
     applyCtpAccent(readCtpAccent());
+    void useCausal.persist.rehydrate();
   }, []);
 
   return (
@@ -129,7 +130,7 @@ function AppShell({ children }: { children: ReactNode }) {
       <main
         className={cn(
           isCausalPlayer
-            ? "flex min-h-[calc(100dvh-3.5rem)] flex-col"
+            ? "flex h-[calc(100dvh-3.5rem)] min-h-0 flex-col overflow-hidden"
             : "mx-auto max-w-3xl px-4 py-8 sm:px-6",
         )}
       >

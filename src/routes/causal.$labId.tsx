@@ -12,7 +12,7 @@ function CausalLabPage() {
   if (!lab) throw notFound();
 
   return (
-    <div className="flex min-h-[calc(100dvh-3.5rem)] flex-col">
+    <div className="flex h-full min-h-0 flex-1 flex-col overflow-hidden">
       <CausalLab lab={lab} />
       <p className="sr-only">
         <Link to="/causal">返回 World 1</Link>
