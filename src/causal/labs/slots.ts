@@ -205,6 +205,10 @@ export const SLOTS_LAB: CausalLab = {
         body: "title 是值，可以用 props。列表是界面，要用 slot。下一镜只创建空壳文件，先不替换 App——否则你会分不清「文件出现」和「内容丢失」。",
       },
       tryThis: "看右侧：边框、标题、列表长在一起。下一镜文件会出现，这一页不应变。",
+      faqs: [
+        { q: "为什么不直接写 <slot />？", a: "因为你还没看见「换上壳、却把内容留在内存里」会长什么样。先有丢失，再开洞。" },
+        { q: "这和抽出 TodoItem 有什么不同？", a: "TodoItem 接收的是一条数据。Panel 要接收的是一段界面。props 传不进模板。" },
+      ],
     },
     {
       id: "slots-s1",
@@ -245,6 +249,10 @@ export const SLOTS_LAB: CausalLab = {
         body: "title 可以用 props 传字符串。列表不行——它不是一个值。下一镜把 App 换成 <Panel title=... />，你会看见列表消失。这是故意的。",
       },
       tryThis: "确认列表还在。Panel.vue 已经存在，但 App 没用它。",
+      faqs: [
+        { q: "为什么先建一个没有 slot 的壳？", a: "有文件 ≠ 被使用。和 TodoItem 进门那一镜同一条边：先让文件出现，页面不变。" },
+        { q: "Panel 现在能显示列表吗？", a: "不能。它只认识 title 字符串。列表还在 App 的模板里。" },
+      ],
     },
     {
       id: "slots-s2",
@@ -293,6 +301,10 @@ export const SLOTS_LAB: CausalLab = {
         body: "这不是 bug，是边界。下一镜只在 Panel 里开一个 <slot />，App 先不改——洞是空的，所以页面仍该是空身体。先看见「有洞 ≠ 有内容」。",
       },
       tryThis: "看右侧：标题「今日待办」还在，两项待办没了。todos 仍在 script 里。",
+      faqs: [
+        { q: "todos 还在，为什么不显示？", a: "它在 App 的 script 里。Panel 的模板读不到父的变量。没过边界的状态，对面看不见。" },
+        { q: "标题为什么还在？", a: "title 走了 props。字符串过了边界。列表没有过。" },
+      ],
     },
     {
       id: "slots-s3",
@@ -594,6 +606,10 @@ export const SLOTS_LAB: CausalLab = {
         body: "slot 只渲染你放进去的节点，或子写下的后备。这是和 props、和 v-for 最大的差别。",
       },
       tryThis: "先看填满的版本。再试：只不传 #title、两个洞都不传、壳上根本没有 slot。每种失败的脸不一样。",
+      faqs: [
+        { q: "后备和默认值有何不同？", a: "props 的 default 是值。slot 的后备是一段界面。空洞合法，所以不报错，只是空。" },
+        { q: "三种消融要按什么顺序看？", a: "先不传标题（走后备）、再两个洞都不传、再拆掉 slot。丢失的脸不一样。" },
+      ],
     },
     {
       id: "slots-s8",
@@ -645,6 +661,10 @@ export const SLOTS_LAB: CausalLab = {
         body: "从手写两项，到数组投影，到输入写回，到子组件协议，到外壳插槽。下一世界会把这份 Todo 变成可共享、可导航的小 SPA。",
       },
       tryThis: "先看写死的名片。想清楚哪一块是壳、哪一块是内容。再打开「抽成 Card 插槽」。",
+      faqs: [
+        { q: "名字为什么不做成 prop？", a: "可以。但名字旁若要放徽章、链接、按钮，字符串立刻不够。具名插槽传的是界面。" },
+        { q: "和 LikeButton 那一课怎么连？", a: "LikeButton 切的是状态边界。Card 切的是外壳 / 内容。两个方向，都是「不要把不该知道的东西写进子组件」。" },
+      ],
     },
   ],
 };

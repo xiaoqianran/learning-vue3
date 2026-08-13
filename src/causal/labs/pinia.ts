@@ -362,6 +362,9 @@ export const PINIA_LAB: CausalLab = {
         body: "模块顶层 ref 没有名字、没有 DevTools、SSR 时会串请求。下一镜只创建 stores/todos.js，先不调用。",
       },
       tryThis: "勾选一项，确认统计跟着变。这是你已经会的共享。",
+      faqs: [
+        { q: "这不就是上一课的模块单例吗？", a: "是。Pinia 要正式化的是这件事：给单例一个 id、一套协议、一个 DevTools 入口。先确认你已经有一份能跑的共享。" },
+      ],
     },
     {
       id: "pinia-s1",

@@ -48,6 +48,25 @@ watch([price, quantity], () => {
 </template>
 `;
 
+const watchNoImmediate = `<script setup>
+import { ref, watch } from 'vue'
+
+const price = ref(10)
+const quantity = ref(2)
+const total = ref(0)
+
+watch([price, quantity], () => {
+  total.value = price.value * quantity.value
+})
+</script>
+
+<template>
+  <p>单价 {{ price }} × {{ quantity }} 件</p>
+  <p class="total">合计 {{ total }}</p>
+  <button @click="quantity++">多买一件</button>
+</template>
+`;
+
 const computedDiscount = `<script setup>
 import { ref, computed } from 'vue'
 
@@ -255,8 +274,8 @@ export const WATCH_LAB: CausalLab = {
   concept: "watch",
   title: "两个世界，同一张脸",
   subtitle: "computed 是派生；watch 是副作用通道",
-  promise: "先看两边 UI 完全一样，再看内部图如何分叉——然后才明白何时用 watch。",
-  minutes: 16,
+  promise: "先看两边 UI 完全一样，再看内部图如何分叉——然后亲手去掉 immediate，看见第一帧的 0。",
+  minutes: 22,
   official: "/guide/essentials/watchers.html",
   scenes: [
     {
@@ -295,6 +314,7 @@ export const WATCH_LAB: CausalLab = {
       faqs: [
         { q: "为什么不直接告诉我用 computed？", a: "因为被告诉的定义记不住。并排看见「一样的脸、不一样的图」，定义会自己长出来。" },
       ],
+      tryThis: "点「多买一件」。数量会变，仍没有合计。先问：合计是记忆，还是算出来的？",
     },
     {
       id: "watch-s1",
@@ -348,10 +368,81 @@ export const WATCH_LAB: CausalLab = {
         { q: "B 为什么要 immediate？", a: "否则首次 total 仍是 0，要等 price/quantity 再变才同步。computed 没有这个问题。忘记 immediate，是 watch 同步派生值时最常见的静默错误。" },
         { q: "watch 的回调里为什么用 .value？", a: "因为那是 script。price、quantity、total 都是 ref / computed ref。漏 .value 会把对象赋进去，合计变成 [object Object] 或根本不对。" },
       ],
+      tryThis: "打开两个世界对比。两边合计都应是 20。先记住这张「一样的脸」。下一镜会拆掉 B 的 immediate。",
     },
     {
       id: "watch-s2",
       tick: "S2",
+      title: "去掉 immediate",
+      goal: "watch 默认不跑第一帧。合计会先亮 0。",
+      layer: "predict",
+      fading: 2,
+      prediction: {
+        question: "同一段 watch 同步 total，但去掉 { immediate: true }。首次渲染合计是？",
+        choices: [
+          { id: "20", label: "20，和 computed 一样", correct: false, why: "没有 immediate 时，回调要等依赖下一次变化。第一帧 total 仍是你写下的 0。" },
+          { id: "zero", label: "0。要再点一次「多买一件」才会同步", correct: true, why: "setup 时 quantity 已经是 2，但 watch 还没跑。点击变成 3 才触发，合计直接跳到 30，20 从未出现。" },
+          { id: "err", label: "报错：watch 必须写 immediate", correct: false, why: "合法。失败是静默的错数。" },
+        ],
+      },
+      mutation: {
+        files: { "src/App.vue": watchNoImmediate },
+        blocks: [{ id: "no-imm", label: "① 去掉 immediate" }],
+        narration: "只删了一个选项。源还在，公式还在，第一帧却是错的。",
+      },
+      observe: {
+        state: [{ id: "total", label: "total", value: "0（尚未同步）", symbol: "total" }],
+        dom: [{ id: "total", label: ".total", value: "合计 0", symbol: "total" }],
+        events: [{ id: "click", label: "click", value: "quantity++" }],
+      },
+      nodes: [
+        { id: "qty", kind: "ref", label: "quantity" },
+        { id: "watch", kind: "watch", label: "watch", detail: "等下一次变化" },
+        { id: "total", kind: "ref", label: "total", detail: "仍是 0", symbol: "total" },
+        { id: "dom", kind: "dom", label: "DOM", detail: "合计 0" },
+      ],
+      edges: [
+        { from: "qty", to: "watch", label: "尚未触发" },
+        { from: "watch", to: "total", label: "赋值" },
+        { from: "total", to: "dom" },
+      ],
+      ablations: [
+        {
+          id: "add-immediate",
+          prompt: "加回 immediate 之后？",
+          files: { "src/App.vue": watchWorld },
+          expected: {
+            kind: "stale",
+            message: "这是修复：第一帧就是 20。immediate 让 watch 在 setup 时立刻跑一次。",
+          },
+          lesson: "computed 第一次被读取就会求值。用 watch 去同步一个值时，你得自己补上这一帧。漏了不会报错。",
+        },
+      ],
+      why: {
+        question: "点一次「多买一件」后合计为什么是 30 不是 20？",
+        choices: [
+          { id: "skip", label: "第一帧被跳过。点击时 quantity 已经是 3，才第一次赋值", correct: true, why: "20 从来没有被写进 total。静默错误不是「不更新」，是「少更新一次」。" },
+          { id: "offby", label: "watch 总是多加一次", correct: false, why: "没有这种偏差。是首次没跑。" },
+          { id: "qty", label: "按钮把数量加了两次", correct: false, why: "数量 2→3 只一次。错的是 total 的初始值。" },
+        ],
+      },
+      explanation: {
+        headline: "少跑的那一帧不会报错",
+        body: "这就是为什么不能用「页面看起来对不对」来选 API。加上 immediate，B 又能装成 A。但你已经看见：装的时候，第一帧是租来的。值应该用 computed。",
+      },
+      faqs: [
+        { q: "flush: 'sync' 能代替 immediate 吗？", a: "不能。flush 管的是「变化之后何时跑」，immediate 管的是「现在先跑一次吗」。两件不同的事。" },
+        { q: "watchEffect 需要 immediate 吗？", a: "不需要。它创建时就会跑，并在那时收集依赖。仍是副作用通道，不是派生值。" },
+      ],
+      tryThis: "先看合计是不是 0。再点「多买一件」——应变成 30，不是 20。然后打开「加回 immediate」，第一帧回到 20。",
+      mapping: [
+        { code: "watch(..., { immediate: true })", runtime: "setup 时先跑一次", ui: "合计 20" },
+        { code: "watch(...) 无 immediate", runtime: "等下一次变化", ui: "合计 0 → 点击后 30" },
+      ],
+    },
+    {
+      id: "watch-s3",
+      tick: "S3",
       title: "加入折扣",
       goal: "需求变了：total 还要乘 discount。看哪边自然生长。",
       layer: "predict",
@@ -416,10 +507,11 @@ export const WATCH_LAB: CausalLab = {
         headline: "派生会生长；同步要人养",
         body: "computed 在读取时自动收集依赖。watch 依赖你列出来的东西。所以：值 → computed；副作用 → watch。",
       },
+      tryThis: "打开两个世界。A 改公式即可。B 还要改 watch 数组。再试「watch 忘了写 discount」：点改折扣，合计不应变。",
     },
     {
-      id: "watch-s3",
-      tick: "S3",
+      id: "watch-s4",
+      tick: "S4",
       title: "watch 真正该做的事",
       goal: "把合计同步到 document.title。这才是副作用。",
       layer: "see",
@@ -476,14 +568,15 @@ export const WATCH_LAB: CausalLab = {
         body: "total 变化后：一条边走向界面，一条边走向世界（标题、网络、日志）。watch 不是 computed 的平替，而是离开程序、进入外界的门。",
       },
       faqs: [
-        { q: "watchEffect 呢？", a: "它自动收集依赖，更像「立刻跑的副作用 computed」。仍是副作用通道，不是派生值。" },
+        { q: "watchEffect 呢？", a: "它创建时就跑，并自动收集依赖，更像「立刻跑的副作用 computed」。仍是副作用通道，不是派生值。上一镜的 immediate，正是 watch 在模仿 watchEffect 的第一帧。" },
         { q: "这里 React 会怎么写？", a: "total 用 useMemo；document.title 用 useEffect。同样是派生 vs 副作用。" },
+        { q: "改标题为什么不写在 computed 里？", a: "computed 必须纯。一写 document.title，它就不再是派生值，缓存和调试都会撒谎。" },
       ],
       tryThis: "点「多买一件」，看合计数字。若运行环境暴露了 document.title，它应写成「合计 n」。",
     },
     {
-      id: "watch-s4",
-      tick: "S4",
+      id: "watch-s5",
+      tick: "S5",
       title: "搜索列表放哪？",
       goal: "filteredUsers：派生还是同步？",
       layer: "transfer",
@@ -534,6 +627,11 @@ export const WATCH_LAB: CausalLab = {
         headline: "三次都判断对，才是 mastered",
         body: "购物车、Todo、搜索。如果你每次都选「派生值用 computed，副作用用 watch」，机制已经可迁移。不是因为背过定义。",
       },
+      faqs: [
+        { q: "如果搜索要打到服务器呢？", a: "query 仍是源。请求是副作用：watch / watchEffect 里去 fetch。返回的列表才是另一份状态。World 4 会专门走这条边。" },
+        { q: "用 watch(query) 去改 filteredUsers 呢？", a: "和用 watch 写 total 同一类错误。本地过滤没有外界，不该多一份要同步的数组。" },
+      ],
+      tryThis: "先输入 Ada——三项都在，因为还没过滤。再打开「用 computed 过滤」：输入 ad 应只剩 Ada。",
     },
   ],
 };

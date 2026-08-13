@@ -38,6 +38,36 @@ const count = ref(0)
 </template>
 `;
 
+const s4 = `<script setup>
+import { ref } from 'vue'
+
+const count = ref(0)
+
+function inc() {
+  count++
+}
+</script>
+
+<template>
+  <button @click="inc">点击 {{ count }}</button>
+</template>
+`;
+
+const s5 = `<script setup>
+import { ref } from 'vue'
+
+const count = ref(0)
+
+function inc() {
+  count.value++
+}
+</script>
+
+<template>
+  <button @click="inc">点击 {{ count }}</button>
+</template>
+`;
+
 const noLine = `<script setup>
 import { ref } from 'vue'
 </script>
@@ -86,8 +116,9 @@ export const REF_LAB: CausalLab = {
   concept: "ref",
   title: "一个按钮活起来",
   subtitle: "普通变量为什么动不了界面",
-  promise: "亲眼看见：有 ref → 界面跟着变；没有 ref → 值变了界面不知道。",
-  minutes: 16,
+  promise:
+    "亲眼看见：有 ref → 界面跟着变；没有 ref → 值变了界面不知道。再看见：模板会解包，script 里必须 .value。",
+  minutes: 22,
   official: "/guide/essentials/reactivity-fundamentals.html",
   scenes: [
     {
@@ -116,6 +147,7 @@ export const REF_LAB: CausalLab = {
         headline: "现在还没有程序状态",
         body: "按钮能显示，是因为模板被编译成了 DOM。但程序里没有任何会变化的东西。接下来我们要让它记住一个数字——一次只改一件事。",
       },
+      tryThis: "点这个按钮。什么都不该发生。记住这张不会动的脸。",
       faqs: [
         { q: "这算 Vue 程序吗？", a: "算。它已经是一个 SFC。只是还没有任何响应式数据，所以行为上和静态 HTML 一样。" },
         { q: "为什么不先讲 setup？", a: "因为你还没看见「缺了它会怎样」。先有现象，再引入机制。" },
@@ -169,8 +201,9 @@ export const REF_LAB: CausalLab = {
       },
       faqs: [
         { q: "为什么刚才页面没变化？", a: "因为模板还没有读取 count。响应式系统只追踪实际发生的读取。" },
-        { q: ".value 呢？", a: "在 script 里读写 ref 需要 .value。这一步我们还没读写它，所以先不引入，避免一次改两件事。" },
+        { q: ".value 呢？", a: "在 script 里读写 ref 需要 .value。这一步我们还没读写它，所以先不引入，避免一次改两件事。两镜之后会把 click 搬进函数，专门看漏 .value 会怎样。" },
       ],
+      tryThis: "看按钮仍是「点击」，没有 0。打开 X-Ray：count 已经在，只是没人读。",
       mapping: [
         { code: "const count = ref(0)", runtime: "count: ref → 0", ui: "（尚未出现）" },
       ],
@@ -217,6 +250,7 @@ export const REF_LAB: CausalLab = {
         { q: "为什么模板不需要 .value？", a: "模板会自动解包 ref。script 里是真正的 Ref 对象，所以要 .value；模板里 Vue 帮你拆开。" },
         { q: "现在点击会怎样？", a: "什么都不会发生。按钮还没有 @click。状态存在，也被读取了，但没有人去改它。" },
       ],
+      tryThis: "确认按钮变成「点击 0」。再点它——这一镜还不会加。",
       mapping: [
         { code: "{{ count }}", runtime: "template effect 读取 count", ui: "点击 0" },
       ],
@@ -272,7 +306,7 @@ export const REF_LAB: CausalLab = {
         question: "模板里 count++ 为什么不用 .value？",
         choices: [
           { id: "unwrap", label: "模板自动解包 ref，编译后相当于 count.value++", correct: true, why: "script 里 count 是 Ref 对象。模板里 Vue 帮你拆开。两条世界，一条规则。" },
-          { id: "sugar", label: "++ 只能用在模板，script 里会失败", correct: false, why: "script 里写 count.value++ 完全合法，而且是正道。" },
+          { id: "sugar", label: "++ 只能用在模板，script 里会失败", correct: false, why: "script 里写 count.value++ 完全合法，而且是正道。下一镜会把 click 搬进函数，让你看见漏 .value 的脸。" },
           { id: "same", label: "模板和 script 是同一套作用域，都不需要 .value", correct: false, why: "script 里漏 .value 是最常见的静默/报错之一。" },
         ],
       },
@@ -293,6 +327,125 @@ export const REF_LAB: CausalLab = {
     {
       id: "ref-s4",
       tick: "S4",
+      title: "搬进函数，丢掉 .value",
+      goal: "同一句 count++，离开模板之后规则换了。",
+      layer: "predict",
+      fading: 2,
+      prediction: {
+        question: "把 @click 换成 inc()，函数里写 count++（没有 .value）。点击会？",
+        choices: [
+          { id: "inc", label: "照样 0 → 1 → 2，因为刚才模板里就是这么写的", correct: false, why: "模板会解包。函数里的 count 是 Ref 对象。++ 要写回这个绑定，const 不允许。" },
+          { id: "stale", label: "数字不动，也不报错", correct: false, why: "有一种漏法是只读了 count.value 却没写回去，那才会静默。这里的 ++ 包含赋值。" },
+          { id: "err", label: "报错：不能给 const 赋值，或 count 不是数字", correct: true, why: "script 里 count 是对象。count++ 等于试图把绑定改成 NaN。const 拦住了。界面冻在 0。" },
+        ],
+      },
+      mutation: {
+        files: { "src/App.vue": s4 },
+        blocks: [{ id: "fn", label: "⑤ 点击改走 inc()，里面是 count++" }],
+        narration: "只搬了一件事：事件处理离开模板。解包规则没有跟着搬家。",
+      },
+      observe: {
+        state: [{ id: "count", label: "count", value: "仍是 0", symbol: "count" }],
+        dom: [{ id: "btn", label: "button", value: "点击 0", symbol: "count" }],
+        events: [{ id: "click", label: "click", value: "inc() → count++" }],
+      },
+      nodes: [
+        { id: "click", kind: "event", label: "click" },
+        { id: "fn", kind: "script", label: "inc()", detail: "count++ 写不回去" },
+        { id: "ref", kind: "ref", label: "count", detail: "没被写入", symbol: "count" },
+        { id: "dom", kind: "dom", label: "DOM", detail: "冻在 0" },
+      ],
+      edges: [
+        { from: "click", to: "fn", label: "调用" },
+        { from: "fn", to: "ref", label: "写入失败" },
+      ],
+      why: {
+        question: "为什么模板里可以 count++，函数里不行？",
+        choices: [
+          { id: "worlds", label: "模板会解包 ref；script 里 count 仍是对象", correct: true, why: "两条世界，一条规则。搬进函数，你就离开了解包区。" },
+          { id: "const", label: "只是因为写了 const。改成 let 就好了", correct: false, why: "let count = ref(0) 再 count++，会把 ref 换成 NaN。更糟，不是修好。" },
+          { id: "fn", label: "函数不能改响应式状态，只能在模板里改", correct: false, why: "函数正是改状态的地方。缺的是 .value，不是函数本身。" },
+        ],
+      },
+      explanation: {
+        headline: "解包只发生在模板",
+        body: "上一镜能跑，不是因为 count++ 是魔法，是因为编译器帮你拆开了 ref。函数里没有这层拆开。漏 .value 是 Vue 3 最常见的第一道坑——有时报错，有时静默把对象当成数字。",
+      },
+      faqs: [
+        { q: "控制台会看见什么？", a: "常见是 Assignment to constant variable，或把对象拿去 ++。不要关掉报错——它在告诉你：你在对 Ref 对象赋值，不是对里面的数字。" },
+        { q: "改成 let count = ref(0) 再 count++ 呢？", a: "绑定能改了，但改成了 NaN。ref 丢了，模板更乱。const + .value 才是正道。" },
+        { q: "count.value + 1 呢？", a: "那是读取，没有写回。界面会静默冻住。++ 和 = 才是写入。" },
+      ],
+      tryThis: "点按钮。数字必须仍是 0。若预览报错，读那一行：它在说你改的是绑定，不是 .value。",
+      mapping: [
+        { code: "function inc() { count++ }", runtime: "对 Ref 对象赋值 → 失败", ui: "冻在 0" },
+      ],
+    },
+    {
+      id: "ref-s5",
+      tick: "S5",
+      title: "函数里补上 .value",
+      goal: "script 里的写入走 .value。模板的读取仍然自动解包。",
+      layer: "predict",
+      fading: 2,
+      prediction: {
+        question: "改成 count.value++ 之后，点击会？",
+        choices: [
+          { id: "inc", label: "数字增加：0 → 1 → 2", correct: true, why: "写入发生在 ref 内部。订阅过的渲染被通知。和模板里 count++ 是同一条边，只是你亲手拆开了。" },
+          { id: "same", label: "还是报错，函数里不能用 .value", correct: false, why: "恰恰相反：函数里必须 .value。" },
+          { id: "unwrap", label: "变成 2、4、6，因为模板又解包了一次", correct: false, why: "解包不会让 ++ 发生两次。模板读的是已经写进去的数字。" },
+        ],
+      },
+      mutation: {
+        files: { "src/App.vue": s5 },
+        blocks: [{ id: "value", label: "⑥ count.value++" }],
+        narration: "只补了一个 .value。事件、ref、模板读取都没改。",
+      },
+      replay: {
+        label: "自动点击 3 次",
+        steps: [
+          { caption: "click → inc()", event: "click", highlight: ["click"] },
+          { caption: "count.value  0 → 1", highlight: ["ref"], state: { id: "count", from: "0", to: "1" } },
+          { caption: "DOM  「点击 0」→「点击 1」", highlight: ["dom"] },
+          { caption: "再点：1 → 2", event: "click", highlight: ["click", "ref", "dom"], state: { id: "count", from: "1", to: "2" } },
+          { caption: "再点：2 → 3", event: "click", highlight: ["click", "ref", "dom"], state: { id: "count", from: "2", to: "3" } },
+        ],
+      },
+      observe: {
+        state: [{ id: "count", label: "count", value: "0 → n", symbol: "count" }],
+        dom: [{ id: "btn", label: "button", value: "点击 n", symbol: "count" }],
+        events: [{ id: "click", label: "click", value: "inc → .value++" }],
+      },
+      nodes: [
+        { id: "click", kind: "event", label: "click" },
+        { id: "fn", kind: "script", label: "inc()", detail: "count.value++" },
+        { id: "ref", kind: "ref", label: "count", detail: "0 → n", symbol: "count" },
+        { id: "render", kind: "render", label: "render" },
+        { id: "dom", kind: "dom", label: "DOM", detail: "点击 n" },
+      ],
+      edges: [
+        { from: "click", to: "fn" },
+        { from: "fn", to: "ref", label: ".value 写入" },
+        { from: "ref", to: "render", label: "通知" },
+        { from: "render", to: "dom" },
+      ],
+      explanation: {
+        headline: "script 写 .value，模板读光名字",
+        body: "count 是盒子。.value 是盒子里的数字。模板帮你打开盒子；函数里你要自己打开。记住这张图，后面 computed、watch、composable 都还在用它。",
+      },
+      faqs: [
+        { q: "为什么不在模板里也写 .value？", a: "能跑，但不要。标记应该读状态，不该露出 Ref 的实现。" },
+        { q: "reactive 呢？", a: "对象可以用 reactive，字段不用 .value。数字、布尔、字符串这种原始值，ref 才是对的工具。一次只改一个机制。" },
+      ],
+      tryThis: "连点三次。必须变成 1、2、3。对比上一镜那次失败：差别只有一个 .value。",
+      mapping: [
+        { code: "count.value++", runtime: "写入 ref 内部", ui: "点击后数字 +1" },
+        { code: "{{ count }}", runtime: "模板解包读取", ui: "按钮文本" },
+      ],
+    },
+    {
+      id: "ref-s6",
+      tick: "S6",
       title: "如果没有这一行？",
       goal: "不要被告知「ref 很重要」。亲自拆掉它。",
       layer: "break",
@@ -307,7 +460,7 @@ export const REF_LAB: CausalLab = {
       },
       mutation: {
         files: { "src/App.vue": s3 },
-        blocks: [{ id: "same", label: "保持上一镜" }],
+        blocks: [{ id: "same", label: "回到模板版 count++" }],
         narration: "代码还是能跑的那一版。下面用消融实验对比「删掉」和「换掉」。",
       },
       observe: {
@@ -350,17 +503,17 @@ export const REF_LAB: CausalLab = {
       ],
       explanation: {
         headline: "两种坏法，两种因果",
-        body: "没有这一行 → 名字不存在 → 报错。不要 ref → 名字存在、值在变、界面不知道。ref 做的不是「声明变量」，而是「让变化可被追踪」。",
+        body: "没有这一行 → 名字不存在 → 报错。不要 ref → 名字存在、值在变、界面不知道。ref 做的不是「声明变量」，而是「让变化可被追踪」。漏 .value 是第三种脸：你碰到了盒子，却没打开它。",
       },
       faqs: [
         { q: "为什么 let 不报错？", a: "因为对 JavaScript 来说完全合法。失败发生在 Vue 的更新协议上，不是语法上。" },
-        { q: "reactive 可以吗？", a: "对对象可以。对数字/布尔这种原始值，ref 才是对的工具。一次只改一个机制。" },
+        { q: "和上一镜漏 .value 有何不同？", a: "漏 .value：你有 ref，但写入走错了地方。不要 ref：根本没有可追踪的源。两种都是「界面不更新」，原因写在不同的边上。" },
       ],
       tryThis: "先点按钮确认正确版本会加。再试「如果不要 ref」：内存在变，页面冻在 0。看完点「恢复」。",
     },
     {
-      id: "ref-s5",
-      tick: "S5",
+      id: "ref-s7",
+      tick: "S7",
       title: "换一个程序",
       goal: "喜欢按钮。不要教学口吻——直接判断缺了什么。",
       layer: "transfer",
@@ -417,6 +570,7 @@ export const REF_LAB: CausalLab = {
       },
       faqs: [
         { q: "这里 React 会怎么写？", a: "useState。setLiked 会触发重渲染。普通 let liked 在 React 里同样不会更新界面——同一条因果。" },
+        { q: "补上 ref 之后，模板里为什么是 liked = !liked，不是 .value？", a: "还在模板里，仍会解包。若把切换写进函数，就要 liked.value = !liked.value。" },
       ],
       tryThis: "先点「喜欢」——文案不应变。再打开「补上 ref」，它应能切换。",
       mapping: [

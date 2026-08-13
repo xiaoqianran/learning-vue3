@@ -5,10 +5,10 @@ export const PROGRAM_WORLDS: ProgramWorld[] = [
     id: "w1",
     n: 1,
     title: "一个按钮活起来",
-    blurb: "template / ref / event / computed / watch",
+    blurb: "template / ref / .value / computed / watch",
     status: "ready",
     labIds: ["ref", "computed", "watch"],
-    topics: ["ref", "computed", "watch"],
+    topics: ["ref", "computed", "watch", ".value"],
   },
   {
     id: "w2",
