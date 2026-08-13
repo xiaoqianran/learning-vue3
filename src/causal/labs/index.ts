@@ -21,6 +21,9 @@ import { TRANSITION_LAB } from "./transition";
 import { NEXTTICK_LAB } from "./nexttick";
 import { CAPTURE_LAB } from "./capture";
 import { TEST_LAB } from "./test";
+import { HYDRATE_LAB } from "./hydrate";
+import { ISOLATE_LAB } from "./isolate";
+import { PAYLOAD_LAB } from "./payload";
 import { WATCH_LAB } from "./watch";
 
 export const CAUSAL_LABS: CausalLab[] = [
@@ -46,6 +49,9 @@ export const CAUSAL_LABS: CausalLab[] = [
   NEXTTICK_LAB,
   CAPTURE_LAB,
   TEST_LAB,
+  HYDRATE_LAB,
+  ISOLATE_LAB,
+  PAYLOAD_LAB,
 ];
 
 export function getCausalLab(id: string): CausalLab | undefined {

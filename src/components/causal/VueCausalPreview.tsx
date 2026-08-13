@@ -40,6 +40,11 @@ const PREVIEW_HEAD = `<style>
   .specs li{font-size:13px;margin:4px 0;}
   .pass{color:#a6e3a1;}
   .fail{color:#f38ba8;}
+  .stamp{background:#45475a33;border:1px dashed #f9e2af;padding:6px 8px;border-radius:8px;margin:8px 0;font-family:ui-monospace,SFMono-Regular,Menlo,Monaco,Consolas,monospace;font-size:12px;color:#f9e2af;}
+  .row{display:flex;gap:12px;flex-wrap:wrap;}
+  .row .panel{flex:1;min-width:11rem;}
+  .match{color:#a6e3a1;font-weight:700;}
+  .mismatch{color:#f38ba8;font-weight:700;}
 </style>`;
 
 const EMPTY_APP = `<script setup>\n</script>\n<template><p>—</p></template>`;
