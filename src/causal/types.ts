@@ -54,7 +54,8 @@ export type NodeKind =
   | "component"
   | "composable"
   | "store"
-  | "route";
+  | "route"
+  | "async";
 
 export type CausalNode = {
   id: string;

@@ -15,6 +15,7 @@ const KIND_COLOR: Record<CausalNode["kind"], string> = {
   composable: "border-mauve/50 bg-mauve/10 text-mauve",
   store: "border-yellow/50 bg-yellow/10 text-yellow",
   route: "border-lavender/50 bg-lavender/10 text-lavender",
+  async: "border-peach/50 bg-peach/10 text-peach",
 };
 
 type Props = {
