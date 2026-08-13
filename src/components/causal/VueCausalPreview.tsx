@@ -4,7 +4,9 @@ import { AlertTriangle, Loader2 } from "lucide-react";
 
 const PREVIEW_HEAD = `<style>
   html,body{margin:0;padding:0;background:#11111b;color:#cdd6f4;font-family:ui-sans-serif,system-ui,sans-serif;}
-  #app{padding:16px;min-height:100%;box-sizing:border-box;}
+  #app{padding:16px;min-height:100%;box-sizing:border-box;animation:causal-vue-in 420ms ease both;}
+  @keyframes causal-vue-in{from{opacity:0;transform:translateY(5px)}to{opacity:1;transform:none}}
+  @media (prefers-reduced-motion:reduce){#app{animation:none}}
   button{margin:6px 8px 6px 0;padding:8px 14px;border-radius:10px;border:1px solid #45475a;background:#1e1e2e;color:#cdd6f4;cursor:pointer;font-size:14px;}
   button:hover{border-color:#a6e3a1;color:#a6e3a1;}
   input,textarea{margin:6px 0;padding:8px 10px;border-radius:10px;border:1px solid #45475a;background:#181825;color:#cdd6f4;width:min(100%,16rem);}
@@ -34,6 +36,7 @@ export function VueCausalPreview({ code, className, label }: Props) {
   const apiRef = useRef<StoreApi | null>(null);
   const [status, setStatus] = useState<"loading" | "ready" | "error">("loading");
   const [error, setError] = useState<string | null>(null);
+  const [veil, setVeil] = useState(false);
 
   useEffect(() => {
     let cancelled = false;
@@ -123,7 +126,16 @@ export function VueCausalPreview({ code, className, label }: Props) {
     const api = apiRef.current;
     if (!api || status !== "ready") return;
     const sfc = code.trim() || `<script setup>\n</script>\n<template><p>—</p></template>`;
-    void api.setFiles({ "src/App.vue": sfc }, "src/App.vue");
+    setVeil(true);
+    let cancelled = false;
+    void api.setFiles({ "src/App.vue": sfc }, "src/App.vue").finally(() => {
+      window.setTimeout(() => {
+        if (!cancelled) setVeil(false);
+      }, 220);
+    });
+    return () => {
+      cancelled = true;
+    };
   }, [code, status]);
 
   return (
@@ -147,6 +159,9 @@ export function VueCausalPreview({ code, className, label }: Props) {
             <AlertTriangle className="mt-0.5 h-4 w-4 shrink-0" />
             <span>{error ?? "加载失败"}</span>
           </div>
+        ) : null}
+        {veil && status === "ready" ? (
+          <div className="causal-preview-veil pointer-events-none absolute inset-0 z-10 bg-[#11111b]" />
         ) : null}
       </div>
     </div>

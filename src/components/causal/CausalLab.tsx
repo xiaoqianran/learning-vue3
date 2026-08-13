@@ -9,6 +9,7 @@ import { NarrativePanel } from "./NarrativePanel";
 import { RuntimeXRay } from "./RuntimeXRay";
 import { TimeMachine } from "./TimeMachine";
 import { VueCausalPreview } from "./VueCausalPreview";
+import { useCodeWrite } from "./useCodeWrite";
 import { Button } from "@/components/ui/button";
 import { ArrowRight, RotateCcw } from "lucide-react";
 import { nextLab, prevLab } from "@/causal/labs";
@@ -30,7 +31,6 @@ export function CausalLab({ lab }: Props) {
   const [selected, setSelected] = useState<string | null>(null);
   const [replay, setReplay] = useState<ReplayStep | null>(null);
   const [replaying, setReplaying] = useState(false);
-  const [blockPulse, setBlockPulse] = useState<string | undefined>(undefined);
   const [done, setDone] = useState(false);
 
   const scene = lab.scenes[index]!;
@@ -42,7 +42,15 @@ export function CausalLab({ lab }: Props) {
 
   const before = appVue(filesBefore(lab, index));
   const after = appVue(filesAfter(lab, index));
-  const liveCode = ablation ? appVue(ablation.files) : waiting ? before : after;
+  const labels = useMemo(() => scene.mutation.blocks.map((b) => b.label), [scene]);
+  const write = useCodeWrite({
+    sceneId: scene.id,
+    waiting,
+    before,
+    after,
+    labels,
+  });
+  const liveCode = ablation ? appVue(ablation.files) : waiting || !write.previewLive ? before : after;
 
   const clickable = useMemo(() => {
     const s = new Set<string>(["ref", "computed", "watch"]);
@@ -63,23 +71,6 @@ export function CausalLab({ lab }: Props) {
     setSelected(null);
     markScene(lab.id, index, false);
   }, [lab.id, index, scene.id, markScene]);
-
-  useEffect(() => {
-    if (waiting) return;
-    const labels = scene.mutation.blocks.map((b) => b.label);
-    if (!labels.length) return;
-    let i = 0;
-    setBlockPulse(labels[0]);
-    const id = window.setInterval(() => {
-      i += 1;
-      if (i >= labels.length) {
-        window.clearInterval(id);
-        return;
-      }
-      setBlockPulse(labels[i]);
-    }, 700);
-    return () => window.clearInterval(id);
-  }, [waiting, scene.id, scene.mutation.blocks]);
 
   const runReplay = useCallback(() => {
     const steps = scene.replay?.steps;
@@ -114,11 +105,12 @@ export function CausalLab({ lab }: Props) {
     if (i < 0 || i >= lab.scenes.length) return;
     if (i > maxReached && waiting) return;
     if (i > index && waiting) return;
+    if (i > index && write.writing) return;
     setIndex(i);
   }
 
   function cont() {
-    if (waiting) return;
+    if (waiting || write.writing) return;
     if (index >= lab.scenes.length - 1) {
       markScene(lab.id, index, true);
       setDone(true);
@@ -130,12 +122,12 @@ export function CausalLab({ lab }: Props) {
   useEffect(() => {
     function onKey(e: KeyboardEvent) {
       if (e.key === "ArrowLeft") go(index - 1);
-      if (e.key === "ArrowRight" && !waiting) go(index + 1);
+      if (e.key === "ArrowRight" && !waiting && !write.writing) go(index + 1);
     }
     window.addEventListener("keydown", onKey);
     return () => window.removeEventListener("keydown", onKey);
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [index, waiting, maxReached]);
+  }, [index, waiting, maxReached, write.writing]);
 
   const labsMap = useCausal((s) => s.labs);
   const scores = scoresFor(lab.id, progress);
@@ -225,8 +217,8 @@ export function CausalLab({ lab }: Props) {
           <CodeEvolution
             before={before}
             after={after}
-            blocks={waiting ? [] : scene.mutation.blocks}
-            activeBlockLabel={blockPulse}
+            blocks={scene.mutation.blocks}
+            write={{ ...write, phase: waiting ? "before" : write.phase }}
             selected={selected}
             onSelect={setSelected}
             clickable={clickable}
@@ -241,6 +233,7 @@ export function CausalLab({ lab }: Props) {
             />
         </section>
         <section className="flex min-h-[min(48vh,20rem)] flex-col overflow-hidden border-b border-border lg:min-h-0 lg:border-b-0 lg:border-r">
+          <div key={scene.id} className="causal-pane-in flex h-full min-h-0 flex-col">
           <RuntimeXRay
             nodes={scene.nodes}
             edges={scene.edges}
@@ -250,8 +243,10 @@ export function CausalLab({ lab }: Props) {
             replay={replay}
             flash={replay?.state ?? null}
           />
+          </div>
         </section>
         <section className="flex min-h-[min(48vh,20rem)] flex-col overflow-hidden lg:min-h-0">
+          <div key={scene.id} className="causal-pane-in flex h-full min-h-0 flex-col">
           <NarrativePanel
             scene={scene}
             waiting={waiting}
@@ -279,12 +274,13 @@ export function CausalLab({ lab }: Props) {
             }}
             cfOpen={cfOpen}
             onContinue={cont}
-            canContinue={!waiting}
+            canContinue={!waiting && !write.writing}
             isLast={index === lab.scenes.length - 1}
             replayLabel={scene.replay?.label}
             onReplay={scene.replay ? runReplay : undefined}
             replaying={replaying}
           />
+          </div>
         </section>
           </>
         )}
