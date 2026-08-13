@@ -55,6 +55,9 @@ const causalLabs = [
   "vfocus",
   "vpaint",
   "vclickout",
+  "asynccomp",
+  "suspense",
+  "asyncerr",
 ];
 
 const staticPages = [

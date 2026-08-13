@@ -39,6 +39,9 @@ import { EXPOSE_LAB } from "./expose";
 import { VFOCUS_LAB } from "./vfocus";
 import { VPAINT_LAB } from "./vpaint";
 import { VCLICKOUT_LAB } from "./vclickout";
+import { ASYNCCOMP_LAB } from "./asynccomp";
+import { SUSPENSE_LAB } from "./suspense";
+import { ASYNCERR_LAB } from "./asyncerr";
 import { WATCH_LAB } from "./watch";
 
 export const CAUSAL_LABS: CausalLab[] = [
@@ -82,6 +85,9 @@ export const CAUSAL_LABS: CausalLab[] = [
   VFOCUS_LAB,
   VPAINT_LAB,
   VCLICKOUT_LAB,
+  ASYNCCOMP_LAB,
+  SUSPENSE_LAB,
+  ASYNCERR_LAB,
 ];
 
 export function getCausalLab(id: string): CausalLab | undefined {
