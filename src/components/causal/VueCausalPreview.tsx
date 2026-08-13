@@ -1,5 +1,6 @@
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { cn } from "@/lib/utils";
+import type { Files } from "@/causal/types";
 import { AlertTriangle, Loader2 } from "lucide-react";
 import { PaneHeader } from "./PaneHeader";
 
@@ -11,10 +12,19 @@ const PREVIEW_HEAD = `<style>
   button{margin:6px 8px 6px 0;padding:8px 14px;border-radius:10px;border:1px solid #45475a;background:#1e1e2e;color:#cdd6f4;cursor:pointer;font-size:14px;}
   button:hover{border-color:#a6e3a1;color:#a6e3a1;}
   input,textarea{margin:6px 0;padding:8px 10px;border-radius:10px;border:1px solid #45475a;background:#181825;color:#cdd6f4;width:min(100%,16rem);}
+  input[type=checkbox]{width:auto;margin-right:8px;}
   p,li,label{line-height:1.55;}
+  label{display:flex;align-items:center;gap:8px;}
   .total{font-size:1.15rem;font-weight:650;color:#a6e3a1;}
   ul{padding-left:1.1rem;}
+  .done{opacity:.55;text-decoration:line-through;}
+  form{display:flex;flex-wrap:wrap;gap:8px;align-items:center;margin:8px 0;}
+  .panel{border:1px solid #313244;border-radius:12px;padding:12px 14px;margin:8px 0;background:#181825;}
+  .panel h3{margin:0 0 8px;font-size:13px;letter-spacing:.12em;text-transform:uppercase;color:#a6e3a1;}
+  .hint{color:#7f849c;font-size:12px;}
 </style>`;
+
+const EMPTY_APP = `<script setup>\n</script>\n<template><p>—</p></template>`;
 
 type StoreApi = {
   setFiles: (files: Record<string, string>, main?: string) => Promise<void>;
@@ -22,22 +32,35 @@ type StoreApi = {
 };
 
 type Props = {
-  code: string;
+  files: Files;
   className?: string;
   label?: string;
 };
+
+function asReplFiles(files: Files): Record<string, string> {
+  const out: Record<string, string> = {};
+  for (const [raw, source] of Object.entries(files)) {
+    const name = raw.startsWith("src/") ? raw : `src/${raw.replace(/^\//, "")}`;
+    out[name] = source;
+  }
+  if (!out["src/App.vue"]?.trim()) out["src/App.vue"] = EMPTY_APP;
+  return out;
+}
 
 /**
  * Preview-only @vue/repl host. Editor is hidden; files update in place for time travel.
  * The mount node must keep a real layout box — never `sr-only` / 1×1 — or the iframe
  * is created at 1px and stays blank after the pane becomes visible.
  */
-export function VueCausalPreview({ code, className, label }: Props) {
+export function VueCausalPreview({ files, className, label }: Props) {
   const hostRef = useRef<HTMLDivElement>(null);
   const apiRef = useRef<StoreApi | null>(null);
   const [status, setStatus] = useState<"loading" | "ready" | "error">("loading");
   const [error, setError] = useState<string | null>(null);
   const [veil, setVeil] = useState(false);
+  const replFiles = useMemo(() => asReplFiles(files), [files]);
+  const filesKey = useMemo(() => JSON.stringify(replFiles), [replFiles]);
+  const extra = Object.keys(replFiles).filter((n) => n !== "src/App.vue").length;
 
   useEffect(() => {
     let cancelled = false;
@@ -67,8 +90,7 @@ export function VueCausalPreview({ code, className, label }: Props) {
         });
         /* eslint-enable react-hooks/rules-of-hooks */
 
-        const sfc = code.trim() || `<script setup>\n</script>\n<template><p>—</p></template>`;
-        await store.setFiles({ "src/App.vue": sfc }, "src/App.vue");
+        await store.setFiles(replFiles, "src/App.vue");
         if (cancelled) return;
 
         const app = createApp({
@@ -96,7 +118,7 @@ export function VueCausalPreview({ code, className, label }: Props) {
         app.mount(el);
         el.querySelector(".split-pane")?.classList.add("show-output");
         apiRef.current = {
-          setFiles: (files, main) => store.setFiles(files, main),
+          setFiles: (next, main) => store.setFiles(next, main),
           unmount: () => {
             app.unmount();
             el.innerHTML = "";
@@ -119,17 +141,16 @@ export function VueCausalPreview({ code, className, label }: Props) {
       unmount?.();
       apiRef.current = null;
     };
-    // boot once
+    // boot once; subsequent file updates go through the second effect
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   useEffect(() => {
     const api = apiRef.current;
     if (!api || status !== "ready") return;
-    const sfc = code.trim() || `<script setup>\n</script>\n<template><p>—</p></template>`;
     setVeil(true);
     let cancelled = false;
-    void api.setFiles({ "src/App.vue": sfc }, "src/App.vue").finally(() => {
+    void api.setFiles(replFiles, "src/App.vue").finally(() => {
       window.setTimeout(() => {
         if (!cancelled) setVeil(false);
       }, 220);
@@ -137,11 +158,15 @@ export function VueCausalPreview({ code, className, label }: Props) {
     return () => {
       cancelled = true;
     };
-  }, [code, status]);
+  }, [filesKey, replFiles, status]);
 
   return (
     <div className={cn("flex h-full min-h-0 flex-col overflow-hidden bg-[#11111b]", className)}>
-      <PaneHeader kicker={label ?? "实时应用"} meta="@vue/repl" live={status === "ready" && !veil} />
+      <PaneHeader
+        kicker={label ?? "实时应用"}
+        meta={extra > 0 ? `@vue/repl · ${extra + 1} files` : "@vue/repl"}
+        live={status === "ready" && !veil}
+      />
       <div className="relative min-h-0 flex-1">
         <div ref={hostRef} className="vue-sfc-repl-host vue-causal-preview absolute inset-0" />
         {status === "loading" ? (

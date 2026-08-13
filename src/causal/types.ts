@@ -50,7 +50,8 @@ export type NodeKind =
   | "render"
   | "dom"
   | "script"
-  | "effect";
+  | "effect"
+  | "component";
 
 export type CausalNode = {
   id: string;

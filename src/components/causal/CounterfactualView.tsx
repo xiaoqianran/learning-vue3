@@ -82,7 +82,7 @@ function WorldPane({
         <span className="text-[11px] text-muted">{world.tagline}</span>
       </div>
       <div className="grid min-h-0 flex-1 grid-rows-2">
-        <VueCausalPreview code={world.files["src/App.vue"] ?? ""} label={world.name} />
+        <VueCausalPreview files={world.files} label={world.name} />
         <div className={cn("min-h-0 border-t border-border")}>
           <RuntimeXRay
             nodes={world.nodes}

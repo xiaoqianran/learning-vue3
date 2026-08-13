@@ -1,7 +1,7 @@
 import { create } from "zustand";
 import { persist } from "zustand/middleware";
 import { labTotals, masteryPercent, type MasteryScores } from "@/causal/engine";
-import { CAUSAL_LABS, getCausalLab } from "@/causal/labs";
+import { CAUSAL_LABS, getCausalLab, labsForWorld } from "@/causal/labs";
 
 export type Answer = { choiceId: string; correct: boolean };
 
@@ -141,8 +141,9 @@ export function labMastery(labId: string, labs: Record<string, LabProgress>): nu
   return masteryPercent(scoresFor(labId, labs[labId]));
 }
 
-export function worldMastery(labs: Record<string, LabProgress>): number {
-  if (!CAUSAL_LABS.length) return 0;
-  const n = CAUSAL_LABS.reduce((a, l) => a + labMastery(l.id, labs), 0);
-  return Math.round(n / CAUSAL_LABS.length);
+export function worldMastery(labs: Record<string, LabProgress>, world = 0): number {
+  const pool = world ? labsForWorld(world) : CAUSAL_LABS;
+  if (!pool.length) return 0;
+  const n = pool.reduce((a, l) => a + labMastery(l.id, labs), 0);
+  return Math.round(n / pool.length);
 }

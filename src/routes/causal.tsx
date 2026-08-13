@@ -8,7 +8,7 @@ import { Outlet, createFileRoute } from "@tanstack/react-router";
 export const Route = createFileRoute("/causal")({
   component: CausalLayout,
   head: () => ({
-    meta: [{ title: "World 1 · Vue Causal Lab" }],
+    meta: [{ title: "Worlds · Vue Causal Lab" }],
   }),
 });
 

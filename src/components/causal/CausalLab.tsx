@@ -1,7 +1,7 @@
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { Link } from "@tanstack/react-router";
-import { appVue, filesAfter, filesBefore } from "@/causal/engine";
-import type { Ablation, CausalLab as Lab, ReplayStep } from "@/causal/types";
+import { filesAfter, filesBefore, mutatedSource } from "@/causal/engine";
+import type { Ablation, CausalLab as Lab, Files, ReplayStep } from "@/causal/types";
 import { labMastery, scoresFor, useCausal } from "@/store/causal";
 import { CodeEvolution } from "./CodeEvolution";
 import { CounterfactualView } from "./CounterfactualView";
@@ -41,20 +41,33 @@ export function CausalLab({ lab }: Props) {
   const whyAnswer = progress?.answers[whyKey];
   const waiting = Boolean(scene.prediction) && !predictAnswer;
 
-  const before = appVue(filesBefore(lab, index));
-  const after = appVue(filesAfter(lab, index));
+  const beforeFiles = filesBefore(lab, index);
+  const afterFiles = filesAfter(lab, index);
+  const mutated = useMemo(
+    () => mutatedSource(beforeFiles, afterFiles),
+    [beforeFiles, afterFiles],
+  );
   const labels = useMemo(() => scene.mutation.blocks.map((b) => b.label), [scene]);
   const write = useCodeWrite({
     sceneId: scene.id,
     waiting,
-    before,
-    after,
+    before: mutated.before,
+    after: mutated.after,
     labels,
   });
-  const liveCode = ablation ? appVue(ablation.files) : waiting || !write.previewLive ? before : after;
+  const liveFiles: Files =
+    ablation?.files ?? (waiting || !write.previewLive ? beforeFiles : afterFiles);
 
   const clickable = useMemo(() => {
-    const s = new Set<string>(["ref", "computed", "watch"]);
+    const s = new Set<string>([
+      "ref",
+      "computed",
+      "watch",
+      "v-for",
+      "v-model",
+      "defineProps",
+      "defineEmits",
+    ]);
     for (const n of scene.nodes) if (n.symbol) s.add(n.symbol);
     for (const p of [...scene.observe.state, ...scene.observe.dom, ...scene.observe.events]) {
       if (p.symbol) s.add(p.symbol);
@@ -169,8 +182,9 @@ export function CausalLab({ lab }: Props) {
           <CausalWorkspace
             code={
               <CodeEvolution
-                before={before}
-                after={after}
+                before={mutated.before}
+                after={mutated.after}
+                filePath={mutated.path}
                 blocks={scene.mutation.blocks}
                 write={{ ...write, phase: waiting ? "before" : write.phase }}
                 selected={selected}
@@ -182,7 +196,7 @@ export function CausalLab({ lab }: Props) {
             live={
               <VueCausalPreview
                 key={lab.id}
-                code={liveCode}
+                files={liveFiles}
                 label={ablation ? `消融 · ${ablation.prompt}` : "实时应用"}
               />
             }

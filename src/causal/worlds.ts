@@ -15,8 +15,8 @@ export const PROGRAM_WORLDS: ProgramWorld[] = [
     n: 2,
     title: "Todo 从 20 行长到 150 行",
     blurb: "list / form / component / props / emit / slots",
-    status: "soon",
-    labIds: [],
+    status: "ready",
+    labIds: ["list", "form", "component", "slots"],
     topics: ["list", "form", "component", "props", "emit", "slots"],
   },
   {
