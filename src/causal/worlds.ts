@@ -127,4 +127,13 @@ export const PROGRAM_WORLDS: ProgramWorld[] = [
     labIds: ["scoped", "deep", "slotted"],
     topics: ["scoped", ":deep", ":slotted"],
   },
+  {
+    id: "w15",
+    n: 15,
+    title: "安装才接通",
+    blurb: "app.use / 全局组件 / options",
+    status: "ready",
+    labIds: ["plugin", "globcomp", "plugopt"],
+    topics: ["app.use", "app.component", "options"],
+  },
 ];

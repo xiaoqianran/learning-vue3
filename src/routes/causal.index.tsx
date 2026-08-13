@@ -18,7 +18,7 @@ function CausalWorldPage() {
     <div className="causal-pane-in pb-16">
       <p className="text-xs font-medium uppercase tracking-[0.18em] text-primary">Curriculum</p>
       <h1 className="mt-2 font-display text-3xl font-semibold tracking-tight text-fg">
-        从一个按钮，到样式的边界
+        从一个按钮，到安装才接通
       </h1>
       <p className="mt-2 max-w-xl text-sm leading-relaxed text-muted">
         每个世界只长一层机制。拖动时间轴。一次只发生一个因果变更。

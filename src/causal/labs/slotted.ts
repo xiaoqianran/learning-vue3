@@ -484,7 +484,7 @@ export const SLOTTED_LAB: CausalLab = {
       ],
       explanation: {
         headline: "涂不到、对空、只涂一位",
-        body: "三张脸，三种原因。World 14 收束：样式也有边界。scoped 立墙，:deep 父开口，:slotted 子开口。",
+        body: "三张脸，三种原因。World 14 收束：样式也有边界。scoped 立墙，:deep 父开口，:slotted 子开口。下一课：安装才接通。",
       },
       tryThis: "三种消融：Ada 默认、「子」绿 Ada 默认、价钱粉 Ada 默认。对上号再恢复 Ada 粉。",
       faqs: [
@@ -533,12 +533,12 @@ export const SLOTTED_LAB: CausalLab = {
             kind: "stale",
             message: "这是修复：「会员」粉，「盒子」绿。",
           },
-          lesson: "World 14 收束：墙、父开口、子开口。颜色停在哪一层，由指纹和口决定。",
+          lesson: "World 14 收束：墙、父开口、子开口。颜色停在哪一层，由指纹和口决定。下一课：插件在树外面，use 才接通。",
         },
       ],
       explanation: {
         headline: "客人要走客人的门",
-        body: "scoped 立墙。:deep 是父往子开。:slotted 是子往插槽开。World 14 停在样式的边界。",
+        body: "scoped 立墙。:deep 是父往子开。:slotted 是子往插槽开。World 14 停在样式的边界。下一课：安装才接通。",
       },
       faqs: [
         { q: "和 World 2 的插槽有什么不同？", a: "那一课问内容从哪来。这一课问样式认谁。节点还是那颗，边不同。" },

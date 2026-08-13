@@ -45,6 +45,9 @@ import { ASYNCERR_LAB } from "./asyncerr";
 import { SCOPED_LAB } from "./scoped";
 import { DEEP_LAB } from "./deep";
 import { SLOTTED_LAB } from "./slotted";
+import { PLUGIN_LAB } from "./plugin";
+import { GLOBCOMP_LAB } from "./globcomp";
+import { PLUGOPT_LAB } from "./plugopt";
 import { WATCH_LAB } from "./watch";
 
 export const CAUSAL_LABS: CausalLab[] = [
@@ -94,6 +97,9 @@ export const CAUSAL_LABS: CausalLab[] = [
   SCOPED_LAB,
   DEEP_LAB,
   SLOTTED_LAB,
+  PLUGIN_LAB,
+  GLOBCOMP_LAB,
+  PLUGOPT_LAB,
 ];
 
 export function getCausalLab(id: string): CausalLab | undefined {

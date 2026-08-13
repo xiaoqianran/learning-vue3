@@ -61,6 +61,9 @@ const causalLabs = [
   "scoped",
   "deep",
   "slotted",
+  "plugin",
+  "globcomp",
+  "plugopt",
 ];
 
 const staticPages = [
