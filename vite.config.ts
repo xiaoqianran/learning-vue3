@@ -43,6 +43,9 @@ const causalLabs = [
   "typedprops",
   "typedemit",
   "injectkey",
+  "definemodel",
+  "modelmod",
+  "multimodel",
 ];
 
 const staticPages = [

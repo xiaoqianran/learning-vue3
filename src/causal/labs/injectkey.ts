@@ -576,7 +576,7 @@ export const INJECTKEY_LAB: CausalLab = {
       },
       faqs: [
         { q: "还要不要学 tsconfig？", a: "要，但不在这一课。strict 打开，这些红线才在。预览里你用脸核对。" },
-        { q: "还有下一世界吗？", a: "机制从按钮走到了类型。工程化（构建配置、monorepo）不再改这张图。" },
+        { q: "还有下一世界吗？", a: "有。下一课组件上的 v-model 也是一对 props + emit。类型走完，门还没装上。" },
       ],
       tryThis: "先看见（没有）。再打开钥匙版：必须是 mocha，换皮肤必须动。",
       mapping: [
