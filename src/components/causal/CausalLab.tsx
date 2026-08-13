@@ -1,0 +1,354 @@
+import { useCallback, useEffect, useMemo, useState } from "react";
+import { Link } from "@tanstack/react-router";
+import { appVue, filesAfter, filesBefore } from "@/causal/engine";
+import type { Ablation, CausalLab as Lab, ReplayStep } from "@/causal/types";
+import { labMastery, scoresFor, useCausal } from "@/store/causal";
+import { CodeEvolution } from "./CodeEvolution";
+import { CounterfactualView } from "./CounterfactualView";
+import { NarrativePanel } from "./NarrativePanel";
+import { RuntimeXRay } from "./RuntimeXRay";
+import { TimeMachine } from "./TimeMachine";
+import { VueCausalPreview } from "./VueCausalPreview";
+import { Button } from "@/components/ui/button";
+import { ArrowRight, RotateCcw } from "lucide-react";
+import { nextLab, prevLab } from "@/causal/labs";
+import { cn } from "@/lib/utils";
+
+type Props = { lab: Lab };
+
+export function CausalLab({ lab }: Props) {
+  const progress = useCausal((s) => s.labs[lab.id]);
+  const recordAnswer = useCausal((s) => s.recordAnswer);
+  const recordTried = useCausal((s) => s.recordTried);
+  const markScene = useCausal((s) => s.markScene);
+  const resetLab = useCausal((s) => s.resetLab);
+
+  const [index, setIndex] = useState(0);
+  const [ablation, setAblation] = useState<Ablation | null>(null);
+  const [cfOpen, setCfOpen] = useState(false);
+  const [cfTwist, setCfTwist] = useState(false);
+  const [selected, setSelected] = useState<string | null>(null);
+  const [replay, setReplay] = useState<ReplayStep | null>(null);
+  const [replaying, setReplaying] = useState(false);
+  const [blockPulse, setBlockPulse] = useState<string | undefined>(undefined);
+  const [done, setDone] = useState(false);
+
+  const scene = lab.scenes[index]!;
+  const predictKey = `${scene.id}:predict`;
+  const whyKey = `${scene.id}:why`;
+  const predictAnswer = progress?.answers[predictKey];
+  const whyAnswer = progress?.answers[whyKey];
+  const waiting = Boolean(scene.prediction) && !predictAnswer;
+
+  const before = appVue(filesBefore(lab, index));
+  const after = appVue(filesAfter(lab, index));
+  const liveCode = ablation ? appVue(ablation.files) : waiting ? before : after;
+
+  const clickable = useMemo(() => {
+    const s = new Set<string>(["ref", "computed", "watch"]);
+    for (const n of scene.nodes) if (n.symbol) s.add(n.symbol);
+    for (const p of [...scene.observe.state, ...scene.observe.dom, ...scene.observe.events]) {
+      if (p.symbol) s.add(p.symbol);
+    }
+    return [...s];
+  }, [scene]);
+
+  const maxReached = Math.max(progress?.maxScene ?? 0, index);
+
+  useEffect(() => {
+    setAblation(null);
+    setCfOpen(Boolean(scene.counterfactual) && !waiting);
+    setCfTwist(false);
+    setReplay(null);
+    setSelected(null);
+    markScene(lab.id, index, false);
+  }, [lab.id, index, scene.id, scene.counterfactual, waiting, markScene]);
+
+  useEffect(() => {
+    if (waiting) return;
+    const labels = scene.mutation.blocks.map((b) => b.label);
+    if (!labels.length) return;
+    let i = 0;
+    setBlockPulse(labels[0]);
+    const id = window.setInterval(() => {
+      i += 1;
+      if (i >= labels.length) {
+        window.clearInterval(id);
+        return;
+      }
+      setBlockPulse(labels[i]);
+    }, 700);
+    return () => window.clearInterval(id);
+  }, [waiting, scene.id, scene.mutation.blocks]);
+
+  const runReplay = useCallback(() => {
+    const steps = scene.replay?.steps;
+    if (!steps?.length) return;
+    setReplaying(true);
+    let i = 0;
+    setReplay(steps[0]!);
+    const id = window.setInterval(() => {
+      i += 1;
+      if (i >= steps.length) {
+        window.clearInterval(id);
+        setReplaying(false);
+        return;
+      }
+      setReplay(steps[i]!);
+    }, 850);
+  }, [scene]);
+
+  function pickPredict(choiceId: string) {
+    const choice = scene.prediction?.choices.find((c) => c.id === choiceId);
+    if (!choice) return;
+    recordAnswer(lab.id, predictKey, choice.id, choice.correct);
+  }
+
+  function pickWhy(choiceId: string) {
+    const choice = scene.why?.choices.find((c) => c.id === choiceId);
+    if (!choice) return;
+    recordAnswer(lab.id, whyKey, choice.id, choice.correct);
+  }
+
+  function go(i: number) {
+    if (i < 0 || i >= lab.scenes.length) return;
+    if (i > maxReached && waiting) return;
+    if (i > index && waiting) return;
+    setIndex(i);
+  }
+
+  function cont() {
+    if (waiting) return;
+    if (index >= lab.scenes.length - 1) {
+      markScene(lab.id, index, true);
+      setDone(true);
+      return;
+    }
+    setIndex(index + 1);
+  }
+
+  useEffect(() => {
+    function onKey(e: KeyboardEvent) {
+      if (e.key === "ArrowLeft") go(index - 1);
+      if (e.key === "ArrowRight" && !waiting) go(index + 1);
+    }
+    window.addEventListener("keydown", onKey);
+    return () => window.removeEventListener("keydown", onKey);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [index, waiting, maxReached]);
+
+  const labsMap = useCausal((s) => s.labs);
+  const scores = scoresFor(lab.id, progress);
+  const mastery = labMastery(lab.id, labsMap);
+  const nxt = nextLab(lab.id);
+  const prv = prevLab(lab.id);
+
+  if (done) {
+    return (
+      <FinishCard
+        lab={lab}
+        mastery={mastery}
+        scores={scores}
+        nextId={nxt?.id}
+        onReplay={() => {
+          setDone(false);
+          setIndex(0);
+        }}
+      />
+    );
+  }
+
+  return (
+    <div className="flex min-h-0 flex-1 flex-col">
+      <div className="flex flex-wrap items-center gap-2 border-b border-border px-3 py-2 sm:px-4">
+        <Link to="/causal" className="text-xs text-muted no-underline hover:text-fg">
+          World 1
+        </Link>
+        <span className="text-subtle">/</span>
+        <span className="font-display text-sm font-semibold text-fg">{lab.title}</span>
+        <span className="rounded-full bg-primary-soft px-2 py-0.5 font-mono text-[10px] text-primary">
+          {lab.concept}
+        </span>
+        <span className="ml-auto font-mono text-[11px] tabular-nums text-muted">
+          掌握 {mastery}%
+        </span>
+        {prv ? (
+          <Link
+            to="/causal/$labId"
+            params={{ labId: prv.id }}
+            className="text-xs text-muted no-underline hover:text-fg"
+          >
+            ← {prv.concept}
+          </Link>
+        ) : null}
+        {nxt ? (
+          <Link
+            to="/causal/$labId"
+            params={{ labId: nxt.id }}
+            className="text-xs text-primary no-underline hover:underline"
+          >
+            {nxt.concept} →
+          </Link>
+        ) : null}
+        <button
+          type="button"
+          className="text-subtle hover:text-muted"
+          title="重置本实验进度"
+          onClick={() => {
+            resetLab(lab.id);
+            setIndex(0);
+            setDone(false);
+          }}
+        >
+          <RotateCcw className="h-3.5 w-3.5" />
+        </button>
+      </div>
+
+      <div className="grid min-h-0 flex-1 grid-cols-1 grid-rows-[minmax(0,1fr)_minmax(0,1fr)] lg:grid-cols-2">
+        <section className="min-h-0 border-b border-border lg:border-r">
+          <CodeEvolution
+            before={before}
+            after={after}
+            blocks={waiting ? [] : scene.mutation.blocks}
+            activeBlockLabel={blockPulse}
+            selected={selected}
+            onSelect={setSelected}
+            clickable={clickable}
+            waiting={waiting}
+          />
+        </section>
+        <section className="min-h-0 border-b border-border">
+          {cfOpen && scene.counterfactual && !waiting ? (
+            <CounterfactualView
+              spec={scene.counterfactual}
+              showTwist={cfTwist}
+              onTwist={() => {
+                setCfTwist(true);
+                recordTried(lab.id, `${scene.counterfactual!.id}:twist`);
+              }}
+              selected={selected}
+              onSelect={setSelected}
+            />
+          ) : (
+            <VueCausalPreview
+              key={lab.id}
+              code={liveCode}
+              label={ablation ? `Ablation · ${ablation.prompt}` : "Live Application"}
+            />
+          )}
+        </section>
+        <section className="min-h-0 border-b border-border lg:border-b-0 lg:border-r">
+          <RuntimeXRay
+            nodes={scene.nodes}
+            edges={scene.edges}
+            observe={scene.observe}
+            selected={selected}
+            onSelect={setSelected}
+            replay={replay}
+            flash={replay?.state ?? null}
+          />
+        </section>
+        <section className="min-h-0">
+          <NarrativePanel
+            scene={scene}
+            waiting={waiting}
+            onPredict={pickPredict}
+            lastChoice={
+              predictAnswer
+                ? { id: predictAnswer.choiceId, correct: predictAnswer.correct }
+                : null
+            }
+            whyChoice={
+              whyAnswer ? { id: whyAnswer.choiceId, correct: whyAnswer.correct } : null
+            }
+            onWhy={pickWhy}
+            ablationId={ablation?.id ?? null}
+            onAblate={(a) => {
+              setAblation(a);
+              setCfOpen(false);
+              if (a) recordTried(lab.id, a.id);
+            }}
+            onOpenCounterfactual={() => {
+              const next = !cfOpen;
+              setCfOpen(next);
+              setAblation(null);
+              if (next && scene.counterfactual) recordTried(lab.id, scene.counterfactual.id);
+            }}
+            cfOpen={cfOpen}
+            onContinue={cont}
+            canContinue={!waiting}
+            isLast={index === lab.scenes.length - 1}
+            replayLabel={scene.replay?.label}
+            onReplay={scene.replay ? runReplay : undefined}
+            replaying={replaying}
+          />
+        </section>
+      </div>
+
+      <TimeMachine scenes={lab.scenes} index={index} maxReached={maxReached} onGo={go} />
+    </div>
+  );
+}
+
+function FinishCard({
+  lab,
+  mastery,
+  scores,
+  nextId,
+  onReplay,
+}: {
+  lab: Lab;
+  mastery: number;
+  scores: ReturnType<typeof scoresFor>;
+  nextId?: string;
+  onReplay: () => void;
+}) {
+  return (
+    <div className="mx-auto flex max-w-lg flex-1 flex-col justify-center px-4 py-10">
+      <p className="text-xs font-medium uppercase tracking-wider text-primary">Mastery</p>
+      <h2 className="mt-1 font-display text-2xl font-semibold text-fg">{lab.title}</h2>
+      <p className="mt-2 text-sm text-muted">{lab.promise}</p>
+      <p className="mt-6 font-display text-5xl font-semibold tabular-nums text-primary">{mastery}%</p>
+      <ul className="mt-6 space-y-2 text-sm">
+        <Row label="预测能力" s={scores.predict} />
+        <Row label="因果解释" s={scores.causal} />
+        <Row label="反事实 / 消融" s={{ correct: scores.counterfactual.tried, total: scores.counterfactual.total }} />
+        <Row label="新场景迁移" s={scores.transfer} />
+      </ul>
+      <div className="mt-8 flex flex-wrap gap-2">
+        <Button variant="secondary" onClick={onReplay}>
+          再走一遍时间轴
+        </Button>
+        {nextId ? (
+          <Link to="/causal/$labId" params={{ labId: nextId }} className="no-underline">
+            <Button>
+              下一实验
+              <ArrowRight className="h-4 w-4" />
+            </Button>
+          </Link>
+        ) : (
+          <Link to="/causal" className="no-underline">
+            <Button>回到 World 1</Button>
+          </Link>
+        )}
+      </div>
+    </div>
+  );
+}
+
+function Row({ label, s }: { label: string; s: { correct: number; total: number } }) {
+  const pct = s.total ? Math.round((s.correct / s.total) * 100) : 0;
+  return (
+    <li>
+      <div className="flex justify-between text-muted">
+        <span>{label}</span>
+        <span className="font-mono text-fg">
+          {s.correct} / {s.total}
+        </span>
+      </div>
+      <div className="mt-1 h-1 overflow-hidden rounded-full bg-surface-3">
+        <div className={cn("h-full bg-primary")} style={{ width: `${pct}%` }} />
+      </div>
+    </li>
+  );
+}

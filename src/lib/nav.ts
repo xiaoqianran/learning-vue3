@@ -76,6 +76,8 @@ export function getContinueHref(completed: string[]): {
 export type NavItem = {
   to:
     | "/"
+    | "/causal"
+    | "/causal/$labId"
     | "/docs"
     | "/cheatsheet"
     | "/studio"
@@ -89,15 +91,16 @@ export type NavItem = {
   icon: LucideIcon;
 };
 
-/** 顶栏主导航：学 / 查 / 练 / 我 */
+/** 顶栏主导航：实验室 / 查 / 练 / 我 */
 export const NAV_PRIMARY: NavItem[] = [
-  { to: "/docs", label: "文档", hint: "查 · 官网对照地图", icon: Library },
-  { to: "/studio", label: "工坊", hint: "练 · 模拟全栈闯关", icon: Server },
-  { to: "/hub", label: "进度", hint: "我 · 学习中心", icon: LayoutDashboard },
+  { to: "/causal", label: "实验室", hint: "学 · 程序时间机器", icon: FlaskConical },
+  { to: "/docs", label: "资料库", hint: "查 · 官网对照地图", icon: Library },
+  { to: "/hub", label: "进度", hint: "我 · 掌握度", icon: LayoutDashboard },
 ];
 
 /** 更多工具（侧栏分组 + 顶栏下拉） */
 export const NAV_TOOLS: NavItem[] = [
+  { to: "/studio", label: "工坊", hint: "练 · 模拟全栈闯关", icon: Server },
   { to: "/cheatsheet", label: "速查表", hint: "写码时扫一眼", icon: BookMarked },
   { to: "/playground", label: "SFC 编辑器", hint: "真 Vue 单文件", icon: Code2 },
   { to: "/lab", label: "练习场", hint: "刷测验题", icon: FlaskConical },
@@ -108,6 +111,6 @@ export const NAV_TOOLS: NavItem[] = [
 export const NAV_HOME: NavItem = {
   to: "/",
   label: "学 · 首页",
-  hint: "路径与大纲",
+  hint: "程序世界与资料库",
   icon: BookOpen,
 };

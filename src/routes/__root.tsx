@@ -26,9 +26,7 @@ import appCss from "@/styles.css?url";
 import { CatppuccinSwitcher } from "@/components/CatppuccinSwitcher";
 import { applyCtpAccent, applyCtpFlavor, readCtpAccent, readCtpFlavor } from "@/lib/catppuccin";
 import {
-  getContinueHref,
   getContinueLesson,
-  isAllComplete,
   NAV_PRIMARY,
   NAV_TOOLS,
   orderedTracks,
@@ -41,12 +39,12 @@ export const Route = createRootRoute({
       { charSet: "utf-8" },
       { name: "viewport", content: "width=device-width, initial-scale=1" },
       {
-        title: "Vue 3 实战学习 v8 · 系统路径",
+        title: "Vue Causal Lab · See Vue Think",
       },
       {
         name: "description",
         content:
-          "Vue 3 中文交互教程：清晰学习路径、文档地图、讲解+源码+Demo、Catppuccin 主题与全栈工坊。",
+          "逐步改变代码，实时观察程序为何随之改变。可执行的 Vue 因果学习系统：程序时间机器、预测、消融与反事实。",
       },
     ],
     links: [
@@ -99,14 +97,15 @@ function AppShell({ children }: { children: ReactNode }) {
     return LESSONS.length ? Math.round((n / LESSONS.length) * 100) : 0;
   })();
   const cont = getContinueLesson(completed);
-  const continueTo = getContinueHref(completed);
-  const allDone = isAllComplete(completed);
   const moreRef = useRef<HTMLDivElement>(null);
   const activeLessonSlug = useRouterState({
     select: (s) => {
       const m = s.location.pathname.match(/\/lesson\/([^/]+)/);
       return m?.[1] ? decodeURIComponent(m[1]) : null;
     },
+  });
+  const isCausalPlayer = useRouterState({
+    select: (s) => /\/causal\/[^/]+/.test(s.location.pathname),
   });
 
   const contTrack = cont.track;
@@ -195,7 +194,10 @@ function AppShell({ children }: { children: ReactNode }) {
         <div className="mx-auto flex h-14 max-w-6xl items-center gap-2 px-4 sm:gap-3 sm:px-6">
           <button
             type="button"
-            className="inline-flex h-10 w-10 items-center justify-center rounded-md border border-border bg-surface text-fg lg:hidden"
+            className={cn(
+              "inline-flex h-10 w-10 items-center justify-center rounded-md border border-border bg-surface text-fg lg:hidden",
+              isCausalPlayer && "hidden",
+            )}
             onClick={() => setOpen((v) => !v)}
             aria-label={open ? "关闭目录" : "打开目录"}
           >
@@ -211,10 +213,10 @@ function AppShell({ children }: { children: ReactNode }) {
               <BookOpen className="h-4 w-4" />
             </span>
             <span className="truncate font-display text-sm font-semibold tracking-tight text-fg">
-              Vue 3 实战学习
+              Vue Causal Lab
             </span>
             <span className="hidden rounded-full bg-surface-3 px-1.5 py-0.5 font-mono text-[10px] text-primary sm:inline">
-              v8
+              v10
             </span>
           </Link>
 
@@ -284,23 +286,14 @@ function AppShell({ children }: { children: ReactNode }) {
           </nav>
 
           <div className="ml-auto flex items-center gap-1.5 sm:gap-2">
-            {continueTo.kind === "certificate" ? (
-              <Link
-                to="/certificate"
-                className="inline-flex items-center gap-1 rounded-full bg-primary px-2.5 py-1.5 text-xs font-medium text-primary-fg no-underline hover:opacity-90 sm:gap-1.5 sm:px-3"
-              >
-                结业
-              </Link>
-            ) : (
-              <Link
-                to="/lesson/$slug"
-                params={{ slug: continueTo.slug! }}
-                className="inline-flex items-center gap-1 rounded-full bg-primary px-2.5 py-1.5 text-xs font-medium text-primary-fg no-underline hover:opacity-90 sm:gap-1.5 sm:px-3"
-              >
-                <Play className="h-3 w-3" />
-                {LESSONS.some((l) => completed.includes(l.slug)) ? "继续" : "开始"}
-              </Link>
-            )}
+            <Link
+              to="/causal/$labId"
+              params={{ labId: "ref" }}
+              className="inline-flex items-center gap-1 rounded-full bg-primary px-2.5 py-1.5 text-xs font-medium text-primary-fg no-underline hover:opacity-90 sm:gap-1.5 sm:px-3"
+            >
+              <Play className="h-3 w-3" />
+              实验室
+            </Link>
             <div className="hidden sm:block">
               <CatppuccinSwitcher mode="popover" />
             </div>
@@ -326,7 +319,8 @@ function AppShell({ children }: { children: ReactNode }) {
         </div>
       </header>
 
-      <div className="mx-auto flex max-w-6xl">
+      <div className={cn("mx-auto flex", isCausalPlayer ? "max-w-none" : "max-w-6xl")}>
+        {isCausalPlayer ? null : (
         <aside
           className={cn(
             "fixed inset-y-0 left-0 z-30 w-[min(18.5rem,90vw)] border-r border-border bg-surface pt-14 transition-transform duration-200 ease-out lg:static lg:z-0 lg:w-72 lg:shrink-0 lg:translate-x-0 lg:border-r lg:bg-transparent lg:pt-0",
@@ -335,48 +329,24 @@ function AppShell({ children }: { children: ReactNode }) {
         >
           <nav className="scrollbar-thin flex h-[calc(100dvh-3.5rem)] flex-col overflow-y-auto p-3 lg:sticky lg:top-14 lg:h-[calc(100dvh-3.5rem)] lg:py-5">
             {/* 继续学习 */}
-            {continueTo.kind === "certificate" ? (
-              <Link
-                to="/certificate"
-                onClick={closeNav}
-                className="mb-3 flex items-start gap-2.5 rounded-xl border border-primary/30 bg-primary-soft px-3 py-2.5 no-underline transition-opacity hover:opacity-90"
-              >
-                <span className="mt-0.5 flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-primary text-primary-fg">
-                  <Play className="h-4 w-4" />
+            <Link
+              to="/causal"
+              onClick={closeNav}
+              className="mb-3 flex items-start gap-2.5 rounded-xl border border-primary/30 bg-primary-soft px-3 py-2.5 no-underline transition-opacity hover:opacity-90"
+            >
+              <span className="mt-0.5 flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-primary text-primary-fg">
+                <Play className="h-4 w-4" />
+              </span>
+              <span className="min-w-0">
+                <span className="block text-[10px] font-medium uppercase tracking-wider text-primary">
+                  因果实验室
                 </span>
-                <span className="min-w-0">
-                  <span className="block text-[10px] font-medium uppercase tracking-wider text-primary">
-                    路径已完成
-                  </span>
-                  <span className="mt-0.5 block truncate text-sm font-semibold text-fg">
-                    领取结业证明
-                  </span>
-                  <span className="block text-[11px] text-muted">
-                    全部 {LESSONS.length} 课已完成
-                  </span>
+                <span className="mt-0.5 block truncate text-sm font-semibold text-fg">
+                  一个按钮活起来
                 </span>
-              </Link>
-            ) : (
-              <Link
-                to="/lesson/$slug"
-                params={{ slug: continueTo.slug! }}
-                onClick={closeNav}
-                className="mb-3 flex items-start gap-2.5 rounded-xl border border-primary/30 bg-primary-soft px-3 py-2.5 no-underline transition-opacity hover:opacity-90"
-              >
-                <span className="mt-0.5 flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-primary text-primary-fg">
-                  <Play className="h-4 w-4" />
-                </span>
-                <span className="min-w-0">
-                  <span className="block text-[10px] font-medium uppercase tracking-wider text-primary">
-                    {LESSONS.some((l) => completed.includes(l.slug)) ? "继续学习" : "开始学习"}
-                  </span>
-                  <span className="mt-0.5 block truncate text-sm font-semibold text-fg">
-                    {cont.title}
-                  </span>
-                  <span className="block text-[11px] text-muted">{trackLabel(cont.track)}</span>
-                </span>
-              </Link>
-            )}
+                <span className="block text-[11px] text-muted">ref · computed · watch</span>
+              </span>
+            </Link>
 
             {/* 搜索 */}
             <div className="relative mb-3">
@@ -530,8 +500,9 @@ function AppShell({ children }: { children: ReactNode }) {
             </div>
           </nav>
         </aside>
+        )}
 
-        {open ? (
+        {open && !isCausalPlayer ? (
           <button
             type="button"
             className="fixed inset-0 z-20 bg-bg/60 lg:hidden"
@@ -540,7 +511,14 @@ function AppShell({ children }: { children: ReactNode }) {
           />
         ) : null}
 
-        <main className="min-w-0 flex-1 px-4 py-6 sm:px-6 lg:py-8">{children}</main>
+        <main
+          className={cn(
+            "min-w-0 flex-1",
+            isCausalPlayer ? "flex flex-col p-0" : "px-4 py-6 sm:px-6 lg:py-8",
+          )}
+        >
+          {children}
+        </main>
       </div>
     </div>
   );

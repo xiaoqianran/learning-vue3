@@ -347,6 +347,44 @@
   border-color: var(--color-border);
 }
 
+.vue-causal-preview .vue-repl {
+  height: 100%;
+  --bg: #11111b;
+  --bg-soft: #181825;
+  --border: #313244;
+  --text-light: #cdd6f4;
+}
+
+.vue-causal-preview .vue-repl .left,
+.vue-causal-preview .vue-repl .file-selector,
+.vue-causal-preview .vue-repl .tab-buttons {
+  display: none !important;
+}
+
+.vue-causal-preview .vue-repl .right,
+.vue-causal-preview .vue-repl .output-container {
+  width: 100% !important;
+  flex: 1 !important;
+  max-width: none !important;
+}
+
+.vue-causal-preview iframe {
+  background: #11111b;
+}
+
+@keyframes causal-hunk-in {
+  from {
+    background-color: color-mix(in oklab, var(--ctp-green) 0%, transparent);
+  }
+  to {
+    background-color: color-mix(in oklab, var(--ctp-green) 18%, transparent);
+  }
+}
+
+.causal-hunk-in {
+  animation: causal-hunk-in 480ms ease-out;
+}
+
 @media (prefers-reduced-motion: reduce) {
   *,
   *::before,
