@@ -502,12 +502,12 @@ export const PLUGOPT_LAB: CausalLab = {
             kind: "stale",
             message: "这是修复：Ada · 36 元。",
           },
-          lesson: "World 15 收束：树外面的边，要 use 接通；名字可以留到安装时再说。",
+          lesson: "World 15 收束：树外面的边，要 use 接通；名字可以留到安装时再说。下一课：有些节点不必再画。",
         },
       ],
       explanation: {
         headline: "安装时说的话",
-        body: "同一份插件，不同应用传入不同 options。World 15 停在树外面的安装。",
+        body: "同一份插件，不同应用传入不同 options。World 15 停在树外面的安装。下一课：有些节点不必再画。",
       },
       faqs: [
         { q: "Pinia 的 options 呢？", a: "createPinia() 自己就是那份配置。app.use(pinia) 往往不再传第二份。你自己的插件更常在 use 上说话。" },

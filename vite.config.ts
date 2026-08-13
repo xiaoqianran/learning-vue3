@@ -64,6 +64,9 @@ const causalLabs = [
   "plugin",
   "globcomp",
   "plugopt",
+  "vonce",
+  "vmemo",
+  "vmemolist",
 ];
 
 const staticPages = [
