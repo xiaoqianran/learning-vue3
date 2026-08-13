@@ -580,7 +580,7 @@ export const EXPOSE_LAB: CausalLab = {
             kind: "stale",
             message: "这是修复：open 是 function。点打开变成开着，再点关闭。",
           },
-          lesson: "World 11 收束：透传贴到哪一层，暴露开哪一扇窗。能用 props/emit 就先用。",
+          lesson: "World 11 收束：透传贴到哪一层，暴露开哪一扇窗。下一课指令直接碰到 DOM。",
         },
       ],
       explanation: {

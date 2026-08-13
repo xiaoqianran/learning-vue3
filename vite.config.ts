@@ -52,6 +52,9 @@ const causalLabs = [
   "attrs",
   "inherit",
   "expose",
+  "vfocus",
+  "vpaint",
+  "vclickout",
 ];
 
 const staticPages = [
