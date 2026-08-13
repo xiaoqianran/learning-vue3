@@ -118,4 +118,13 @@ export const PROGRAM_WORLDS: ProgramWorld[] = [
     labIds: ["asynccomp", "suspense", "asyncerr"],
     topics: ["defineAsyncComponent", "Suspense", "retry"],
   },
+  {
+    id: "w14",
+    n: 14,
+    title: "样式也有边界",
+    blurb: "scoped / :deep / :slotted",
+    status: "ready",
+    labIds: ["scoped", "deep", "slotted"],
+    topics: ["scoped", ":deep", ":slotted"],
+  },
 ];
