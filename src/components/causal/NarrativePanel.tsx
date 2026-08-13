@@ -9,6 +9,7 @@ import type {
   Scene,
 } from "@/causal/types";
 import { ChevronRight, FlaskConical, GitCompare, HelpCircle } from "lucide-react";
+import { PaneHeader } from "./PaneHeader";
 
 type Props = {
   scene: Scene;
@@ -61,14 +62,7 @@ export function NarrativePanel({
 
   return (
     <div className="flex h-full min-h-0 flex-col">
-      <div className="flex items-center justify-between border-b border-border px-3 py-1.5">
-        <p className="text-[10px] font-medium uppercase tracking-wider text-primary">
-          AI Narrative
-        </p>
-        <span className="rounded-full bg-surface-3 px-2 py-0.5 text-[10px] text-muted">
-          {layerLabel}
-        </span>
-      </div>
+      <PaneHeader kicker="这一镜" meta={layerLabel} />
       <div className="scrollbar-thin min-h-0 flex-1 space-y-3 overflow-auto p-3">
         <div>
           <p className="text-[10px] font-medium uppercase tracking-wider text-subtle">这一镜的需求</p>
@@ -146,7 +140,7 @@ export function NarrativePanel({
                       type="button"
                       onClick={() => onAblate(ablationId === a.id ? null : a)}
                       className={cn(
-                        "rounded-full border px-2.5 py-1 text-xs",
+                        "rounded-full border px-2.5 py-1 text-xs transition-[border-color,background-color,color] duration-200",
                         ablationId === a.id
                           ? "border-peach/50 bg-peach/15 text-peach"
                           : "border-border bg-surface-3 text-muted hover:text-fg",
@@ -185,7 +179,7 @@ export function NarrativePanel({
                 type="button"
                 onClick={onOpenCounterfactual}
                 className={cn(
-                  "flex w-full items-center gap-2 rounded-lg border px-3 py-2 text-left text-sm",
+                  "flex w-full items-center gap-2 rounded-lg border px-3 py-2 text-left text-sm transition-[border-color,background-color,color] duration-200",
                   cfOpen
                     ? "border-primary/40 bg-primary-soft text-primary"
                     : "border-border bg-surface-2 text-fg hover:border-border-strong",
@@ -243,7 +237,7 @@ function ChoiceCard({
                 disabled={picked !== null}
                 onClick={() => onPick(c.id)}
                 className={cn(
-                  "w-full rounded-md border px-2.5 py-2 text-left text-[13px] leading-snug",
+                  "w-full rounded-md border px-2.5 py-2 text-left text-[13px] leading-snug transition-[border-color,background-color,color,transform] duration-200 active:scale-[0.995]",
                   on && c.correct && "border-green/40 bg-green/10 text-green",
                   on && !c.correct && "border-peach/40 bg-peach/10 text-peach",
                   !on && shown && c.correct && "border-green/30 text-green",
@@ -306,11 +300,13 @@ function FaqList({
               <button
                 type="button"
                 onClick={() => onOpen(on ? null : f.q)}
-                className="w-full rounded-md px-2 py-1.5 text-left text-xs text-primary hover:bg-surface-2"
+                className="w-full rounded-md px-2 py-1.5 text-left text-xs text-primary transition-colors duration-200 hover:bg-surface-2"
               >
                 {f.q}
               </button>
-              {on ? <p className="px-2 pb-2 text-xs leading-relaxed text-muted">{f.a}</p> : null}
+              <div className={cn("causal-faq-slot", on && "is-open")}>
+                <p className="causal-faq-inner px-2 pb-2 text-xs leading-relaxed text-muted">{f.a}</p>
+              </div>
             </li>
           );
         })}

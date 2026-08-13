@@ -460,23 +460,91 @@
   }
 }
 
-.causal-pane-in {
-  animation: causal-pane-in 380ms ease both;
+.causal-player {
+  height: 100%;
+  min-height: 0;
+  overscroll-behavior: none;
+  scroll-behavior: auto;
+}
+
+.causal-player [data-group],
+.causal-player [data-panel] {
+  min-height: 0;
+}
+
+.causal-split[data-separator] {
+  flex-shrink: 0;
+  background: var(--color-border-strong);
+  transition: background-color 120ms ease;
+}
+
+.causal-split[data-separator]:hover,
+.causal-split[data-separator="focus"],
+.causal-split[data-separator="active"] {
+  background: var(--color-primary);
+}
+
+.causal-split[data-separator]:hover span,
+.causal-split[data-separator="focus"] span,
+.causal-split[data-separator="active"] span {
+  background: var(--color-primary-fg);
 }
 
 @keyframes causal-pane-in {
   from {
     opacity: 0;
-    transform: translateY(6px);
   }
   to {
     opacity: 1;
-    transform: none;
   }
 }
 
+.causal-pane-in {
+  animation: causal-pane-in 220ms ease-out both;
+}
+
+@keyframes causal-live-pulse {
+  0%,
+  100% {
+    opacity: 1;
+    transform: scale(1);
+  }
+  50% {
+    opacity: 0.4;
+    transform: scale(0.82);
+  }
+}
+
+.causal-live-dot {
+  width: 7px;
+  height: 7px;
+  border-radius: 999px;
+  background: var(--color-primary);
+  box-shadow: 0 0 0 3px color-mix(in oklab, var(--color-primary) 22%, transparent);
+  animation: causal-live-pulse 1.8s ease-in-out infinite;
+}
+
+.causal-faq-slot {
+  display: grid;
+  grid-template-rows: 0fr;
+  opacity: 0;
+  transition:
+    grid-template-rows 200ms ease,
+    opacity 180ms ease;
+}
+
+.causal-faq-slot.is-open {
+  grid-template-rows: 1fr;
+  opacity: 1;
+}
+
+.causal-faq-inner {
+  overflow: hidden;
+  min-height: 0;
+}
+
 .causal-preview-veil {
-  animation: causal-veil-out 280ms ease 80ms both;
+  animation: causal-veil-out 220ms ease 40ms both;
 }
 
 @keyframes causal-veil-out {

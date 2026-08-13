@@ -119,7 +119,7 @@ export function CatppuccinSwitcher({
         aria-controls={listId}
         onClick={() => setOpen((v) => !v)}
         className={cn(
-          "inline-flex h-9 max-w-[11.5rem] items-center gap-1.5 rounded-full border border-border bg-surface px-2.5 text-xs font-medium text-fg shadow-soft transition-colors",
+          "inline-flex h-9 max-w-[11.5rem] items-center gap-1.5 rounded-full border border-border bg-surface px-2.5 text-xs font-medium text-fg shadow-soft transition-[background-color,border-color,color] duration-200",
           "hover:border-border-strong hover:bg-surface-2",
           open && "border-primary/40 bg-primary-soft text-primary",
         )}

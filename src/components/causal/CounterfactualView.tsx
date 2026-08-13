@@ -15,7 +15,7 @@ type Props = {
 export function CounterfactualView({ spec, showTwist, onTwist, onClose, selected, onSelect }: Props) {
   const worlds = showTwist && spec.twist ? spec.twist.worlds : spec.worlds;
   return (
-    <div className="flex h-full min-h-0 flex-col">
+    <div className="causal-pane-in flex h-full min-h-0 flex-col bg-surface">
       <div className="flex items-start justify-between gap-3 border-b border-border px-3 py-2">
         <div className="min-w-0">
           <p className="text-[10px] font-medium uppercase tracking-wider text-primary">
@@ -28,7 +28,7 @@ export function CounterfactualView({ spec, showTwist, onTwist, onClose, selected
           <button
             type="button"
             onClick={onClose}
-            className="shrink-0 rounded-full border border-border px-3 py-1 text-xs text-muted hover:bg-surface-2 hover:text-fg"
+            className="shrink-0 rounded-full border border-border px-3 py-1 text-xs text-muted transition-colors duration-200 hover:bg-surface-2 hover:text-fg"
           >
             回到实时预览
           </button>

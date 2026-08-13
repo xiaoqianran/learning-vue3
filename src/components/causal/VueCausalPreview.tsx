@@ -1,11 +1,12 @@
 import { useEffect, useRef, useState } from "react";
 import { cn } from "@/lib/utils";
 import { AlertTriangle, Loader2 } from "lucide-react";
+import { PaneHeader } from "./PaneHeader";
 
 const PREVIEW_HEAD = `<style>
   html,body{margin:0;padding:0;background:#11111b;color:#cdd6f4;font-family:ui-sans-serif,system-ui,sans-serif;}
-  #app{padding:16px;min-height:100%;box-sizing:border-box;animation:causal-vue-in 420ms ease both;}
-  @keyframes causal-vue-in{from{opacity:0;transform:translateY(5px)}to{opacity:1;transform:none}}
+  #app{padding:16px;min-height:100%;box-sizing:border-box;animation:causal-vue-in 280ms ease both;}
+  @keyframes causal-vue-in{from{opacity:0}to{opacity:1}}
   @media (prefers-reduced-motion:reduce){#app{animation:none}}
   button{margin:6px 8px 6px 0;padding:8px 14px;border-radius:10px;border:1px solid #45475a;background:#1e1e2e;color:#cdd6f4;cursor:pointer;font-size:14px;}
   button:hover{border-color:#a6e3a1;color:#a6e3a1;}
@@ -140,12 +141,7 @@ export function VueCausalPreview({ code, className, label }: Props) {
 
   return (
     <div className={cn("flex h-full min-h-0 flex-col overflow-hidden bg-[#11111b]", className)}>
-      <div className="flex shrink-0 items-center justify-between gap-2 border-b border-border/70 px-3 py-1.5">
-        <p className="text-[10px] font-medium uppercase tracking-wider text-primary">
-          {label ?? "Live Application"}
-        </p>
-        <span className="font-mono text-[10px] text-subtle">@vue/repl</span>
-      </div>
+      <PaneHeader kicker={label ?? "实时应用"} meta="@vue/repl" live={status === "ready" && !veil} />
       <div className="relative min-h-0 flex-1">
         <div ref={hostRef} className="vue-sfc-repl-host vue-causal-preview absolute inset-0" />
         {status === "loading" ? (
