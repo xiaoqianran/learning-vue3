@@ -759,7 +759,7 @@ export const ROUTER_LAB: CausalLab = {
       ],
       explanation: {
         headline: "Todo 已经是一个小 SPA",
-        body: "列表、表单、组件、插槽、共享状态、仓库、页面。World 4 才会让这份应用去请求真实世界——loading、错误、竞态。机制已经可以迁移。",
+        body: "列表、表单、组件、插槽、共享状态、仓库、页面。下一世界会让这份应用去请求——loading、错误、竞态。机制已经可以迁移。",
       },
       tryThis: "先切到账单再想刷新会怎样。再打开「拆成两条路由」，用链接切换。",
     },

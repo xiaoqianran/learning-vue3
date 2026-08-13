@@ -27,6 +27,11 @@ const PREVIEW_HEAD = `<style>
   nav.links a.router-link-active,nav.links a.active{color:#a6e3a1;}
   .stats{color:#a6e3a1;font-size:13px;margin:8px 0;}
   .page{min-height:8rem;}
+  .loading{color:#89b4fa;font-size:13px;margin:8px 0;}
+  .error{color:#f38ba8;font-size:13px;margin:8px 0;}
+  .empty{color:#7f849c;font-size:13px;margin:8px 0;}
+  .card{border:1px solid #313244;border-radius:12px;padding:14px;margin:8px 0;background:#181825;}
+  .card h3{margin:0 0 6px;font-size:1.05rem;color:#cdd6f4;}
 </style>`;
 
 const EMPTY_APP = `<script setup>\n</script>\n<template><p>—</p></template>`;
