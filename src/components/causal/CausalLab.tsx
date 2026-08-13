@@ -8,11 +8,12 @@ import { CounterfactualView } from "./CounterfactualView";
 import { NarrativePanel } from "./NarrativePanel";
 import { RuntimeXRay } from "./RuntimeXRay";
 import { TimeMachine } from "./TimeMachine";
+import { CausalWorkspace } from "./CausalWorkspace";
 import { VueCausalPreview } from "./VueCausalPreview";
 import { useCodeWrite } from "./useCodeWrite";
 import { Button } from "@/components/ui/button";
-import { ArrowRight, RotateCcw } from "lucide-react";
-import { nextLab, prevLab } from "@/causal/labs";
+import { ArrowRight } from "lucide-react";
+import { nextLab } from "@/causal/labs";
 import { cn } from "@/lib/utils";
 
 type Props = { lab: Lab };
@@ -133,7 +134,6 @@ export function CausalLab({ lab }: Props) {
   const scores = scoresFor(lab.id, progress);
   const mastery = labMastery(lab.id, labsMap);
   const nxt = nextLab(lab.id);
-  const prv = prevLab(lab.id);
 
   if (done) {
     return (
@@ -152,142 +152,106 @@ export function CausalLab({ lab }: Props) {
 
   return (
     <div className="flex h-full min-h-0 flex-1 flex-col overflow-hidden">
-      <div className="flex shrink-0 flex-wrap items-center gap-2 border-b border-border px-3 py-2 sm:px-4">
-        <Link to="/causal" className="text-xs text-muted no-underline hover:text-fg">
-          World 1
-        </Link>
-        <span className="text-subtle">/</span>
-        <span className="font-display text-sm font-semibold text-fg">{lab.title}</span>
-        <span className="rounded-full bg-primary-soft px-2 py-0.5 font-mono text-[10px] text-primary">
-          {lab.concept}
-        </span>
-        <span className="ml-auto font-mono text-[11px] tabular-nums text-muted">
-          掌握 {mastery}%
-        </span>
-        {prv ? (
-          <Link
-            to="/causal/$labId"
-            params={{ labId: prv.id }}
-            className="text-xs text-muted no-underline hover:text-fg"
-          >
-            ← {prv.concept}
-          </Link>
-        ) : null}
-        {nxt ? (
-          <Link
-            to="/causal/$labId"
-            params={{ labId: nxt.id }}
-            className="text-xs text-primary no-underline hover:underline"
-          >
-            {nxt.concept} →
-          </Link>
-        ) : null}
-        <button
-          type="button"
-          className="text-subtle hover:text-muted"
-          title="重置本实验进度"
-          onClick={() => {
-            resetLab(lab.id);
-            setIndex(0);
-            setDone(false);
-          }}
-        >
-          <RotateCcw className="h-3.5 w-3.5" />
-        </button>
-      </div>
-
-      <div className="grid min-h-0 flex-1 grid-cols-1 overflow-auto lg:grid-cols-2 lg:grid-rows-2 lg:overflow-hidden">
+      <div className="flex min-h-0 flex-1 flex-col overflow-hidden">
         {cfOpen && scene.counterfactual && !waiting ? (
-          <section className="min-h-[min(70vh,36rem)] overflow-hidden lg:col-span-2 lg:row-span-2 lg:min-h-0">
-            <CounterfactualView
-              spec={scene.counterfactual}
-              showTwist={cfTwist}
-              onTwist={() => {
-                setCfTwist(true);
-                recordTried(lab.id, `${scene.counterfactual!.id}:twist`);
-              }}
-              onClose={() => setCfOpen(false)}
-              selected={selected}
-              onSelect={setSelected}
-            />
-          </section>
+          <CounterfactualView
+            spec={scene.counterfactual}
+            showTwist={cfTwist}
+            onTwist={() => {
+              setCfTwist(true);
+              recordTried(lab.id, `${scene.counterfactual!.id}:twist`);
+            }}
+            onClose={() => setCfOpen(false)}
+            selected={selected}
+            onSelect={setSelected}
+          />
         ) : (
-          <>
-        <section className="flex min-h-[min(52vh,22rem)] flex-col overflow-hidden border-b border-border lg:min-h-0 lg:border-r">
-          <CodeEvolution
-            before={before}
-            after={after}
-            blocks={scene.mutation.blocks}
-            write={{ ...write, phase: waiting ? "before" : write.phase }}
-            selected={selected}
-            onSelect={setSelected}
-            clickable={clickable}
-            waiting={waiting}
-          />
-        </section>
-        <section className="flex min-h-[min(52vh,22rem)] flex-col overflow-hidden border-b border-border lg:min-h-0">
-            <VueCausalPreview
-              key={lab.id}
-              code={liveCode}
-              label={ablation ? `Ablation · ${ablation.prompt}` : "Live Application"}
-            />
-        </section>
-        <section className="flex min-h-[min(48vh,20rem)] flex-col overflow-hidden border-b border-border lg:min-h-0 lg:border-b-0 lg:border-r">
-          <div key={scene.id} className="causal-pane-in flex h-full min-h-0 flex-col">
-          <RuntimeXRay
-            nodes={scene.nodes}
-            edges={scene.edges}
-            observe={scene.observe}
-            selected={selected}
-            onSelect={setSelected}
-            replay={replay}
-            flash={replay?.state ?? null}
-          />
-          </div>
-        </section>
-        <section className="flex min-h-[min(48vh,20rem)] flex-col overflow-hidden lg:min-h-0">
-          <div key={scene.id} className="causal-pane-in flex h-full min-h-0 flex-col">
-          <NarrativePanel
-            scene={scene}
-            waiting={waiting}
-            onPredict={pickPredict}
-            lastChoice={
-              predictAnswer
-                ? { id: predictAnswer.choiceId, correct: predictAnswer.correct }
-                : null
+          <CausalWorkspace
+            code={
+              <CodeEvolution
+                before={before}
+                after={after}
+                blocks={scene.mutation.blocks}
+                write={{ ...write, phase: waiting ? "before" : write.phase }}
+                selected={selected}
+                onSelect={setSelected}
+                clickable={clickable}
+                waiting={waiting}
+              />
             }
-            whyChoice={
-              whyAnswer ? { id: whyAnswer.choiceId, correct: whyAnswer.correct } : null
+            live={
+              <VueCausalPreview
+                key={lab.id}
+                code={liveCode}
+                label={ablation ? `消融 · ${ablation.prompt}` : "实时应用"}
+              />
             }
-            onWhy={pickWhy}
-            ablationId={ablation?.id ?? null}
-            onAblate={(a) => {
-              setAblation(a);
-              setCfOpen(false);
-              if (a) recordTried(lab.id, a.id);
-            }}
-            onOpenCounterfactual={() => {
-              const next = !cfOpen;
-              setCfOpen(next);
-              setAblation(null);
-              if (next && scene.counterfactual) recordTried(lab.id, scene.counterfactual.id);
-            }}
-            cfOpen={cfOpen}
-            onContinue={cont}
-            canContinue={!waiting && !write.writing}
-            isLast={index === lab.scenes.length - 1}
-            replayLabel={scene.replay?.label}
-            onReplay={scene.replay ? runReplay : undefined}
-            replaying={replaying}
+            xray={
+              <div key={scene.id} className="causal-pane-in flex h-full min-h-0 flex-col">
+                <RuntimeXRay
+                  nodes={scene.nodes}
+                  edges={scene.edges}
+                  observe={scene.observe}
+                  selected={selected}
+                  onSelect={setSelected}
+                  replay={replay}
+                  flash={replay?.state ?? null}
+                />
+              </div>
+            }
+            narrative={
+              <div key={scene.id} className="causal-pane-in flex h-full min-h-0 flex-col">
+                <NarrativePanel
+                  scene={scene}
+                  waiting={waiting}
+                  onPredict={pickPredict}
+                  lastChoice={
+                    predictAnswer
+                      ? { id: predictAnswer.choiceId, correct: predictAnswer.correct }
+                      : null
+                  }
+                  whyChoice={
+                    whyAnswer ? { id: whyAnswer.choiceId, correct: whyAnswer.correct } : null
+                  }
+                  onWhy={pickWhy}
+                  ablationId={ablation?.id ?? null}
+                  onAblate={(a) => {
+                    setAblation(a);
+                    setCfOpen(false);
+                    if (a) recordTried(lab.id, a.id);
+                  }}
+                  onOpenCounterfactual={() => {
+                    const next = !cfOpen;
+                    setCfOpen(next);
+                    setAblation(null);
+                    if (next && scene.counterfactual) recordTried(lab.id, scene.counterfactual.id);
+                  }}
+                  cfOpen={cfOpen}
+                  onContinue={cont}
+                  canContinue={!waiting && !write.writing}
+                  isLast={index === lab.scenes.length - 1}
+                  replayLabel={scene.replay?.label}
+                  onReplay={scene.replay ? runReplay : undefined}
+                  replaying={replaying}
+                />
+              </div>
+            }
           />
-          </div>
-        </section>
-          </>
         )}
       </div>
 
       <div className="shrink-0">
-        <TimeMachine scenes={lab.scenes} index={index} maxReached={maxReached} onGo={go} />
+        <TimeMachine
+          scenes={lab.scenes}
+          index={index}
+          maxReached={maxReached}
+          onGo={go}
+          onReset={() => {
+            resetLab(lab.id);
+            setIndex(0);
+            setDone(false);
+          }}
+        />
       </div>
     </div>
   );
@@ -307,7 +271,7 @@ function FinishCard({
   onReplay: () => void;
 }) {
   return (
-    <div className="mx-auto flex max-w-lg flex-1 flex-col justify-center px-4 py-10">
+    <div className="causal-pane-in mx-auto flex max-w-lg flex-1 flex-col justify-center px-4 py-10">
       <p className="text-xs font-medium uppercase tracking-wider text-primary">Mastery</p>
       <h2 className="mt-1 font-display text-2xl font-semibold text-fg">{lab.title}</h2>
       <p className="mt-2 text-sm text-muted">{lab.promise}</p>

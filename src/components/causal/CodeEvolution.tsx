@@ -3,6 +3,7 @@ import { cn } from "@/lib/utils";
 import type { DiffLine } from "@/causal/diff";
 import type { SemanticBlock } from "@/causal/types";
 import type { CodeWrite } from "./useCodeWrite";
+import { PaneHeader } from "./PaneHeader";
 
 const TOKEN =
   /(\b(?:import|from|const|let|function|return|export|type|interface|if|else|new|true|false)\b|<\/?[A-Za-z][\w.-]*|@[\w.-]+|:[\w.-]+|v-[\w.-]+|'[^']*'|"[^"]*"|`[^`]*`|\b[A-Za-z_]\w*\b)/g;
@@ -31,30 +32,23 @@ export function CodeEvolution({
   useEffect(() => {
     if (write.writingIndex == null) return;
     const el = scrollerRef.current?.querySelector(`[data-write-line="${write.writingIndex}"]`);
-    el?.scrollIntoView({ block: "nearest", behavior: "smooth" });
+    el?.scrollIntoView({ block: "nearest", behavior: "auto" });
   }, [write.writingIndex]);
 
   return (
     <div className="flex h-full min-h-0 flex-col">
-      <div className="flex shrink-0 items-center justify-between gap-2 border-b border-border px-3 py-1.5">
-        <p className="text-[10px] font-medium uppercase tracking-wider text-primary">
-          Code Evolution
-        </p>
-        <span className="truncate font-mono text-[10px] text-subtle">
-          {write.writing ? "写入中…" : "App.vue"}
-        </span>
-      </div>
+      <PaneHeader kicker="代码演化" meta={write.writing ? "写入中…" : "App.vue"} />
       {blocks.length > 0 ? (
         <ol className="flex min-h-[2.35rem] shrink-0 flex-wrap items-center gap-1.5 border-b border-border px-3 py-2">
           {blocks.map((b, i) => (
             <li
               key={b.id}
               className={cn(
-                "rounded-full px-2 py-0.5 font-mono text-[10px] transition-colors duration-300",
+                "rounded-full px-2 py-0.5 font-mono text-[10px] transition-[background-color,color,transform] duration-200",
                 waiting
                   ? "bg-surface-3 text-subtle"
                   : write.label === b.label
-                    ? "bg-primary text-primary-fg"
+                    ? "scale-[1.03] bg-primary text-primary-fg"
                     : "bg-surface-3 text-muted",
               )}
             >
@@ -172,7 +166,7 @@ function tokenize(
           type="button"
           onClick={() => onSelect(p)}
           className={cn(
-            "rounded-sm px-0.5 font-medium underline decoration-dotted underline-offset-2",
+            "rounded-sm px-0.5 font-medium underline decoration-dotted underline-offset-2 transition-colors duration-150",
             on ? "bg-primary/25 text-primary" : "text-sapphire hover:bg-surface-3",
           )}
         >

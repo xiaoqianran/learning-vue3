@@ -69,9 +69,13 @@ function RootDocument({ children }: { children: ReactNode }) {
 }
 
 function AppShell({ children }: { children: ReactNode }) {
-  const isCausalPlayer = useRouterState({
-    select: (s) => /\/causal\/[^/]+/.test(s.location.pathname),
+  const pathname = useRouterState({
+    select: (s) => s.location.pathname,
   });
+  const isCausalPlayer = /\/causal\/[^/]+/.test(pathname);
+  const playerLab = isCausalPlayer
+    ? CAUSAL_LABS.find((lab) => pathname.endsWith(`/causal/${lab.id}`))
+    : undefined;
   const labs = useCausal((s) => s.labs);
 
   useEffect(() => {
@@ -81,20 +85,25 @@ function AppShell({ children }: { children: ReactNode }) {
   }, []);
 
   return (
-    <div className="min-h-dvh text-fg">
-      <header className="sticky top-0 z-40 border-b border-border bg-bg/85 backdrop-blur-md">
+    <div className={cn("min-h-dvh text-fg", isCausalPlayer && "bg-bg")}>
+      <header
+        className={cn(
+          "sticky top-0 z-40 border-b border-border/80 bg-bg/80 backdrop-blur-md",
+          isCausalPlayer && "bg-bg/95",
+        )}
+      >
         <div
           className={cn(
-            "mx-auto flex h-14 items-center gap-3 px-4 sm:px-6",
-            isCausalPlayer ? "max-w-none" : "max-w-3xl",
+            "mx-auto flex items-center gap-3 px-4 sm:px-6",
+            isCausalPlayer ? "h-12 max-w-none" : "h-14 max-w-3xl",
           )}
         >
           <Link to="/" className="flex min-w-0 items-center gap-2.5 no-underline">
-            <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-md bg-primary-soft text-primary">
+            <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-md bg-primary-soft text-primary transition-transform duration-200 hover:scale-105">
               <Atom className="h-4 w-4" />
             </span>
             <span className="truncate font-display text-sm font-semibold tracking-tight text-fg">
-              Vue Causal Lab
+              {isCausalPlayer && playerLab ? playerLab.title : "Vue Causal Lab"}
             </span>
           </Link>
 
@@ -104,24 +113,33 @@ function AppShell({ children }: { children: ReactNode }) {
                 key={lab.id}
                 to="/causal/$labId"
                 params={{ labId: lab.id }}
-                className="rounded-md px-2.5 py-1.5 font-mono text-xs text-muted no-underline hover:bg-surface-2 hover:text-fg [&.active]:bg-primary-soft [&.active]:text-primary"
+                className="rounded-full px-2.5 py-1 font-mono text-xs text-muted no-underline transition-[background-color,color] duration-200 hover:bg-surface-2 hover:text-fg [&.active]:bg-primary-soft [&.active]:text-primary"
                 activeProps={{ className: "active" }}
               >
                 {lab.concept}
-                <span className="ml-1 text-[10px] text-subtle">{labMastery(lab.id, labs)}%</span>
+                <span className="ml-1 text-[10px] tabular-nums text-subtle">{labMastery(lab.id, labs)}%</span>
               </Link>
             ))}
           </nav>
 
           <div className="ml-auto flex items-center gap-2">
-            <Link
-              to="/causal/$labId"
-              params={{ labId: "ref" }}
-              className="inline-flex items-center gap-1 rounded-full bg-primary px-3 py-1.5 text-xs font-medium text-primary-fg no-underline hover:opacity-90"
-            >
-              <Play className="h-3 w-3" />
-              打开时间机器
-            </Link>
+            {isCausalPlayer ? (
+              <Link
+                to="/causal"
+                className="text-xs text-muted no-underline transition-colors duration-200 hover:text-fg"
+              >
+                World 1
+              </Link>
+            ) : (
+              <Link
+                to="/causal/$labId"
+                params={{ labId: "ref" }}
+                className="inline-flex items-center gap-1 rounded-full bg-primary px-3 py-1.5 text-xs font-medium text-primary-fg no-underline transition-opacity duration-200 hover:opacity-90"
+              >
+                <Play className="h-3 w-3" />
+                打开时间机器
+              </Link>
+            )}
             <CatppuccinSwitcher mode="popover" />
           </div>
         </div>
@@ -130,7 +148,7 @@ function AppShell({ children }: { children: ReactNode }) {
       <main
         className={cn(
           isCausalPlayer
-            ? "flex h-[calc(100dvh-3.5rem)] min-h-0 flex-col overflow-hidden"
+            ? "causal-player flex h-[calc(100dvh-3rem)] min-h-0 flex-col overflow-hidden bg-bg"
             : "mx-auto max-w-3xl px-4 py-8 sm:px-6",
         )}
       >

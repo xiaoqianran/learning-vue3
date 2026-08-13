@@ -1,5 +1,6 @@
 import { cn } from "@/lib/utils";
 import type { CausalEdge, CausalNode, Observe, ReplayStep } from "@/causal/types";
+import { PaneHeader } from "./PaneHeader";
 
 const KIND_COLOR: Record<CausalNode["kind"], string> = {
   event: "border-peach/50 bg-peach/10 text-peach",
@@ -35,12 +36,7 @@ export function RuntimeXRay({
 
   return (
     <div className="flex h-full min-h-0 flex-col">
-      <div className="flex items-center justify-between border-b border-border px-3 py-1.5">
-        <p className="text-[10px] font-medium uppercase tracking-wider text-primary">
-          Runtime X-Ray
-        </p>
-        <span className="font-mono text-[10px] text-subtle">因果显微镜</span>
-      </div>
+      <PaneHeader kicker="运行时透视" meta="因果显微镜" />
       <div className="scrollbar-thin min-h-0 flex-1 overflow-auto p-3">
         {replay?.caption ? (
           <p className="mb-3 rounded-md border border-primary/30 bg-primary-soft px-2.5 py-1.5 font-mono text-xs text-primary">
@@ -71,9 +67,9 @@ export function RuntimeXRay({
                   type="button"
                   onClick={() => node.symbol && onSelect(node.symbol)}
                   className={cn(
-                    "w-full max-w-xs rounded-lg border px-3 py-2 text-left transition-all",
+                    "w-full max-w-xs rounded-lg border px-3 py-2 text-left transition-[box-shadow,transform,border-color] duration-200 ease-out",
                     KIND_COLOR[node.kind],
-                    on && "ring-2 ring-primary/70",
+                    on && "scale-[1.01] ring-2 ring-primary/70",
                   )}
                 >
                   <div className="flex items-center justify-between gap-2">
