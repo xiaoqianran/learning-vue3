@@ -570,7 +570,7 @@ export const PROVIDE_LAB: CausalLab = {
       ],
       explanation: {
         headline: "子树里的最近源",
-        body: "没伸手、伸错、被更近的盖住，脸都是错名字。KeepAlive / Teleport 会问另一件事：组件活在哪、DOM 挂在哪。那是下一课。",
+        body: "没伸手、伸错、被更近的盖住，脸都是错名字。下一课 KeepAlive 会问：切走的组件是睡了还是死了。",
       },
       tryThis: "三种消融都换一次人。游客、游客、被盖住，对上号再恢复。",
     },
@@ -623,7 +623,7 @@ export const PROVIDE_LAB: CausalLab = {
             "src/Box.vue": themeBox,
           },
           expected: { kind: "stale", message: "这是修复：切换一次，两行一起变。user 和 theme 是同一张图。" },
-          lesson: "World 5 开了个头：跨树传递。KeepAlive、Teleport、TS 还在后面。",
+          lesson: "user 和 theme 是同一张图。下一课：切走的面板，实例还在不在。",
         },
       ],
       explanation: {

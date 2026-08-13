@@ -41,10 +41,10 @@ export const PROGRAM_WORLDS: ProgramWorld[] = [
     id: "w5",
     n: 5,
     title: "应用开始复杂",
-    blurb: "provide / inject",
+    blurb: "provide / inject / keep-alive / teleport / transition",
     status: "ready",
-    labIds: ["provide"],
-    topics: ["provide", "inject"],
+    labIds: ["provide", "keepalive", "teleport", "transition"],
+    topics: ["provide", "inject", "keep-alive", "teleport", "transition"],
   },
   {
     id: "w6",
