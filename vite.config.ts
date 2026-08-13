@@ -70,6 +70,9 @@ const causalLabs = [
   "watcheffect",
   "watchestop",
   "watchclean",
+  "hnode",
+  "hsnap",
+  "hslot",
 ];
 
 const staticPages = [
