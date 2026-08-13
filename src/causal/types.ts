@@ -147,6 +147,8 @@ export type Scene = {
     headline: string;
     body: string;
   };
+  /** What to actually do in the live preview this beat. */
+  tryThis?: string;
   faqs?: Faq[];
   mapping?: Mapping[];
 };

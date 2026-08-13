@@ -345,7 +345,8 @@ export const WATCH_LAB: CausalLab = {
       },
       faqs: [
         { q: "为什么这里不用 watch？", a: "因为你要的是值，不是副作用。watch 更适合 fetch、改标题、写 localStorage。" },
-        { q: "B 为什么要 immediate？", a: "否则首次 total 仍是 0，要等 price/quantity 再变才同步。computed 没有这个问题。" },
+        { q: "B 为什么要 immediate？", a: "否则首次 total 仍是 0，要等 price/quantity 再变才同步。computed 没有这个问题。忘记 immediate，是 watch 同步派生值时最常见的静默错误。" },
+        { q: "watch 的回调里为什么用 .value？", a: "因为那是 script。price、quantity、total 都是 ref / computed ref。漏 .value 会把对象赋进去，合计变成 [object Object] 或根本不对。" },
       ],
     },
     {
@@ -478,6 +479,7 @@ export const WATCH_LAB: CausalLab = {
         { q: "watchEffect 呢？", a: "它自动收集依赖，更像「立刻跑的副作用 computed」。仍是副作用通道，不是派生值。" },
         { q: "这里 React 会怎么写？", a: "total 用 useMemo；document.title 用 useEffect。同样是派生 vs 副作用。" },
       ],
+      tryThis: "点「多买一件」，看合计数字。若运行环境暴露了 document.title，它应写成「合计 n」。",
     },
     {
       id: "watch-s4",
