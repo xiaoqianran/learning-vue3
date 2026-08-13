@@ -67,6 +67,9 @@ const causalLabs = [
   "vonce",
   "vmemo",
   "vmemolist",
+  "watcheffect",
+  "watchestop",
+  "watchclean",
 ];
 
 const staticPages = [

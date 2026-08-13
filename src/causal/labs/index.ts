@@ -51,6 +51,9 @@ import { PLUGOPT_LAB } from "./plugopt";
 import { VONCE_LAB } from "./vonce";
 import { VMEMO_LAB } from "./vmemo";
 import { VMEMOLIST_LAB } from "./vmemolist";
+import { WATCHEFFECT_LAB } from "./watcheffect";
+import { WATCHESTOP_LAB } from "./watchestop";
+import { WATCHCLEAN_LAB } from "./watchclean";
 import { WATCH_LAB } from "./watch";
 
 export const CAUSAL_LABS: CausalLab[] = [
@@ -106,6 +109,9 @@ export const CAUSAL_LABS: CausalLab[] = [
   VONCE_LAB,
   VMEMO_LAB,
   VMEMOLIST_LAB,
+  WATCHEFFECT_LAB,
+  WATCHESTOP_LAB,
+  WATCHCLEAN_LAB,
 ];
 
 export function getCausalLab(id: string): CausalLab | undefined {
