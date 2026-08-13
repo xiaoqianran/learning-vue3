@@ -558,7 +558,7 @@ export const MULTIMODEL_LAB: CausalLab = {
             kind: "stale",
             message: "这是修复：改正文，父的提示跟着走。第二扇门握住了。",
           },
-          lesson: "World 9 收束：一扇门、门上的锁、门的名字。下一处写组件表单时，先数有几扇门。",
+          lesson: "World 9 收束：一扇门、门上的锁、门的名字。下一课：追踪本身也会停在某一层。",
         },
       ],
       explanation: {
