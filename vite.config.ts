@@ -14,6 +14,34 @@ const base = isGitHubPages ? "/learning-vue3/" : "/";
 
 const lessonPaths = LESSON_SLUGS.map((slug) => ({ path: `/lesson/${slug}` }));
 
+const causalLabs = [
+  "ref",
+  "computed",
+  "watch",
+  "list",
+  "form",
+  "component",
+  "slots",
+  "composable",
+  "pinia",
+  "router",
+  "fetch",
+  "error",
+  "race",
+  "crud",
+  "auth",
+  "provide",
+  "keepalive",
+  "teleport",
+  "transition",
+  "nexttick",
+  "capture",
+  "test",
+  "hydrate",
+  "isolate",
+  "payload",
+];
+
 const staticPages = [
   { path: "/" },
   { path: "/hub" },
@@ -25,9 +53,7 @@ const staticPages = [
   { path: "/cheatsheet" },
   { path: "/docs" },
   { path: "/causal" },
-  { path: "/causal/ref" },
-  { path: "/causal/computed" },
-  { path: "/causal/watch" },
+  ...causalLabs.map((id) => ({ path: `/causal/${id}` })),
   ...lessonPaths,
 ];
 

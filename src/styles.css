@@ -461,7 +461,6 @@
 }
 
 .causal-player {
-  height: 100%;
   min-height: 0;
   overscroll-behavior: none;
   scroll-behavior: auto;
@@ -470,6 +469,7 @@
 .causal-player [data-group],
 .causal-player [data-panel] {
   min-height: 0;
+  height: 100%;
 }
 
 .causal-split[data-separator] {
@@ -564,4 +564,14 @@
     animation-iteration-count: 1 !important;
     transition-duration: 0.01ms !important;
   }
+}
+
+html:has(.causal-player),
+html:has(.causal-player) body {
+  height: 100%;
+  overflow: hidden;
+}
+
+html:has(.causal-player) body {
+  min-height: 0;
 }

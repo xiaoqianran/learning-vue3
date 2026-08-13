@@ -9,7 +9,7 @@ import {
 } from "react-resizable-panels";
 import { cn } from "@/lib/utils";
 
-const STORAGE_KEY = "vue-causal-lab-split-v1";
+const STORAGE_KEY = "vue-causal-lab-split-v2";
 
 type Saved = {
   rows?: Layout;
@@ -78,7 +78,12 @@ function PersistentGroup({
 
   useEffect(() => {
     const saved = readSaved()[part];
-    if (saved) groupRef.current?.setLayout(saved);
+    if (!saved || typeof saved !== "object") return;
+    try {
+      groupRef.current?.setLayout(saved);
+    } catch {
+      /* stale layout from an older pane schema */
+    }
   }, [groupRef, part]);
 
   function onLayoutChanged(layout: Layout, meta: LayoutChangedMeta) {
@@ -123,7 +128,7 @@ export function CausalWorkspace({ code, live, xray, narrative }: WorkspaceProps)
         part="stack"
         groupId="causal-stack"
         orientation="vertical"
-        className="min-h-0 w-full flex-1"
+        className="h-full min-h-0 w-full flex-1"
       >
         <Panel id="code" minSize="14%" defaultSize="28%" className="min-h-0">
           <Pane>{code}</Pane>
@@ -149,7 +154,7 @@ export function CausalWorkspace({ code, live, xray, narrative }: WorkspaceProps)
       part="rows"
       groupId="causal-rows"
       orientation="vertical"
-      className="min-h-0 w-full flex-1"
+      className="h-full min-h-0 w-full flex-1"
     >
       <Panel id="top" minSize="18%" defaultSize="50%" className="min-h-0">
         <PersistentGroup
