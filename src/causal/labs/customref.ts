@@ -560,7 +560,7 @@ export const CUSTOMREF_LAB: CausalLab = {
             kind: "stale",
             message: "这是对照：每个字都搜索。铃立刻敲。",
           },
-          lesson: "World 10 收束：深浅、盖章、铃铛。追踪停在哪，画面就停在哪。",
+          lesson: "World 10 收束：深浅、盖章、铃铛。下一课：没声明的属性会贴到根上。",
         },
       ],
       explanation: {

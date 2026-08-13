@@ -49,6 +49,9 @@ const causalLabs = [
   "shallow",
   "markraw",
   "customref",
+  "attrs",
+  "inherit",
+  "expose",
 ];
 
 const staticPages = [

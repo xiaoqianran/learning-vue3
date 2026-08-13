@@ -33,6 +33,9 @@ import { MULTIMODEL_LAB } from "./multimodel";
 import { SHALLOW_LAB } from "./shallow";
 import { MARKRAW_LAB } from "./markraw";
 import { CUSTOMREF_LAB } from "./customref";
+import { ATTRS_LAB } from "./attrs";
+import { INHERIT_LAB } from "./inherit";
+import { EXPOSE_LAB } from "./expose";
 import { WATCH_LAB } from "./watch";
 
 export const CAUSAL_LABS: CausalLab[] = [
@@ -70,6 +73,9 @@ export const CAUSAL_LABS: CausalLab[] = [
   SHALLOW_LAB,
   MARKRAW_LAB,
   CUSTOMREF_LAB,
+  ATTRS_LAB,
+  INHERIT_LAB,
+  EXPOSE_LAB,
 ];
 
 export function getCausalLab(id: string): CausalLab | undefined {

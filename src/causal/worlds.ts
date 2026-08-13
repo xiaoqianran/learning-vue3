@@ -91,4 +91,13 @@ export const PROGRAM_WORLDS: ProgramWorld[] = [
     labIds: ["shallow", "markraw", "customref"],
     topics: ["shallowRef", "markRaw", "customRef"],
   },
+  {
+    id: "w11",
+    n: 11,
+    title: "贴到哪一层，开哪一扇窗",
+    blurb: "$attrs / inheritAttrs / defineExpose",
+    status: "ready",
+    labIds: ["attrs", "inherit", "expose"],
+    topics: ["$attrs", "inheritAttrs", "defineExpose"],
+  },
 ];
