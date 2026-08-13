@@ -64,3 +64,32 @@ export function changedBlocks(lines: DiffLine[]): number[] {
   }
   return [...seen].sort((x, y) => x - y);
 }
+
+export type WriteStep =
+  | { kind: "remove"; indices: number[] }
+  | { kind: "add"; index: number };
+
+/** Old lines leave as a hunk; new lines arrive one at a time so the write reads as a process. */
+export function writePlan(lines: DiffLine[]): WriteStep[] {
+  const steps: WriteStep[] = [];
+  let i = 0;
+  while (i < lines.length) {
+    const line = lines[i]!;
+    if (line.kind === "same") {
+      i += 1;
+      continue;
+    }
+    if (line.kind === "remove") {
+      const indices: number[] = [];
+      while (i < lines.length && lines[i]!.kind === "remove") {
+        indices.push(i);
+        i += 1;
+      }
+      steps.push({ kind: "remove", indices });
+      continue;
+    }
+    steps.push({ kind: "add", index: i });
+    i += 1;
+  }
+  return steps;
+}

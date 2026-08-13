@@ -209,7 +209,7 @@ export function NarrativePanel({
       </div>
       <div className="border-t border-border p-3">
         <Button className="w-full" onClick={onContinue} disabled={!canContinue}>
-          {waiting ? "先做出预测" : isLast ? "完成本实验" : "继续下一镜"}
+          {waiting ? "先做出预测" : !canContinue ? "代码写入中…" : isLast ? "完成本实验" : "继续下一镜"}
           <ChevronRight className="h-4 w-4" />
         </Button>
       </div>
