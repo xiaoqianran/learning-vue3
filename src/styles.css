@@ -397,6 +397,24 @@
   animation: causal-hunk-in 480ms ease-out;
 }
 
+.causal-split[data-separator] {
+  flex-shrink: 0;
+  background: var(--color-border);
+  transition: background-color 120ms ease;
+}
+
+.causal-split[data-separator]:hover,
+.causal-split[data-separator="focus"],
+.causal-split[data-separator="active"] {
+  background: var(--color-primary);
+}
+
+.causal-split[data-separator]:hover span,
+.causal-split[data-separator="focus"] span,
+.causal-split[data-separator="active"] span {
+  background: var(--color-primary-fg);
+}
+
 @media (prefers-reduced-motion: reduce) {
   *,
   *::before,

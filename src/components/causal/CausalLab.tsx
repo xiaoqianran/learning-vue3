@@ -8,6 +8,7 @@ import { CounterfactualView } from "./CounterfactualView";
 import { NarrativePanel } from "./NarrativePanel";
 import { RuntimeXRay } from "./RuntimeXRay";
 import { TimeMachine } from "./TimeMachine";
+import { CausalWorkspace } from "./CausalWorkspace";
 import { VueCausalPreview } from "./VueCausalPreview";
 import { Button } from "@/components/ui/button";
 import { ArrowRight, RotateCcw } from "lucide-react";
@@ -204,89 +205,87 @@ export function CausalLab({ lab }: Props) {
         </button>
       </div>
 
-      <div className="grid min-h-0 flex-1 grid-cols-1 overflow-auto lg:grid-cols-2 lg:grid-rows-2 lg:overflow-hidden">
+      <div className="flex min-h-0 flex-1 flex-col overflow-hidden">
         {cfOpen && scene.counterfactual && !waiting ? (
-          <section className="min-h-[min(70vh,36rem)] overflow-hidden lg:col-span-2 lg:row-span-2 lg:min-h-0">
-            <CounterfactualView
-              spec={scene.counterfactual}
-              showTwist={cfTwist}
-              onTwist={() => {
-                setCfTwist(true);
-                recordTried(lab.id, `${scene.counterfactual!.id}:twist`);
-              }}
-              onClose={() => setCfOpen(false)}
-              selected={selected}
-              onSelect={setSelected}
-            />
-          </section>
+          <CounterfactualView
+            spec={scene.counterfactual}
+            showTwist={cfTwist}
+            onTwist={() => {
+              setCfTwist(true);
+              recordTried(lab.id, `${scene.counterfactual!.id}:twist`);
+            }}
+            onClose={() => setCfOpen(false)}
+            selected={selected}
+            onSelect={setSelected}
+          />
         ) : (
-          <>
-        <section className="flex min-h-[min(52vh,22rem)] flex-col overflow-hidden border-b border-border lg:min-h-0 lg:border-r">
-          <CodeEvolution
-            before={before}
-            after={after}
-            blocks={waiting ? [] : scene.mutation.blocks}
-            activeBlockLabel={blockPulse}
-            selected={selected}
-            onSelect={setSelected}
-            clickable={clickable}
-            waiting={waiting}
-          />
-        </section>
-        <section className="flex min-h-[min(52vh,22rem)] flex-col overflow-hidden border-b border-border lg:min-h-0">
-            <VueCausalPreview
-              key={lab.id}
-              code={liveCode}
-              label={ablation ? `Ablation · ${ablation.prompt}` : "Live Application"}
-            />
-        </section>
-        <section className="flex min-h-[min(48vh,20rem)] flex-col overflow-hidden border-b border-border lg:min-h-0 lg:border-b-0 lg:border-r">
-          <RuntimeXRay
-            nodes={scene.nodes}
-            edges={scene.edges}
-            observe={scene.observe}
-            selected={selected}
-            onSelect={setSelected}
-            replay={replay}
-            flash={replay?.state ?? null}
-          />
-        </section>
-        <section className="flex min-h-[min(48vh,20rem)] flex-col overflow-hidden lg:min-h-0">
-          <NarrativePanel
-            scene={scene}
-            waiting={waiting}
-            onPredict={pickPredict}
-            lastChoice={
-              predictAnswer
-                ? { id: predictAnswer.choiceId, correct: predictAnswer.correct }
-                : null
+          <CausalWorkspace
+            code={
+              <CodeEvolution
+                before={before}
+                after={after}
+                blocks={waiting ? [] : scene.mutation.blocks}
+                activeBlockLabel={blockPulse}
+                selected={selected}
+                onSelect={setSelected}
+                clickable={clickable}
+                waiting={waiting}
+              />
             }
-            whyChoice={
-              whyAnswer ? { id: whyAnswer.choiceId, correct: whyAnswer.correct } : null
+            live={
+              <VueCausalPreview
+                key={lab.id}
+                code={liveCode}
+                label={ablation ? `Ablation · ${ablation.prompt}` : "Live Application"}
+              />
             }
-            onWhy={pickWhy}
-            ablationId={ablation?.id ?? null}
-            onAblate={(a) => {
-              setAblation(a);
-              setCfOpen(false);
-              if (a) recordTried(lab.id, a.id);
-            }}
-            onOpenCounterfactual={() => {
-              const next = !cfOpen;
-              setCfOpen(next);
-              setAblation(null);
-              if (next && scene.counterfactual) recordTried(lab.id, scene.counterfactual.id);
-            }}
-            cfOpen={cfOpen}
-            onContinue={cont}
-            canContinue={!waiting}
-            isLast={index === lab.scenes.length - 1}
-            replayLabel={scene.replay?.label}
-            onReplay={scene.replay ? runReplay : undefined}
-            replaying={replaying}
+            xray={
+              <RuntimeXRay
+                nodes={scene.nodes}
+                edges={scene.edges}
+                observe={scene.observe}
+                selected={selected}
+                onSelect={setSelected}
+                replay={replay}
+                flash={replay?.state ?? null}
+              />
+            }
+            narrative={
+              <NarrativePanel
+                scene={scene}
+                waiting={waiting}
+                onPredict={pickPredict}
+                lastChoice={
+                  predictAnswer
+                    ? { id: predictAnswer.choiceId, correct: predictAnswer.correct }
+                    : null
+                }
+                whyChoice={
+                  whyAnswer ? { id: whyAnswer.choiceId, correct: whyAnswer.correct } : null
+                }
+                onWhy={pickWhy}
+                ablationId={ablation?.id ?? null}
+                onAblate={(a) => {
+                  setAblation(a);
+                  setCfOpen(false);
+                  if (a) recordTried(lab.id, a.id);
+                }}
+                onOpenCounterfactual={() => {
+                  const next = !cfOpen;
+                  setCfOpen(next);
+                  setAblation(null);
+                  if (next && scene.counterfactual) recordTried(lab.id, scene.counterfactual.id);
+                }}
+                cfOpen={cfOpen}
+                onContinue={cont}
+                canContinue={!waiting}
+                isLast={index === lab.scenes.length - 1}
+                replayLabel={scene.replay?.label}
+                onReplay={scene.replay ? runReplay : undefined}
+                replaying={replaying}
+              />
+            }
           />
-        </section>
-          </>
         )}
       </div>
 
