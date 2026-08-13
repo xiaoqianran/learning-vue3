@@ -50,3 +50,6 @@ if (causalSceneIds.length < 30) {
   process.exit(1);
 }
 console.log(`check-content: ${causalSceneIds.length} causal scenes OK`);
+
+const { checkCausal } = await import("./check-causal.mjs");
+await checkCausal();
