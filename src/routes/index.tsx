@@ -34,7 +34,7 @@ function HomePage() {
       <WorldCatalog progress={labs} />
 
       <p className="mt-8 text-xs leading-relaxed text-subtle">
-        World 1 是响应式。World 2 是 Todo 长成组件。World 3 以后（路由、Pinia、异步）还没长出来。
+        World 1 是响应式。World 2 是 Todo 长成组件。World 3 是共享状态和页面。World 4 以后（异步、架构、上线）还没长出来。
       </p>
     </div>
   );

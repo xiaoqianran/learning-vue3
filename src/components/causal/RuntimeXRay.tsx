@@ -12,6 +12,9 @@ const KIND_COLOR: Record<CausalNode["kind"], string> = {
   script: "border-overlay1 bg-surface-3 text-muted",
   effect: "border-mauve/50 bg-mauve/10 text-mauve",
   component: "border-teal/50 bg-teal/10 text-teal",
+  composable: "border-mauve/50 bg-mauve/10 text-mauve",
+  store: "border-yellow/50 bg-yellow/10 text-yellow",
+  route: "border-lavender/50 bg-lavender/10 text-lavender",
 };
 
 type Props = {
