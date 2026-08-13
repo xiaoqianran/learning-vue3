@@ -8,6 +8,7 @@ import { CRUD_LAB } from "./crud";
 import { ERROR_LAB } from "./error";
 import { FETCH_LAB } from "./fetch";
 import { FORM_LAB } from "./form";
+import { KEEPALIVE_LAB } from "./keepalive";
 import { LIST_LAB } from "./list";
 import { PINIA_LAB } from "./pinia";
 import { PROVIDE_LAB } from "./provide";
@@ -15,6 +16,8 @@ import { RACE_LAB } from "./race";
 import { REF_LAB } from "./ref";
 import { ROUTER_LAB } from "./router";
 import { SLOTS_LAB } from "./slots";
+import { TELEPORT_LAB } from "./teleport";
+import { TRANSITION_LAB } from "./transition";
 import { WATCH_LAB } from "./watch";
 
 export const CAUSAL_LABS: CausalLab[] = [
@@ -34,6 +37,9 @@ export const CAUSAL_LABS: CausalLab[] = [
   CRUD_LAB,
   AUTH_LAB,
   PROVIDE_LAB,
+  KEEPALIVE_LAB,
+  TELEPORT_LAB,
+  TRANSITION_LAB,
 ];
 
 export function getCausalLab(id: string): CausalLab | undefined {

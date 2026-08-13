@@ -34,6 +34,7 @@ const PREVIEW_HEAD = `<style>
   .card h3{margin:0 0 6px;font-size:1.05rem;color:#cdd6f4;}
   .who{font-size:13px;color:#a6e3a1;margin:8px 0;}
   button:disabled{opacity:.45;cursor:not-allowed;}
+  button.on{border-color:#a6e3a1;color:#a6e3a1;}
 </style>`;
 
 const EMPTY_APP = `<script setup>\n</script>\n<template><p>—</p></template>`;
