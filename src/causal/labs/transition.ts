@@ -522,7 +522,7 @@ export const TRANSITION_LAB: CausalLab = {
       ],
       explanation: {
         headline: "Transition 的身份是进离场的寿命",
-        body: "它不保存状态（那是 KeepAlive），不换父节点（那是 Teleport）。它只请求：在销毁或插入的前后，请给我几帧。",
+        body: "它不保存状态（那是 KeepAlive），不换父节点（那是 Teleport）。它只请求：在销毁或插入的前后，请给我几帧。下一世界会问：你读 DOM 是不是太早，以及渲染炸了树还在不在。",
       },
       tryThis: "先瞬间展开。再打开淡入版，慢一点点。",
     },

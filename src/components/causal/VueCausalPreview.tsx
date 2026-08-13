@@ -35,6 +35,11 @@ const PREVIEW_HEAD = `<style>
   .who{font-size:13px;color:#a6e3a1;margin:8px 0;}
   button:disabled{opacity:.45;cursor:not-allowed;}
   button.on{border-color:#a6e3a1;color:#a6e3a1;}
+  .probe{font-family:ui-monospace,ui-sans-serif,monospace;font-size:12px;color:#f9e2af;margin:8px 0;}
+  .specs{list-style:none;padding-left:0;margin:12px 0 0;}
+  .specs li{font-size:13px;margin:4px 0;}
+  .pass{color:#a6e3a1;}
+  .fail{color:#f38ba8;}
 </style>`;
 
 const EMPTY_APP = `<script setup>\n</script>\n<template><p>—</p></template>`;
