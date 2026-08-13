@@ -73,4 +73,13 @@ export const PROGRAM_WORLDS: ProgramWorld[] = [
     labIds: ["typedprops", "typedemit", "injectkey"],
     topics: ["defineProps", "defineEmits", "InjectionKey"],
   },
+  {
+    id: "w9",
+    n: 9,
+    title: "组件上的双向门",
+    blurb: "defineModel / 修饰符 / 具名 v-model",
+    status: "ready",
+    labIds: ["definemodel", "modelmod", "multimodel"],
+    topics: ["defineModel", "v-model.trim", "v-model:title"],
+  },
 ];

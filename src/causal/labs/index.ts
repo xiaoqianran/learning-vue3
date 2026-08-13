@@ -27,6 +27,9 @@ import { PAYLOAD_LAB } from "./payload";
 import { TYPEDPROPS_LAB } from "./typedprops";
 import { TYPEDEMIT_LAB } from "./typedemit";
 import { INJECTKEY_LAB } from "./injectkey";
+import { DEFINEMODEL_LAB } from "./definemodel";
+import { MODELMOD_LAB } from "./modelmod";
+import { MULTIMODEL_LAB } from "./multimodel";
 import { WATCH_LAB } from "./watch";
 
 export const CAUSAL_LABS: CausalLab[] = [
@@ -58,6 +61,9 @@ export const CAUSAL_LABS: CausalLab[] = [
   TYPEDPROPS_LAB,
   TYPEDEMIT_LAB,
   INJECTKEY_LAB,
+  DEFINEMODEL_LAB,
+  MODELMOD_LAB,
+  MULTIMODEL_LAB,
 ];
 
 export function getCausalLab(id: string): CausalLab | undefined {
