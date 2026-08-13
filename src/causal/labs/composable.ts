@@ -340,6 +340,10 @@ export const COMPOSABLE_LAB: CausalLab = {
         body: "文件边界就是作用域边界。下一镜只补 props。composable 还没出场——先确认「过边界」这件事本身。",
       },
       tryThis: "勾选第二项。列表划线，统计仍是 1 / 2。",
+      faqs: [
+        { q: "Stats 为什么还能显示 1 / 2？", a: "那是写在它自己模板里的字。不是读出来的。和手写清单两项同一类假真相。" },
+        { q: "为什么不直接抽 useTodos？", a: "因为你还没看见「剪组件会剪断读取」。先断，再接 props，再抽函数。一次一条边。" },
+      ],
     },
     {
       id: "composable-s2",
@@ -383,6 +387,10 @@ export const COMPOSABLE_LAB: CausalLab = {
         body: "两个消费者还好。十个页面、一个深孙子，就要一直往下传。composable 要解决的是：让读取发生在需要它的地方，而不是从 App 层层递。下一镜只抽函数，先不让 Stats 自己调用。",
       },
       tryThis: "勾选、取消。统计应和列表一致。这是「对的」，但还不是终点。",
+      faqs: [
+        { q: "为什么还要再抽 composable？", a: "props 能用。消费者一多，App 就变成接线板。抽函数是为了让读取发生在需要它的地方。" },
+        { q: "completed 为什么可以当 prop 传？", a: "它是 number。computed 在模板/传参时会解包。和 ref 同一条规则。" },
+      ],
       mapping: [{ code: '<Stats :completed :total />', runtime: "props 过边界", ui: "统计跟着变" }],
     },
     {

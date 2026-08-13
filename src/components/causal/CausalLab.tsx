@@ -63,6 +63,7 @@ export function CausalLab({ lab }: Props) {
       "ref",
       "computed",
       "watch",
+      "immediate",
       "v-for",
       "v-model",
       "defineProps",

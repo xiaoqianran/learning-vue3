@@ -360,6 +360,10 @@ export const ROUTER_LAB: CausalLab = {
         body: "下一镜安装 vue-router，但 App 仍听 page ref。你会看见：链接可以存在，视图仍不跟地址走。",
       },
       tryThis: "点进详情。看「内部页：detail」。刷新，应回到 list。",
+      faqs: [
+        { q: "为什么刷新会丢？", a: "page 住在内存。刷新是新的 setup，ref 回到 'list'。地址栏没被问过。" },
+        { q: "RouterLink 这一镜为什么还没有？", a: "先看见「组件切换 ≠ 导航」。下一镜会装上路由，但视图仍听 page——安装不等于出口。" },
+      ],
     },
     {
       id: "router-s2",
