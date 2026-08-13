@@ -68,9 +68,9 @@ export const PROGRAM_WORLDS: ProgramWorld[] = [
     id: "w8",
     n: 8,
     title: "类型",
-    blurb: "TypeScript / props / emit / InjectionKey",
-    status: "soon",
-    labIds: [],
-    topics: ["TypeScript"],
+    blurb: "defineProps / defineEmits / InjectionKey",
+    status: "ready",
+    labIds: ["typedprops", "typedemit", "injectkey"],
+    topics: ["defineProps", "defineEmits", "InjectionKey"],
   },
 ];

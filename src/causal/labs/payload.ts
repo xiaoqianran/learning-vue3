@@ -629,7 +629,7 @@ export const PAYLOAD_LAB: CausalLab = {
             kind: "stale",
             message: "这是修复：文章立刻在。刷新中那一行可以出现，正文不消失。",
           },
-          lesson: "World 7 收束：两帧对齐，请求隔离，第一帧带着冻住的数据。TS 还没上场，机制已经可以上线。",
+          lesson: "World 7 收束：两帧对齐，请求隔离，第一帧带着冻住的数据。下一课才给这些边加上类型契约。",
         },
       ],
       explanation: {
