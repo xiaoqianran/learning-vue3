@@ -88,6 +88,23 @@ function pickMain(files: Record<string, string>): string {
   return "src/App.vue";
 }
 
+function waitForBox(el: HTMLElement | null, timeoutMs = 2000): Promise<void> {
+  if (!el) return Promise.resolve();
+  if (el.clientWidth > 8 && el.clientHeight > 8) return Promise.resolve();
+  return new Promise((resolve) => {
+    const done = () => {
+      ro.disconnect();
+      window.clearTimeout(timer);
+      resolve();
+    };
+    const ro = new ResizeObserver(() => {
+      if (el.clientWidth > 8 && el.clientHeight > 8) done();
+    });
+    ro.observe(el);
+    const timer = window.setTimeout(done, timeoutMs);
+  });
+}
+
 /**
  * Preview-only @vue/repl host. Editor is hidden; files update in place for time travel.
  * The mount node must keep a real layout box — never `sr-only` / 1×1 — or the iframe
@@ -112,6 +129,8 @@ export function VueCausalPreview({ files, className, label }: Props) {
     async function boot() {
       try {
         setStatus("loading");
+        await waitForBox(el);
+        if (cancelled) return;
         const vue = await import("vue");
         const repl = await import("@vue/repl");
         const CodeMirror = (await import("@vue/repl/codemirror-editor")).default;
