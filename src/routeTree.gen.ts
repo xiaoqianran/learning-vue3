@@ -19,6 +19,8 @@ import { Route as MistakesRouteImport } from './routes/mistakes'
 import { Route as PlaygroundRouteImport } from './routes/playground'
 import { Route as StudioRouteImport } from './routes/studio'
 import { Route as LessonSlugRouteImport } from './routes/lesson.$slug'
+import { Route as CausalRouteImport } from './routes/causal'
+import { Route as CausalLabIdRouteImport } from './routes/causal.$labId'
 
 const IndexRoute = IndexRouteImport.update({
   id: '/',
@@ -70,6 +72,16 @@ const LessonSlugRoute = LessonSlugRouteImport.update({
   path: '/lesson/$slug',
   getParentRoute: () => rootRouteImport,
 } as any)
+const CausalRoute = CausalRouteImport.update({
+  id: '/causal',
+  path: '/causal',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const CausalLabIdRoute = CausalLabIdRouteImport.update({
+  id: '/causal/$labId',
+  path: '/causal/$labId',
+  getParentRoute: () => rootRouteImport,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
@@ -82,6 +94,8 @@ export interface FileRoutesByFullPath {
   '/playground': typeof PlaygroundRoute
   '/studio': typeof StudioRoute
   '/lesson/$slug': typeof LessonSlugRoute
+  '/causal': typeof CausalRoute
+  '/causal/$labId': typeof CausalLabIdRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
@@ -94,6 +108,8 @@ export interface FileRoutesByTo {
   '/playground': typeof PlaygroundRoute
   '/studio': typeof StudioRoute
   '/lesson/$slug': typeof LessonSlugRoute
+  '/causal': typeof CausalRoute
+  '/causal/$labId': typeof CausalLabIdRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -107,6 +123,8 @@ export interface FileRoutesById {
   '/playground': typeof PlaygroundRoute
   '/studio': typeof StudioRoute
   '/lesson/$slug': typeof LessonSlugRoute
+  '/causal': typeof CausalRoute
+  '/causal/$labId': typeof CausalLabIdRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -121,6 +139,8 @@ export interface FileRouteTypes {
     | '/playground'
     | '/studio'
     | '/lesson/$slug'
+    | '/causal'
+    | '/causal/$labId'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
@@ -133,6 +153,8 @@ export interface FileRouteTypes {
     | '/playground'
     | '/studio'
     | '/lesson/$slug'
+    | '/causal'
+    | '/causal/$labId'
   id:
     | '__root__'
     | '/'
@@ -145,6 +167,8 @@ export interface FileRouteTypes {
     | '/playground'
     | '/studio'
     | '/lesson/$slug'
+    | '/causal'
+    | '/causal/$labId'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -158,6 +182,8 @@ export interface RootRouteChildren {
   PlaygroundRoute: typeof PlaygroundRoute
   StudioRoute: typeof StudioRoute
   LessonSlugRoute: typeof LessonSlugRoute
+  CausalRoute: typeof CausalRoute
+  CausalLabIdRoute: typeof CausalLabIdRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -232,6 +258,20 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof LessonSlugRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/causal': {
+      id: '/causal'
+      path: '/causal'
+      fullPath: '/causal'
+      preLoaderRoute: typeof CausalRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/causal/$labId': {
+      id: '/causal/$labId'
+      path: '/causal/$labId'
+      fullPath: '/causal/$labId'
+      preLoaderRoute: typeof CausalLabIdRouteImport
+      parentRoute: typeof rootRouteImport
+    }
   }
 }
 
@@ -246,6 +286,8 @@ const rootRouteChildren: RootRouteChildren = {
   PlaygroundRoute: PlaygroundRoute,
   StudioRoute: StudioRoute,
   LessonSlugRoute: LessonSlugRoute,
+  CausalRoute: CausalRoute,
+  CausalLabIdRoute: CausalLabIdRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)

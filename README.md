@@ -1,42 +1,84 @@
-# Vue 3 实战学习
+# Vue Causal Lab · See Vue Think
 
-交互式中文 Vue 3 教程：课程 + 测验 + 进度 + 真实 SFC 编辑器 + 模拟全栈工坊。
+逐步改变代码，实时观察程序为何随之改变。
+
+**不是让用户写代码。不是让 AI 聊天。不是播放「AI 打字动画」。**
+
+而是让学习者反复经历：预测 → 最小因果变更 → 真实 Vue 重编译 → Runtime X-Ray → 消融 / 反事实 → 可迁移的心智模型。
 
 **在线访问：** [https://xiaoqianran.github.io/learning-vue3/](https://xiaoqianran.github.io/learning-vue3/)  
 **仓库：** [https://github.com/xiaoqianran/learning-vue3](https://github.com/xiaoqianran/learning-vue3)
 
 ---
 
-## 这是什么
+## 产品定义
 
-面向想系统学习 **Vue 3**、并逐步过渡到 **全栈能力** 的同学。内容以「读一点、动手一点、测一点」组织，而不是纯文档站。
+> Watch a Vue application evolve one causal change at a time.
 
-你可以：
+训练的不是会不会敲 `computed()`，而是能不能看见 Vue 程序背后的因果结构。
 
-- 按路径学完 **69 节** 课程（**讲解 + 对应源码 + 交互 Demo + 小测验**，源码与 Demo 一一对应）
-- 在 **SFC 编辑器** 里写并运行真实 `.vue` 文件
-- 在 **全栈工坊** 里练登录、401、笔记 CRUD（模拟 REST API）
-- 用 **速查表** 复习，用 **学习中心 / 错题本 / 结业证明** 跟进度
+第一版只做三个概念，但体验做完整：
 
-> 说明：本站本身用 React + TanStack Start 承载教学内容；其中 SFC 编辑器嵌入官方 `@vue/repl`，运行的是真实 Vue 3 编译与预览。
+```text
+ref  →  computed  →  watch
+```
+
+必须同时拥有：程序时间轴、Semantic Diff、真实 Vue 重编译、Prediction、自动交互 Replay、状态/DOM 可视化、因果连线、Code Ablation、Counterfactual。
+
+69 节原课程仍在，降级为 **Reference Library（资料库）**。真正的主路径是程序世界的生命史。
 
 ---
 
-## 功能一览
+## 核心界面：Program Time Machine
 
-| 模块 | 路径 | 说明 |
-|------|------|------|
-| 课程 | `/lesson/:slug` | 正文、**对应源码**、Live Demo（可折叠对照）、测验、笔记 |
-| 首页大纲 | `/` | 搜索、路径筛选、进度条 |
-| SFC 编辑器 | `/playground` | 真实 Vue SFC 在线编译 |
-| 全栈工坊 | `/studio` | 模拟 API + 闯关任务 |
-| 文档地图 | `/docs` | 对照 vuejs.org/llms.txt：官网 ↔ 本站课 |
-| 主题 | 全局 | **Catppuccin Userstyles**（Mocha/Macchiato/Frappé/Latte + Accent） |
-| 速查表 | `/cheatsheet` | 一页核心 API 与约定 |
-| 学习中心 | `/hub` | 打卡、收藏、路径进度 |
-| 练习场 | `/lab` | 综合练习 |
-| 错题本 | `/mistakes` | 测验错题回顾 |
-| 结业证明 | `/certificate` | 全部完成后解锁 |
+一节课不是一篇文章，而是一串可执行的程序状态：
+
+```text
+S0 ─── S1 ─── S2 ─── S3 ─── S4 ─── S5
+│      │      │      │      │      │
+HTML   ref    模板   click  消融   迁移
+```
+
+四区固定布局：
+
+| 区 | 作用 |
+|----|------|
+| ① Code Evolution | 语义 Diff，按块高亮，不是逐字符打字 |
+| ② Live Application | 官方 `@vue/repl` 真编译真运行 |
+| ③ Runtime X-Ray | 事件 → 状态 → effect → DOM |
+| ④ AI Narrative | 预测是唯一强制交互；解释是预制的 |
+
+原则：**One Step = One Causal Change**。核心课程全部 deterministic（预制 patch / 运行结果 / 解释）。LLM 只适合回答「为什么刚才没变化」这类旁边问题——第一版用当前 Scene 的 FAQ 承担。
+
+---
+
+## 学习五层
+
+```text
+SEE → PREDICT → EXPLAIN → BREAK → TRANSFER
+```
+
+掌握度不再是「看完课 / Quiz 80%」：
+
+```text
+Mastery = 预测 + 因果解释 + 反事实判断 + 新场景迁移
+```
+
+---
+
+## 路径
+
+| 路径 | 说明 |
+|------|------|
+| `/causal` | World 1 实验室入口 |
+| `/causal/ref` | 一个按钮活起来 |
+| `/causal/computed` | 合计是算出来的 |
+| `/causal/watch` | 两个世界，同一张脸 |
+| `/` | 产品首页 + 资料库 |
+| `/lesson/:slug` | 69 节参考课 |
+| `/playground` | 真实 Vue SFC 编辑器 |
+| `/studio` | 全栈工坊 |
+| `/hub` | 掌握度 |
 
 ### 全栈工坊演示账号
 
@@ -45,45 +87,19 @@
 密码：password123
 ```
 
-闯关任务：成功登录 → 触发一次 401 → 创建 / 编辑 / 删除笔记 → 退出。
-
 ---
 
-## 学习路径（6 条）
+## 程序世界（课程生命史）
 
-| 路径 | 你学到什么 |
-|------|------------|
-| **基础** | 模板、响应式、列表/事件/表单、组件、生命周期、composable |
-| **进阶** | Router、Pinia、常见坑、从零搭项目 |
-| **全栈准备** | Slots、Provide/Inject、异步请求态、路由守卫、表单校验 |
-| **全栈实训** | REST/CRUD、Token 会话、Nuxt 地图、毕业作品清单 |
-| **工程化** | Vue+TS、API 客户端、测试入门、生产部署 |
-| **进阶模式** | Teleport、KeepAlive、自定义指令、性能、面试串讲 |
-| **官网对齐** | 对照 vuejs.org/llms.txt：class/style、watch、template ref、组件 v-model、attrs、异步组件、插件、Transition、Suspense、a11y/安全、SSR、风格指南等 |
-
-建议顺序：
-
-```text
-基础 → 进阶 → 全栈准备 → 工坊闯关 → 工程化 → 进阶模式 → 自己的作品
-```
-
----
-
-## 版本演进
-
-| 版本 | 内容 |
-|------|------|
-| v1 | 基础交互课程 |
-| v2 | 学习中心、练习场、错题本、结业 |
-| v3 | 真实 Vue SFC 在线编辑器（`@vue/repl`） |
-| v4 | 全栈准备线（Slots / 异步 / 守卫 / 校验） |
-| v5 | 全栈工坊：模拟登录 + 笔记 CRUD |
-| v6 | 工坊闯关 + 工程化课 |
-| v7 | 进阶模式 + 速查表 |
-| v8 | 官网 llms.txt 对齐补强 + 代码即组件 + 对照外链 |
-| v8.1 | Guide 全目录迁移：条件渲染/注册/事件/SFC CSS/Options/Web Components/API 精选等 |
-
-Release 见：[GitHub Releases](https://github.com/xiaoqianran/learning-vue3/releases)
+| World | 内容 | 状态 |
+|-------|------|------|
+| 1 | 一个按钮活起来 · ref / computed / watch | **已开放** |
+| 2 | Todo 从 20 行长到 150 行 | 后续 |
+| 3 | Todo 成为真正 SPA | 后续 |
+| 4 | 接入现实世界 | 后续 |
+| 5 | 应用开始复杂 | 后续 |
+| 6 | 应用坏掉 | 后续 |
+| 7 | 生产环境 | 后续 |
 
 ---
 
@@ -98,14 +114,11 @@ npm install
 npm run dev
 ```
 
-开发服务默认：`http://127.0.0.1:8080`（绑定 `0.0.0.0:8080`）。
-
-常用脚本：
+开发服务默认：`http://127.0.0.1:8080`。
 
 ```bash
-npm run dev        # 开发
-npm run build      # 生产构建
-npm run typecheck  # TypeScript 检查
+npm run typecheck
+npm run test:content
 ```
 
 GitHub Pages 静态构建会设置 `GITHUB_PAGES=true`，`base` 为 `/learning-vue3/`。
@@ -115,10 +128,19 @@ GitHub Pages 静态构建会设置 `GITHUB_PAGES=true`，`base` 为 `/learning-v
 ## 技术栈
 
 - **界面与路由：** React 19、TanStack Start / Router、Vite
-- **样式：** Tailwind CSS v4
-- **状态：** Zustand（学习进度持久化）
-- **Vue 教学运行时：** `vue` + `@vue/repl`（SFC 编辑器）
-- **部署：** GitHub Actions → GitHub Pages
+- **样式：** Tailwind CSS v4 · Catppuccin
+- **状态：** Zustand（资料库进度 + 因果掌握度，localStorage）
+- **课程引擎：** `src/causal` Scene / Patch / Time Travel
+- **Vue 运行时：** `vue` + `@vue/repl`
+
+```text
+Curriculum Graph (Scene / Patch)
+        ↓
+Evolution Engine
+   ├── SFC Runtime (@vue/repl)
+   ├── Runtime X-Ray
+   └── Time Travel + Mastery
+```
 
 ---
 
@@ -126,32 +148,21 @@ GitHub Pages 静态构建会设置 `GITHUB_PAGES=true`，`base` 为 `/learning-v
 
 ```text
 src/
-  data/lessons.ts          # 全部课程内容
-  data/sfc-presets.ts      # SFC 编辑器预设
-  components/demos/        # 交互 Demo
+  causal/                 # Scene 引擎与 World 1 三节实验
+  components/causal/      # 四区播放器
+  data/lessons.ts         # 资料库 69 节
   components/VueSfcPlayground.tsx
-  lib/mock-api.ts          # 全栈工坊模拟 API
-  lib/studio-quests.ts     # 闯关进度
-  routes/                  # 页面路由
-  store/progress.ts        # 学习进度
-.github/workflows/         # Pages 部署
+  routes/causal*.tsx
+  store/causal.ts         # 掌握度
+  store/progress.ts       # 资料库进度
 ```
-
----
-
-## 部署
-
-推送到 `main` 后，Actions 工作流 **Deploy to GitHub Pages** 会构建并发布。
-
-- Pages 源：GitHub Actions  
-- 站点：`https://xiaoqianran.github.io/learning-vue3/`
 
 ---
 
 ## 进度与隐私
 
-- 学习进度、笔记、错题、工坊数据保存在 **浏览器 localStorage**
-- 不上传到服务器；清站点数据会丢失进度
+- 学习进度、笔记、错题、工坊、因果掌握度保存在 **浏览器 localStorage**
+- 不上传到服务器
 - 结业证明为本地成就展示，**非正式官方证书**
 
 ---
@@ -160,12 +171,4 @@ src/
 
 - 教程内容用于学习与演示
 - Vue 相关商标归各自所有者
-- 欢迎提 Issue / PR 纠错与补充
-
----
-
-## 相关链接
-
-- 在线课站：[learning-vue3](https://xiaoqianran.github.io/learning-vue3/)
-- 仓库：[xiaoqianran/learning-vue3](https://github.com/xiaoqianran/learning-vue3)
-- Vue 官方文档：[https://cn.vuejs.org/](https://cn.vuejs.org/)
+- 欢迎提 Issue / PR

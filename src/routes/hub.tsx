@@ -10,7 +10,9 @@ import {
 } from "@/lib/nav";
 import { useProgress, todayKey } from "@/store/progress";
 import { Button } from "@/components/ui/button";
-import { Award, BookMarked, BookX, Flame, StickyNote, Target } from "lucide-react";
+import { Award, BookX, Flame, StickyNote, Target } from "lucide-react";
+import { labMastery, scoresFor, useCausal, worldMastery } from "@/store/causal";
+import { CAUSAL_LABS } from "@/causal/labs";
 
 export const Route = createFileRoute("/hub")({
   component: HubPage,
@@ -41,19 +43,58 @@ function HubPage() {
   const doneCount = completedCount(completed);
   const allDone = isAllComplete(completed);
   const reset = useProgress((s) => s.reset);
+  const causalLabs = useCausal((s) => s.labs);
+  const causalPct = worldMastery(causalLabs);
 
   return (
     <div className="mx-auto max-w-3xl pb-16">
       <header className="mb-6">
-        <p className="text-xs font-medium uppercase tracking-wider text-primary">v8 · 我的进度</p>
+        <p className="text-xs font-medium uppercase tracking-wider text-primary">v10 · 掌握度</p>
         <h1 className="mt-1 font-display text-2xl font-semibold text-fg">学习中心</h1>
-        <p className="mt-1 text-sm text-muted">这里是进度权威视图：路径、打卡、收藏、笔记与错题</p>
+        <p className="mt-1 text-sm text-muted">
+          因果实验室看预测/消融/迁移；资料库课节仍按测验统计。
+        </p>
       </header>
 
-      <div className="mb-6 flex flex-col gap-3 rounded-xl border border-primary/30 bg-primary-soft p-4 sm:flex-row sm:items-center sm:justify-between">
+      <section className="mb-6 rounded-xl border border-primary/30 bg-primary-soft p-4">
+        <div className="flex flex-wrap items-start justify-between gap-3">
+          <div>
+            <p className="text-[10px] font-medium uppercase tracking-wider text-primary">
+              Vue Causal Lab
+            </p>
+            <p className="mt-0.5 font-display text-base font-semibold text-fg">
+              World 1 掌握 {causalPct}%
+            </p>
+            <p className="text-xs text-muted">预测 · 因果解释 · 反事实 · 迁移</p>
+          </div>
+          <Link to="/causal" className="no-underline">
+            <Button>进入实验室</Button>
+          </Link>
+        </div>
+        <ul className="mt-4 grid gap-2 sm:grid-cols-3">
+          {CAUSAL_LABS.map((lab) => {
+            const sc = scoresFor(lab.id, causalLabs[lab.id]);
+            return (
+              <li key={lab.id} className="rounded-lg border border-border/60 bg-bg/40 px-3 py-2">
+                <Link
+                  to="/causal/$labId"
+                  params={{ labId: lab.id }}
+                  className="text-sm font-medium text-fg no-underline hover:text-primary"
+                >
+                  {lab.concept}
+                </Link>
+                <p className="font-mono text-[11px] text-muted">
+                  {labMastery(lab.id, causalLabs)}% · 预测 {sc.predict.correct}/{sc.predict.total}
+                </p>
+              </li>
+            );
+          })}
+        </ul>
+      </section>
+      <div className="mb-6 flex flex-col gap-3 rounded-xl border border-border bg-surface p-4 sm:flex-row sm:items-center sm:justify-between">
         <div>
           <p className="text-[10px] font-medium uppercase tracking-wider text-primary">
-            {allDone ? "已毕业" : "下一步"}
+            {allDone ? "已毕业" : "资料库下一步"}
           </p>
           <p className="mt-0.5 font-display text-base font-semibold text-fg">
             {allDone ? "领取结业证明" : cont.title}

@@ -1,20 +1,22 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { LESSONS, getLessonsByTrack } from "@/data/lessons";
 import { useProgress } from "@/store/progress";
+import { labMastery, useCausal, worldMastery } from "@/store/causal";
+import { CAUSAL_LABS } from "@/causal/labs";
+import { PROGRAM_WORLDS } from "@/causal/worlds";
 import { Button } from "@/components/ui/button";
 import {
   ArrowRight,
-  BookOpen,
   Check,
   Clock,
-  Sparkles,
   Search,
   Library,
   BookMarked,
   Server,
   Code2,
-  FlaskConical,
   LayoutDashboard,
+  Sparkles,
+  Lock,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { useMemo, useState } from "react";
@@ -34,10 +36,22 @@ export const Route = createFileRoute("/")({
 
 type TrackFilter = "全部" | (typeof LESSONS)[number]["track"];
 
+const LOOP = [
+  "需求出现",
+  "我先预测",
+  "最小修改",
+  "语义 Diff",
+  "Vue 真运行",
+  "X-Ray 点亮",
+  "删掉试试",
+  "理解 WHY",
+];
+
 function HomePage() {
   const completed = useProgress((s) => s.completed);
   const quizScores = useProgress((s) => s.quizScores);
   const streak = useProgress((s) => s.streak);
+  const causalLabs = useCausal((s) => s.labs);
   const [q, setQ] = useState("");
   const [track, setTrack] = useState<TrackFilter>("全部");
 
@@ -46,6 +60,7 @@ function HomePage() {
   const cont = getContinueLesson(completed);
   const contIdx = LESSONS.findIndex((l) => l.slug === cont.slug);
   const allDone = isAllComplete(completed);
+  const causalPct = worldMastery(causalLabs);
 
   const filtered = useMemo(() => {
     let list = track === "全部" ? LESSONS : getLessonsByTrack(track);
@@ -75,7 +90,6 @@ function HomePage() {
 
   return (
     <div className="mx-auto max-w-3xl pb-16">
-      {/* Hero：一条主路 */}
       <section className="relative overflow-hidden rounded-xl border border-border bg-surface px-5 py-8 sm:px-8 sm:py-10">
         <div
           className="pointer-events-none absolute inset-0 opacity-40"
@@ -88,7 +102,7 @@ function HomePage() {
           <div className="flex flex-wrap items-center gap-2">
             <p className="inline-flex items-center gap-1.5 rounded-full border border-border bg-bg/60 px-2.5 py-1 text-xs font-medium text-primary">
               <Sparkles className="h-3.5 w-3.5" />
-              v9 · 源码即运行
+              Vue Causal Lab · See Vue Think
             </p>
             {streak > 0 ? (
               <span className="rounded-full bg-surface-3 px-2.5 py-1 font-mono text-xs text-muted">
@@ -97,121 +111,106 @@ function HomePage() {
             ) : null}
           </div>
           <h1 className="mt-4 font-display text-3xl font-semibold tracking-tight text-balance text-fg sm:text-4xl">
-            带你系统学 Vue 3
+            Vue — 从一个按钮生长成完整应用
           </h1>
           <p className="mt-3 max-w-xl text-base leading-relaxed text-muted">
-            讲解 → 同一段 Vue 源码真运行 → 测验（≥80% 掌握）。对照官网{" "}
-            <Link to="/docs" className="text-primary no-underline hover:underline">
-              文档地图
-            </Link>
-            ，需要时再查速查表与工坊。
+            逐步改变代码，实时观察程序为何随之改变。训练的不是会不会敲{" "}
+            <code className="rounded-sm bg-surface-3 px-1 font-mono text-[13px]">computed()</code>
+            ，而是能不能看见 Vue 背后的因果结构。
           </p>
 
           <div className="mt-6 flex flex-col gap-3 sm:flex-row sm:flex-wrap sm:items-center">
-            {allDone ? (
-              <Link to="/certificate" className="no-underline">
-                <Button size="lg" className="w-full sm:w-auto">
-                  领取结业证明
-                  <ArrowRight className="h-4 w-4" />
-                </Button>
-              </Link>
-            ) : (
-              <Link to="/lesson/$slug" params={{ slug: cont.slug }} className="no-underline">
-                <Button size="lg" className="w-full sm:w-auto">
-                  {doneCount > 0 ? "继续学习" : "从第一节开始"}
-                  <ArrowRight className="h-4 w-4" />
-                </Button>
-              </Link>
-            )}
-            <Link to="/hub" className="no-underline">
+            <Link to="/causal/$labId" params={{ labId: "ref" }} className="no-underline">
+              <Button size="lg" className="w-full sm:w-auto">
+                {causalPct > 0 ? "继续因果实验" : "打开程序时间机器"}
+                <ArrowRight className="h-4 w-4" />
+              </Button>
+            </Link>
+            <Link to="/causal" className="no-underline">
               <Button size="lg" variant="secondary" className="w-full sm:w-auto">
-                <LayoutDashboard className="h-4 w-4" />
-                学习中心
+                World 1 · 三个概念
               </Button>
             </Link>
           </div>
 
-          <div className="mt-6 rounded-xl border border-border bg-bg/50 p-4">
-            <p className="text-[10px] font-medium uppercase tracking-wider text-subtle">
-              {allDone ? "全部完成" : `下一课 · ${trackLabel(cont.track)}`}
-            </p>
-            <div className="mt-1 flex flex-wrap items-start justify-between gap-2">
-              <div className="min-w-0">
-                <p className="font-display text-lg font-semibold text-fg">
-                  {allDone ? "可以生成结业证明" : cont.title}
-                </p>
-                <p className="mt-0.5 line-clamp-2 text-sm text-muted">
-                  {allDone ? "想复习可从下方路径点回任意一课。" : cont.summary}
-                </p>
-              </div>
-              {!allDone ? (
-                <span className="shrink-0 font-mono text-xs text-subtle">
-                  #{String(contIdx + 1).padStart(2, "0")} · {cont.minutes} 分
-                </span>
-              ) : null}
-            </div>
-          </div>
+          <p className="mt-4 font-mono text-xs text-subtle">
+            World 1 掌握 {causalPct}% · 资料库 {doneCount}/{LESSONS.length} 课
+          </p>
 
-          <div className="mt-5 flex flex-wrap items-center gap-3">
-            <div className="h-2 min-w-[8rem] flex-1 overflow-hidden rounded-full bg-surface-3 sm:max-w-xs">
-              <div
-                className="h-full rounded-full bg-primary transition-[width] duration-300"
-                style={{ width: `${progress}%` }}
-              />
-            </div>
-            <span className="font-mono text-xs tabular-nums text-muted">
-              {doneCount}/{LESSONS.length}
-            </span>
-            <span className="inline-flex items-center gap-1 text-xs text-muted">
-              <BookOpen className="h-3.5 w-3.5" />约 {LESSONS.reduce((a, l) => a + l.minutes, 0)}{" "}
-              分钟
-            </span>
-            <Link to="/hub" className="text-xs text-primary no-underline hover:underline">
-              详细进度 →
-            </Link>
-          </div>
+          <ol className="mt-6 flex flex-wrap gap-1.5">
+            {LOOP.map((step, i) => (
+              <li
+                key={step}
+                className="inline-flex items-center gap-1 rounded-full bg-surface-3 px-2.5 py-1 text-[11px] text-muted"
+              >
+                <span className="font-mono text-primary">{i + 1}</span>
+                {step}
+              </li>
+            ))}
+          </ol>
         </div>
       </section>
 
-      {/* 怎么用：学 / 查 / 练 / 我 */}
+      <section className="mt-8">
+        <h2 className="font-display text-lg font-semibold text-fg">World 1 · 一个按钮活起来</h2>
+        <p className="mt-1 text-sm text-muted">
+          只做 ref、computed、watch。但必须同时拥有时间轴、预测、消融和反事实。
+        </p>
+        <ol className="mt-4 space-y-2">
+          {CAUSAL_LABS.map((lab) => {
+            const m = labMastery(lab.id, causalLabs);
+            return (
+              <li key={lab.id}>
+                <Link
+                  to="/causal/$labId"
+                  params={{ labId: lab.id }}
+                  className="flex items-center gap-3 rounded-xl border border-border bg-surface px-4 py-3 no-underline hover:border-border-strong hover:bg-surface-2"
+                >
+                  <span className="font-mono text-xs text-primary">{lab.concept}</span>
+                  <span className="min-w-0 flex-1">
+                    <span className="block text-sm font-medium text-fg">{lab.title}</span>
+                    <span className="block text-xs text-muted">{lab.subtitle}</span>
+                  </span>
+                  <span className="font-mono text-xs text-subtle">{m}%</span>
+                </Link>
+              </li>
+            );
+          })}
+        </ol>
+      </section>
+
+      <section className="mt-8">
+        <h2 className="font-display text-lg font-semibold text-fg">一个软件系统的生命史</h2>
+        <p className="mt-1 text-sm text-muted">知识不再是第 1 课、第 2 课，而是程序世界不断变复杂。</p>
+        <ol className="mt-4 grid gap-2 sm:grid-cols-2">
+          {PROGRAM_WORLDS.map((w) => (
+            <li
+              key={w.id}
+              className={cn(
+                "rounded-xl border px-4 py-3",
+                w.status === "ready"
+                  ? "border-primary/35 bg-primary-soft/40"
+                  : "border-border bg-surface",
+              )}
+            >
+              <p className="flex items-center gap-1.5 text-sm font-semibold text-fg">
+                {w.status === "soon" ? <Lock className="h-3.5 w-3.5 text-subtle" /> : null}
+                World {w.n}
+              </p>
+              <p className="mt-0.5 text-sm text-fg">{w.title}</p>
+              <p className="text-xs text-muted">{w.blurb}</p>
+            </li>
+          ))}
+        </ol>
+      </section>
+
       <section className="mt-6 grid gap-2 sm:grid-cols-2">
         {[
-          {
-            to: "/docs" as const,
-            icon: Library,
-            title: "查 · 文档地图",
-            desc: "官网章节 ↔ 本站课",
-          },
-          {
-            to: "/cheatsheet" as const,
-            icon: BookMarked,
-            title: "查 · 速查表",
-            desc: "写码时扫一眼 API",
-          },
-          {
-            to: "/studio" as const,
-            icon: Server,
-            title: "练 · 全栈工坊",
-            desc: "模拟 REST / 鉴权",
-          },
-          {
-            to: "/playground" as const,
-            icon: Code2,
-            title: "练 · SFC 编辑器",
-            desc: "真实 Vue 单文件",
-          },
-          {
-            to: "/lab" as const,
-            icon: FlaskConical,
-            title: "练 · 练习场",
-            desc: "刷测验题",
-          },
-          {
-            to: "/hub" as const,
-            icon: LayoutDashboard,
-            title: "我 · 学习中心",
-            desc: "进度 · 打卡 · 错题",
-          },
+          { to: "/docs" as const, icon: Library, title: "资料库 · 文档地图", desc: "69 节对照官网" },
+          { to: "/cheatsheet" as const, icon: BookMarked, title: "速查表", desc: "写码时扫一眼 API" },
+          { to: "/studio" as const, icon: Server, title: "全栈工坊", desc: "模拟 REST / 鉴权" },
+          { to: "/playground" as const, icon: Code2, title: "SFC 编辑器", desc: "真实 Vue 单文件" },
+          { to: "/hub" as const, icon: LayoutDashboard, title: "学习中心", desc: "掌握度 · 打卡 · 错题" },
         ].map((item) => {
           const Icon = item.icon;
           return (
@@ -232,57 +231,12 @@ function HomePage() {
         })}
       </section>
 
-      {/* 路径总览 */}
-      <section className="mt-8">
-        <div className="flex items-end justify-between gap-2">
-          <div>
-            <h2 className="font-display text-lg font-semibold text-fg">七条学习路径</h2>
-            <p className="mt-1 text-sm text-muted">建议按 ①→⑥ 主路径学完，⑦ 官网补全为可选加深</p>
-          </div>
-        </div>
-        <ol className="mt-4 grid gap-2 sm:grid-cols-2">
-          {pathCards.map((p) => (
-            <li key={p.track}>
-              <button
-                type="button"
-                onClick={() => {
-                  setTrack(p.track);
-                  document
-                    .getElementById("course-outline")
-                    ?.scrollIntoView({ behavior: "smooth", block: "start" });
-                }}
-                className={cn(
-                  "w-full rounded-xl border px-4 py-3 text-left transition-colors",
-                  track === p.track
-                    ? "border-primary/40 bg-primary-soft"
-                    : "border-border bg-surface hover:border-border-strong hover:bg-surface-2",
-                )}
-              >
-                <div className="flex items-center justify-between gap-2">
-                  <span className="text-sm font-semibold text-fg">{p.label}</span>
-                  <span className="font-mono text-[11px] text-muted">
-                    {p.done}/{p.total}
-                  </span>
-                </div>
-                <p className="mt-0.5 text-xs text-muted">{p.blurb}</p>
-                <div className="mt-2 h-1 overflow-hidden rounded-full bg-surface-3">
-                  <div className="h-full rounded-full bg-primary" style={{ width: `${p.pct}%` }} />
-                </div>
-              </button>
-            </li>
-          ))}
-        </ol>
-      </section>
-
-      {/* 大纲：筛选 + 列表 */}
-      <section id="course-outline" className="mt-10 scroll-mt-20">
+      <section id="course-outline" className="mt-12 scroll-mt-20">
         <div className="flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between">
           <div>
-            <h2 className="font-display text-lg font-semibold text-fg">课程大纲</h2>
+            <h2 className="font-display text-lg font-semibold text-fg">资料库 · 参考课节</h2>
             <p className="mt-1 text-sm text-muted">
-              {track === "全部"
-                ? `全部 ${LESSONS.length} 课`
-                : `${trackLabel(track as (typeof LESSONS)[number]["track"])} · ${filtered.length} 课`}
+              69 节仍在。它们是 Reference Library，不是主路径。主路径是程序世界的生命史。
             </p>
           </div>
           <div className="flex flex-wrap gap-1.5">
@@ -326,7 +280,16 @@ function HomePage() {
           />
         </div>
 
+        {allDone ? (
+          <p className="mt-3 text-xs text-muted">资料库已读完 · 总进度 {progress}%</p>
+        ) : (
+          <p className="mt-3 text-xs text-muted">
+            资料库下一节：{trackLabel(cont.track)} · {cont.title}（#{String(contIdx + 1).padStart(2, "0")}）
+          </p>
+        )}
+
         <ol className="mt-4 flex flex-col gap-2">
+          {pathCards.length && track !== "全部" ? null : null}
           {filtered.map((lesson) => {
             const i = LESSONS.findIndex((l) => l.slug === lesson.slug);
             const done = completed.includes(lesson.slug);
@@ -348,14 +311,9 @@ function HomePage() {
                   </span>
                   <div className="min-w-0 flex-1">
                     <div className="flex flex-wrap items-center gap-2">
-                      <h3 className="font-medium text-fg group-hover:text-primary">
-                        {lesson.title}
-                      </h3>
+                      <h3 className="font-medium text-fg group-hover:text-primary">{lesson.title}</h3>
                       <span className="rounded-full bg-surface-3 px-2 py-0.5 text-[10px] font-medium text-muted">
                         {trackLabel(lesson.track)}
-                      </span>
-                      <span className="rounded-full bg-surface-3 px-2 py-0.5 text-[10px] text-subtle">
-                        {lesson.level}
                       </span>
                     </div>
                     <p className="mt-0.5 text-sm text-muted">{lesson.summary}</p>

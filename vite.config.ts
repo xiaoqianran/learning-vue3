@@ -24,6 +24,10 @@ const staticPages = [
   { path: "/studio" },
   { path: "/cheatsheet" },
   { path: "/docs" },
+  { path: "/causal" },
+  { path: "/causal/ref" },
+  { path: "/causal/computed" },
+  { path: "/causal/watch" },
   ...lessonPaths,
 ];
 

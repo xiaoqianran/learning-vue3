@@ -26,3 +26,25 @@ if (trueDups.length) {
   console.warn("Possible duplicate quiz ids:", trueDups.slice(0, 20));
 }
 console.log("check-content: OK");
+
+const labFiles = ["ref.ts", "computed.ts", "watch.ts"].map((f) =>
+  fs.readFileSync(path.join(root, "src/causal/labs", f), "utf8"),
+);
+const causalSceneIds = labFiles.flatMap((src) =>
+  [...src.matchAll(/id:\s*"((?:ref|computed|watch)-s\d+)"/g)].map((m) => m[1]),
+);
+const seenLab = new Set();
+const dupLab = [];
+for (const id of causalSceneIds) {
+  if (seenLab.has(id)) dupLab.push(id);
+  seenLab.add(id);
+}
+if (dupLab.length) {
+  console.error("Duplicate causal scene ids:", dupLab);
+  process.exit(1);
+}
+if (causalSceneIds.length < 12) {
+  console.error("Expected at least 12 causal scenes, got", causalSceneIds.length);
+  process.exit(1);
+}
+console.log(`check-content: ${causalSceneIds.length} causal scenes OK`);
