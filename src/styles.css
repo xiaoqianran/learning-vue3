@@ -399,7 +399,7 @@
 
 .causal-split[data-separator] {
   flex-shrink: 0;
-  background: var(--color-border);
+  background: var(--color-border-strong);
   transition: background-color 120ms ease;
 }
 

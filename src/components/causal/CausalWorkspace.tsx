@@ -42,19 +42,20 @@ function Pane({ children }: { children: ReactNode }) {
   return <div className="flex h-full min-h-0 flex-col overflow-hidden">{children}</div>;
 }
 
-function Split({ axis }: { axis: "x" | "y" }) {
+function Split({ axis, id }: { axis: "x" | "y"; id: string }) {
   return (
     <Separator
+      id={id}
       className={cn(
-        "causal-split z-10 flex items-center justify-center bg-border",
-        axis === "x" ? "w-1.5" : "h-1.5",
+        "causal-split z-10 flex items-center justify-center",
+        axis === "x" ? "w-2" : "h-2",
       )}
       title="拖动调整大小，双击恢复默认"
     >
       <span
         className={cn(
           "rounded-full bg-overlay1",
-          axis === "x" ? "h-8 w-0.5" : "h-0.5 w-8",
+          axis === "x" ? "h-10 w-1" : "h-1 w-10",
         )}
       />
     </Separator>
@@ -92,6 +93,7 @@ function PersistentGroup({
       orientation={orientation}
       className={className}
       onLayoutChanged={onLayoutChanged}
+      resizeTargetMinimumSize={{ coarse: 28, fine: 12 }}
     >
       {children}
     </Group>
@@ -127,15 +129,15 @@ export function CausalWorkspace({ code, live, xray, narrative }: WorkspaceProps)
         <Panel id="code" minSize="14%" defaultSize="28%" className="min-h-0">
           <Pane>{code}</Pane>
         </Panel>
-        <Split axis="y" />
+        <Split axis="y" id="split-stack-1" />
         <Panel id="live" minSize="14%" defaultSize="28%" className="min-h-0">
           <Pane>{live}</Pane>
         </Panel>
-        <Split axis="y" />
+        <Split axis="y" id="split-stack-2" />
         <Panel id="xray" minSize="14%" defaultSize="22%" className="min-h-0">
           <Pane>{xray}</Pane>
         </Panel>
-        <Split axis="y" />
+        <Split axis="y" id="split-stack-3" />
         <Panel id="narrative" minSize="14%" defaultSize="22%" className="min-h-0">
           <Pane>{narrative}</Pane>
         </Panel>
@@ -160,13 +162,13 @@ export function CausalWorkspace({ code, live, xray, narrative }: WorkspaceProps)
           <Panel id="code" minSize="18%" defaultSize="50%" className="min-h-0">
             <Pane>{code}</Pane>
           </Panel>
-          <Split axis="x" />
+          <Split axis="x" id="split-top" />
           <Panel id="live" minSize="18%" defaultSize="50%" className="min-h-0">
             <Pane>{live}</Pane>
           </Panel>
         </PersistentGroup>
       </Panel>
-      <Split axis="y" />
+      <Split axis="y" id="split-rows" />
       <Panel id="bottom" minSize="18%" defaultSize="50%" className="min-h-0">
         <PersistentGroup
           part="bottom"
@@ -177,7 +179,7 @@ export function CausalWorkspace({ code, live, xray, narrative }: WorkspaceProps)
           <Panel id="xray" minSize="18%" defaultSize="50%" className="min-h-0">
             <Pane>{xray}</Pane>
           </Panel>
-          <Split axis="x" />
+          <Split axis="x" id="split-bottom" />
           <Panel id="narrative" minSize="18%" defaultSize="50%" className="min-h-0">
             <Pane>{narrative}</Pane>
           </Panel>
