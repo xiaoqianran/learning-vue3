@@ -104,6 +104,10 @@ export function CausalLab({ lab }: Props) {
       "markRaw",
       "toRaw",
       "customRef",
+      "$attrs",
+      "inheritAttrs",
+      "defineExpose",
+      "defineOptions",
     ]);
     for (const n of scene.nodes) if (n.symbol) s.add(n.symbol);
     for (const p of [...scene.observe.state, ...scene.observe.dom, ...scene.observe.events]) {
