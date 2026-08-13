@@ -794,7 +794,7 @@ export const RACE_LAB: CausalLab = {
             kind: "stale",
             message: "这是修复：每个字母一次请求，过期丢掉。先打 a 再打 ad，应停在 ad 的命中。",
           },
-          lesson: "World 4 收束：远程数据有延迟、会失败、会赛跑。auth / CRUD 还在后面。机制已经可以迁移。",
+          lesson: "World 4 读的部分到此。下一课写回服务器：屏幕上的 push，源认不认。",
         },
       ],
       explanation: {

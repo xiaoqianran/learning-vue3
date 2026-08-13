@@ -1,13 +1,16 @@
 import type { CausalLab } from "../types";
 import { PROGRAM_WORLDS } from "../worlds";
+import { AUTH_LAB } from "./auth";
 import { COMPONENT_LAB } from "./component";
 import { COMPOSABLE_LAB } from "./composable";
 import { COMPUTED_LAB } from "./computed";
+import { CRUD_LAB } from "./crud";
 import { ERROR_LAB } from "./error";
 import { FETCH_LAB } from "./fetch";
 import { FORM_LAB } from "./form";
 import { LIST_LAB } from "./list";
 import { PINIA_LAB } from "./pinia";
+import { PROVIDE_LAB } from "./provide";
 import { RACE_LAB } from "./race";
 import { REF_LAB } from "./ref";
 import { ROUTER_LAB } from "./router";
@@ -28,6 +31,9 @@ export const CAUSAL_LABS: CausalLab[] = [
   FETCH_LAB,
   ERROR_LAB,
   RACE_LAB,
+  CRUD_LAB,
+  AUTH_LAB,
+  PROVIDE_LAB,
 ];
 
 export function getCausalLab(id: string): CausalLab | undefined {
