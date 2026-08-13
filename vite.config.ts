@@ -58,6 +58,9 @@ const causalLabs = [
   "asynccomp",
   "suspense",
   "asyncerr",
+  "scoped",
+  "deep",
+  "slotted",
 ];
 
 const staticPages = [

@@ -549,7 +549,7 @@ export const ASYNCERR_LAB: CausalLab = {
       ],
       explanation: {
         headline: "没脸、仍失败、永远等",
-        body: "三张停住的脸，三种原因。World 13 收束：组件还在路上。等待、失败、重试，都要有脸。",
+        body: "三张停住的脸，三种原因。World 13 收束：组件还在路上。等待、失败、重试，都要有脸。下一课：样式也有边界。",
       },
       tryThis: "三种消融：空白、点了仍红、永远转。对上号再恢复：失败后点成 Ada。",
       faqs: [
@@ -604,12 +604,12 @@ export const ASYNCERR_LAB: CausalLab = {
             kind: "stale",
             message: "停在「失败：价钱丢失」。retry 在 prop 里，画面上没接线。",
           },
-          lesson: "World 13 收束：等待、失败、重试，都要有脸。",
+          lesson: "World 13 收束：等待、失败、重试，都要有脸。下一课：样式也有边界。",
         },
       ],
       explanation: {
         headline: "失败不是终点",
-        body: "retry 把同一条边再走一遍。timeout 把永远等着切成失败。World 13 停在还没到的组件：分包、setup、拒绝，三张不同的脸。",
+        body: "retry 把同一条边再走一遍。timeout 把永远等着切成失败。World 13 停在还没到的组件。下一课：颜色停在哪一层模板。",
       },
       faqs: [
         { q: "和 World 4 请求失败重试有什么不同？", a: "那一课 retry 是你自己写的函数去 fetch。这一课 retry 是 Vue 塞进 errorComponent 的 prop，再跑的是 loader。" },

@@ -42,6 +42,9 @@ import { VCLICKOUT_LAB } from "./vclickout";
 import { ASYNCCOMP_LAB } from "./asynccomp";
 import { SUSPENSE_LAB } from "./suspense";
 import { ASYNCERR_LAB } from "./asyncerr";
+import { SCOPED_LAB } from "./scoped";
+import { DEEP_LAB } from "./deep";
+import { SLOTTED_LAB } from "./slotted";
 import { WATCH_LAB } from "./watch";
 
 export const CAUSAL_LABS: CausalLab[] = [
@@ -88,6 +91,9 @@ export const CAUSAL_LABS: CausalLab[] = [
   ASYNCCOMP_LAB,
   SUSPENSE_LAB,
   ASYNCERR_LAB,
+  SCOPED_LAB,
+  DEEP_LAB,
+  SLOTTED_LAB,
 ];
 
 export function getCausalLab(id: string): CausalLab | undefined {
