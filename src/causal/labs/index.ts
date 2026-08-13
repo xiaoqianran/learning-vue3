@@ -24,6 +24,9 @@ import { TEST_LAB } from "./test";
 import { HYDRATE_LAB } from "./hydrate";
 import { ISOLATE_LAB } from "./isolate";
 import { PAYLOAD_LAB } from "./payload";
+import { TYPEDPROPS_LAB } from "./typedprops";
+import { TYPEDEMIT_LAB } from "./typedemit";
+import { INJECTKEY_LAB } from "./injectkey";
 import { WATCH_LAB } from "./watch";
 
 export const CAUSAL_LABS: CausalLab[] = [
@@ -52,6 +55,9 @@ export const CAUSAL_LABS: CausalLab[] = [
   HYDRATE_LAB,
   ISOLATE_LAB,
   PAYLOAD_LAB,
+  TYPEDPROPS_LAB,
+  TYPEDEMIT_LAB,
+  INJECTKEY_LAB,
 ];
 
 export function getCausalLab(id: string): CausalLab | undefined {

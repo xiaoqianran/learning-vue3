@@ -40,6 +40,9 @@ const causalLabs = [
   "hydrate",
   "isolate",
   "payload",
+  "typedprops",
+  "typedemit",
+  "injectkey",
 ];
 
 const staticPages = [
