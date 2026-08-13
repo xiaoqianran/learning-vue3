@@ -373,7 +373,7 @@ function FinishCard({
           </Link>
         ) : (
           <Link to="/causal" className="no-underline">
-            <Button>回到 World 1</Button>
+            <Button>回到目录</Button>
           </Link>
         )}
       </div>

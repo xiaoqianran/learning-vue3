@@ -73,8 +73,11 @@ function AppShell({ children }: { children: ReactNode }) {
     select: (s) => s.location.pathname,
   });
   const isCausalPlayer = /\/causal\/[^/]+/.test(pathname);
-  const playerLab = isCausalPlayer
-    ? CAUSAL_LABS.find((lab) => pathname.endsWith(`/causal/${lab.id}`))
+  const playerLabId = isCausalPlayer
+    ? pathname.split("/").filter(Boolean).at(-1)
+    : undefined;
+  const playerLab = playerLabId
+    ? CAUSAL_LABS.find((lab) => lab.id === playerLabId)
     : undefined;
   const navLabs = labsForWorld(playerLab?.world ?? 1);
   const labs = useCausal((s) => s.labs);
