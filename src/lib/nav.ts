@@ -1,19 +1,13 @@
 import {
-  Award,
-  BookMarked,
   BookOpen,
-  BookX,
-  Code2,
   FlaskConical,
   LayoutDashboard,
   Library,
-  Server,
   type LucideIcon,
 } from "lucide-react";
 import type { Lesson } from "@/data/lessons";
 import { LESSONS, TRACKS, getCourseLessons } from "@/data/lessons";
 
-/** 用户向路径命名（序号 + 短名） */
 export const TRACK_META: Record<Lesson["track"], { order: number; label: string; blurb: string }> =
   {
     基础: { order: 1, label: "① 入门", blurb: "模板 · 响应式 · 组件基础" },
@@ -22,7 +16,6 @@ export const TRACK_META: Record<Lesson["track"], { order: number; label: string;
     全栈实训: { order: 4, label: "④ 项目实训", blurb: "REST · 鉴权 · Nuxt · 毕业" },
     工程化: { order: 5, label: "⑤ 工程化", blurb: "TS · 测试 · 部署" },
     进阶模式: { order: 6, label: "⑥ 模式与面试", blurb: "内置组件 · 性能 · 串讲" },
-    /** 可选加深：与 LESSONS 数组一致，放在主路径之后，避免「继续学习」与路径卡错位 */
     官网对齐: { order: 7, label: "⑦ 官网补全", blurb: "对照 llms.txt · 可选加深" },
   };
 
@@ -34,7 +27,6 @@ export function orderedTracks(): Lesson["track"][] {
   return [...TRACKS].sort((a, b) => (TRACK_META[a]?.order ?? 99) - (TRACK_META[b]?.order ?? 99));
 }
 
-/** 仅统计仍存在的课（忽略历史脏 slug） */
 export function getValidCompleted(completed: string[]): string[] {
   const set = new Set(LESSONS.map((l) => l.slug));
   return completed.filter((s) => set.has(s));
@@ -52,11 +44,9 @@ export function progressPercent(completed: string[]): number {
 }
 
 export function isAllComplete(completed: string[]): boolean {
-  // 主修课全部 completed（结业硬门槛另看 mastered）
   return getCourseLessons().every((l) => completed.includes(l.slug));
 }
 
-/** 下一未完成课；若已全部完成则返回最后一课 */
 export function getContinueLesson(completed: string[]): Lesson {
   const coreNext = getCourseLessons().find((l) => !completed.includes(l.slug));
   if (coreNext) return coreNext;
@@ -74,43 +64,23 @@ export function getContinueHref(completed: string[]): {
 }
 
 export type NavItem = {
-  to:
-    | "/"
-    | "/causal"
-    | "/causal/$labId"
-    | "/docs"
-    | "/cheatsheet"
-    | "/studio"
-    | "/playground"
-    | "/lab"
-    | "/hub"
-    | "/mistakes"
-    | "/certificate";
+  to: "/" | "/causal" | "/causal/$labId" | "/hub" | "/docs";
   label: string;
   hint?: string;
   icon: LucideIcon;
 };
 
-/** 顶栏主导航：实验室 / 查 / 练 / 我 */
 export const NAV_PRIMARY: NavItem[] = [
-  { to: "/causal", label: "实验室", hint: "学 · 程序时间机器", icon: FlaskConical },
-  { to: "/docs", label: "资料库", hint: "查 · 官网对照地图", icon: Library },
-  { to: "/hub", label: "进度", hint: "我 · 掌握度", icon: LayoutDashboard },
+  { to: "/causal", label: "实验室", hint: "程序时间机器", icon: FlaskConical },
+  { to: "/hub", label: "掌握度", icon: LayoutDashboard },
 ];
 
-/** 更多工具（侧栏分组 + 顶栏下拉） */
 export const NAV_TOOLS: NavItem[] = [
-  { to: "/studio", label: "工坊", hint: "练 · 模拟全栈闯关", icon: Server },
-  { to: "/cheatsheet", label: "速查表", hint: "写码时扫一眼", icon: BookMarked },
-  { to: "/playground", label: "SFC 编辑器", hint: "真 Vue 单文件", icon: Code2 },
-  { to: "/lab", label: "练习场", hint: "刷测验题", icon: FlaskConical },
-  { to: "/mistakes", label: "错题本", hint: "错题重练", icon: BookX },
-  { to: "/certificate", label: "结业证书", hint: "全部完成后解锁", icon: Award },
+  { to: "/docs", label: "资料库", hint: "旧教程对照", icon: Library },
 ];
 
 export const NAV_HOME: NavItem = {
   to: "/",
-  label: "学 · 首页",
-  hint: "程序世界与资料库",
+  label: "首页",
   icon: BookOpen,
 };
